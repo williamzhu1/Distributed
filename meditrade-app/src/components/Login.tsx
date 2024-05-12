@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
-import './login_register.css'; // Using the same CSS file for consistency
+import { useNavigate } from 'react-router-dom';
+import './login_register.css';
+import logo from '../images/logo.jpeg';
+import Footer from '../components/Footer';
+
 
 const Login: React.FC = () => {
+    const navigate = useNavigate();
     const [loginData, setLoginData] = useState({
         username: '',
         password: ''
@@ -46,25 +51,29 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="login-container">
-            <h1 className="login-header">Log In</h1>
-            <form onSubmit={handleSubmit} className="login-form">
-                <div className="form-group">
-                    <label htmlFor="username">Username</label>
-                    <input type="text" id="username" name="username" value={loginData.username} onChange={handleChange} className={errors.username ? 'input-error' : ''} />
-                    {errors.username && <p className="error-message">{errors.username}</p>}
+        <>
+            <div className="login-container">
+                <img src={logo} alt="MediTrade Logo" className="logo-img" />
+                <h1 className="login-header">Sign In</h1>
+                <form onSubmit={handleSubmit} className="login-form">
+                    <div className="form-group">
+                        <label htmlFor="username">Username</label>
+                        <input type="text" id="username" name="username" value={loginData.username} onChange={handleChange} className={errors.username ? 'input-error' : ''} />
+                        {errors.username && <p className="error-message">{errors.username}</p>}
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <input type="password" id="password" name="password" value={loginData.password} onChange={handleChange} className={errors.password ? 'input-error' : ''} />
+                        {errors.password && <p className="error-message">{errors.password}</p>}
+                    </div>
+                    <button type="submit" className="login-button">SIGN IN</button>
+                </form>
+                <div className="switch-to-register">
+                    <a href="/register" onClick={(e) => {e.preventDefault(); navigate('/register')}}>Don't have an account? Register!</a>
                 </div>
-                <div className="form-group">
-                    <label htmlFor="password">Password</label>
-                    <input type="password" id="password" name="password" value={loginData.password} onChange={handleChange} className={errors.password ? 'input-error' : ''} />
-                    {errors.password && <p className="error-message">{errors.password}</p>}
-                </div>
-                <button type="submit" className="login-button">Log In</button>
-            </form>
-            <div className="switch-to-register">
-                <button onClick={() => { /* Handle route change to register */ }}>Don't have an account? Register!</button>
             </div>
-        </div>
+            <Footer />
+        </>
     );
 };
 

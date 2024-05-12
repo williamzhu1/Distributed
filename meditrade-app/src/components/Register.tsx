@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import './login_register.css'; // CSS for styling
-import logo from '../images/logo.jpeg'; // Logo import
+import { useNavigate } from 'react-router-dom';
+import './login_register.css';
+import logo from '../images/logo.jpeg';
+import Footer from './Footer';
 
 const Register: React.FC = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         username: '',
@@ -75,36 +78,40 @@ const Register: React.FC = () => {
     };
 
     return (
-        <div className="register-container">
-            <img src={logo} alt="MediTrade Logo" className="logo-img" />
-            <h1 className="register-header">Register</h1>
-            <form onSubmit={handleSubmit} className="register-form">
-                <div className="form-group">
-                    <label htmlFor="email">Email</label>
-                    <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className={errors.email ? 'input-error' : ''} />
-                    {errors.email && <p className="error-message">{errors.email}</p>}
-                </div>
-                <div className="form-group">
-                    <label htmlFor="username">Username</label>
-                    <input type="text" id="username" name="username" value={formData.username} onChange={handleChange} className={errors.username ? 'input-error' : ''} />
-                    {errors.username && <p className="error-message">{errors.username}</p>}
-                </div>
-                <div className="form-group">
-                    <label htmlFor="password">Password</label>
-                    <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} className={errors.password ? 'input-error' : ''} />
-                    {errors.password && <p className="error-message">{errors.password}</p>}
-                </div>
-                <div className="form-group">
-                    <label htmlFor="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className={errors.confirmPassword ? 'input-error' : ''} />
-                    {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
-                </div>
-                <button type="submit" className="register-button" disabled={!allFieldsValid()}>Register</button>
-                <div className="switch-to-login">
-                    <button onClick={() => { /* Handle route change to login */ }}>Already have an account? Log in!</button>
-                </div>
-            </form>
-        </div>
+        <>
+            <div className="register-container">
+                <img src={logo} alt="MediTrade Logo" className="logo-img" />
+                <h1 className="register-header">Register</h1>
+                <form onSubmit={handleSubmit} className="register-form">
+                    <div className="form-group">
+                        <label htmlFor="email">Email</label>
+                        <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className={errors.email ? 'input-error' : ''} />
+                        {errors.email && <p className="error-message">{errors.email}</p>}
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="username">Username</label>
+                        <input type="text" id="username" name="username" value={formData.username} onChange={handleChange} className={errors.username ? 'input-error' : ''} />
+                        {errors.username && <p className="error-message">{errors.username}</p>}
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} className={errors.password ? 'input-error' : ''} />
+                        {errors.password && <p className="error-message">{errors.password}</p>}
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className={errors.confirmPassword ? 'input-error' : ''} />
+                        {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
+                    </div>
+                    <button type="submit" className="register-button" disabled={!allFieldsValid()}>REGISTER</button>
+                    <div className="switch-to-login">
+                        <a href="/login" onClick={(e) => {e.preventDefault(); navigate('/login')}}>Already have an account? Sign in!</a>
+                    </div>
+                </form>
+            </div>
+            <Footer />
+        </>
+
     );
 };
 
