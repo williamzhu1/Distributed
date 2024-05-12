@@ -1,0 +1,111 @@
+html, body {
+  background-image: none;
+  background-color: #fff;
+}
+
+.home-container {
+  font-family: "Arial", sans-serif; /* Change as needed */
+  flex: 1;        /* Ensures container takes necessary space */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Space distribution */
+}
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo_horizontal {
+  height: 50px; /* Adjust size as needed */
+}
+
+nav a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+nav a:hover {
+  color: #4caf50; /* Theme color */
+}
+
+.hero {
+    position: relative;
+    text-align: left; /* Ensure text alignment is consistent */
+    padding-left: 0%; /* Add padding to move text from the very edge of the image */
+    padding-top: 5px; /* Space from the top of the container */
+    color: white;
+    width: 100%; /* Ensure the hero covers the full width */
+}
+
+.banner-image {
+    width: 100%;
+    height: auto;
+    display: block; /* Ensures the image does not have any inline spacing */
+    opacity: 1; /* Optional: Slightly see-through */
+}
+
+.hero h1, .hero p {
+    position: absolute;
+    left: 0%; /* Start text from 5% from the left, adjust as needed */
+    padding: 10px;
+    align-items: left;
+    border-radius: 5px;
+    box-sizing: border-box; /* Includes padding and border in the element's total width and height */
+    color:white;
+}
+
+.hero h1 {
+    top: 15%; /* Adjust top position as necessary */
+    align-items: left;
+    width: 37.5%;
+    padding-left: 40px;
+    font-size: 2.5em; /* Large text size */
+}
+
+.hero p {
+    width: 40%;
+    align-items: center;
+    top: 35%; /* Position just below the h1 */
+    font-size: 1.5em; /* Smaller text size than h1 */
+    left:5%;
+}
+
+
+.search-bar {
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+}
+
+.search-bar input,
+.search-bar button {
+    padding: 10px;
+    margin: 5px;
+}
+
+.results-section {
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+/* Additional styles for responsiveness */
+@media (max-width: 768px) {
+  .home-header {
+    flex-direction: column;
+  }
+
+  .hero h1 {
+      font-size: 5vw; /* Adjust as needed */
+    }
+
+  .hero p {
+    font-size: 4vw; /* Adjust as needed */
+  }
+}
