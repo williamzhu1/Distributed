@@ -1,23 +1,33 @@
-html {
+html,
+body {
   height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.login-register-background {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   background-image: url("../images/background.jpeg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-}
-
-body {
-  height: 100%;
-  margin: 0;
-  background: transparent;
-}
-
-.login-register-background {
   position: relative;
   opacity: 0.8; /* Adjust the opacity of the background image */
+  min-height: 100vh; /* Ensures the background takes full height */
 }
-/* Semi-transparent overlay to the entire background */
+
 body::before {
   content: "";
   position: fixed;
@@ -46,6 +56,7 @@ body::before {
   border-radius: 8px;
   font-family: "Open Sans", sans-serif;
 }
+
 .register-header,
 .login-header {
   font-size: 24px; /* Adjust the font size as needed */

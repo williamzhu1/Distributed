@@ -7,11 +7,15 @@ import Footer from "./Footer"; // Assuming Footer is a separate component
 
 const Home = () => {
   return (
-    <div className="home-container">
+    <div className="home-page">
       <header className="home-header">
-        <img src={logo_horizontal} alt="MediTrade Logo" className="logo_horizontal" />
+        <img
+          src={logo_horizontal}
+          alt="MediTrade Logo"
+          className="logo_horizontal"
+        />
         <nav>
-          <Link to="/">Home</Link>
+          <Link to="/home">Home</Link>
           <Link to="/login">Login</Link>
           <Link to="/register">Register</Link>
           <Link to="/contact">Contact</Link>
