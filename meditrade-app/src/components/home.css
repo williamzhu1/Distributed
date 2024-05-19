@@ -1,28 +1,25 @@
-.home-page html,
-.home-page body {
-  background-image: none;
-  background-color: #fff;
+body {
+  font-family: Arial, sans-serif;
 }
 
-.home-container {
-  font-family: "Arial", sans-serif; /* Change as needed */
-  flex: 1; /* Ensures container takes necessary space */
+.home-page {
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Space distribution */
+  min-height: 100vh;
+  background-color: #fff;
 }
 
 .home-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 40px; /* Increase padding to make the header larger */
+  padding: 15px 40px;
   background: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .logo_horizontal {
-  height: 50px; /* Adjust size as needed */
+  height: 50px;
 }
 
 nav a {
@@ -33,49 +30,49 @@ nav a {
 }
 
 nav a:hover {
-  color: #4caf50; /* Theme color */
+  color: #4caf50;
 }
 
 .hero {
   position: relative;
-  text-align: left; /* Ensure text alignment is consistent */
-  padding-left: 0%; /* Add padding to move text from the very edge of the image */
-  padding-top: 5px; /* Space from the top of the container */
+  text-align: left;
+  padding-left: 0%;
+  padding-top: 5px;
   color: white;
-  width: 100%; /* Ensure the hero covers the full width */
+  width: 100%;
 }
 
 .banner-image {
   width: 100%;
   height: auto;
-  display: block; /* Ensures the image does not have any inline spacing */
-  opacity: 1; /* Optional: Slightly see-through */
+  display: block;
+  opacity: 1;
 }
 
 .hero h1,
 .hero p {
   position: absolute;
-  left: 0%; /* Start text from 5% from the left, adjust as needed */
+  left: 0%;
   padding: 10px;
   align-items: left;
   border-radius: 5px;
-  box-sizing: border-box; /* Includes padding and border in the element's total width and height */
+  box-sizing: border-box;
   color: white;
 }
 
 .hero h1 {
-  top: 15%; /* Adjust top position as necessary */
+  top: 15%;
   align-items: left;
   width: 37.5%;
   padding-left: 40px;
-  font-size: 2.5em; /* Large text size */
+  font-size: 2.5em;
 }
 
 .hero p {
   width: 40%;
   align-items: left;
-  top: 35%; /* Position just below the h1 */
-  font-size: 1.5em; /* Smaller text size than h1 */
+  top: 35%;
+  font-size: 1.5em;
   left: 5%;
 }
 
@@ -100,38 +97,88 @@ nav a:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   font-size: 16px;
   cursor: pointer;
-  transition:
-    background-color 0.3s,
-    transform 0.3s;
+  transition: background-color 0.3s, transform 0.3s;
 }
 
 .search-bar button:hover {
-  background-color: light-gray; /* Darker green on hover */
+  background-color: light-gray;
   color: black;
-  transform: translateY(-2px); /* Slight lift effect on hover */
+  transform: translateY(-2px);
 }
 
 .search-bar button:active {
-  background-color: gray; /* Even darker green on active */
-  transform: translateY(0); /* Reset lift effect on active */
+  background-color: gray;
+  transform: translateY(0);
 }
 
 .results-section {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 20px;
   padding: 20px;
   background-color: #f9f9f9;
 }
 
+.product-card {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+}
+
+.product-image {
+  width: 100%;
+  height: auto;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.product-info h2 {
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.product-price {
+  font-size: 16px;
+  color: #4caf50;
+  margin: 10px 0;
+}
+
+.product-genre, .product-origin {
+  font-size: 14px;
+  color: #555;
+}
+
 /* Additional styles for responsiveness */
+@media (max-width: 1200px) {
+  .results-section {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .home-header {
     flex-direction: column;
   }
 
   .hero h1 {
-    font-size: 5vw; /* Adjust as needed */
+    font-size: 5vw;
   }
 
   .hero p {
-    font-size: 4vw; /* Adjust as needed */
+    font-size: 4vw;
+  }
+
+  .results-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .results-section {
+    grid-template-columns: 1fr;
   }
 }
