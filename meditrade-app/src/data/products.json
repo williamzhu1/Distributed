@@ -1,0 +1,146 @@
+[
+  {
+    "id": 1,
+    "image": "Sample1.jpeg",
+    "name": "Herbal Tea",
+    "price": "$10.00",
+    "genre": "Herbal",
+    "origin": "China",
+    "details": "Detailed info about Herbal Tea."
+  },
+  {
+    "id": 2,
+    "image": "Sample2.jpeg",
+    "name": "Ginseng Extract",
+    "price": "$25.00",
+    "genre": "Herbal",
+    "origin": "Korea",
+    "details": "Detailed info about Ginseng Extract."
+  },
+  {
+    "id": 3,
+    "image": "Sample3.jpeg",
+    "name": "Aloe Vera Gel",
+    "price": "$15.00",
+    "genre": "Topical",
+    "origin": "Egypt",
+    "details": "Detailed info about Aloe Vera Gel."
+  },
+  {
+    "id": 4,
+    "image": "Sample4.jpeg",
+    "name": "Echinacea",
+    "price": "$12.00",
+    "genre": "Herbal",
+    "origin": "USA",
+    "details": "Detailed info about Echinacea."
+  },
+  {
+    "id": 5,
+    "image": "Sample5.jpeg",
+    "name": "Chamomile",
+    "price": "$8.00",
+    "genre": "Herbal",
+    "origin": "Germany",
+    "details": "Detailed info about Chamomile."
+  },
+  {
+    "id": 6,
+    "image": "Sample6.jpeg",
+    "name": "Lavender Oil",
+    "price": "$20.00",
+    "genre": "Essential Oil",
+    "origin": "France",
+    "details": "Detailed info about Lavender Oil."
+  },
+  {
+    "id": 7,
+    "image": "Sample7.jpeg",
+    "name": "Peppermint",
+    "price": "$5.00",
+    "genre": "Herbal",
+    "origin": "USA",
+    "details": "Detailed info about Peppermint."
+  },
+  {
+    "id": 8,
+    "image": "Sample8.jpeg",
+    "name": "Turmeric",
+    "price": "$7.00",
+    "genre": "Herbal",
+    "origin": "India",
+    "details": "Detailed info about Turmeric."
+  },
+  {
+    "id": 9,
+    "image": "Sample9.jpeg",
+    "name": "Rosemary",
+    "price": "$6.00",
+    "genre": "Herbal",
+    "origin": "Italy",
+    "details": "Detailed info about Rosemary."
+  },
+  {
+    "id": 10,
+    "image": "Sample10.jpeg",
+    "name": "Sage",
+    "price": "$5.50",
+    "genre": "Herbal",
+    "origin": "Turkey",
+    "details": "Detailed info about Sage."
+  },
+  {
+    "id": 11,
+    "image": "Sample11.jpeg",
+    "name": "Thyme",
+    "price": "$4.00",
+    "genre": "Herbal",
+    "origin": "Spain",
+    "details": "Detailed info about Thyme."
+  },
+  {
+    "id": 12,
+    "image": "Sample12.jpeg",
+    "name": "Basil",
+    "price": "$4.50",
+    "genre": "Herbal",
+    "origin": "India",
+    "details": "Detailed info about Basil."
+  },
+  {
+    "id": 13,
+    "image": "Sample13.jpeg",
+    "name": "Oregano",
+    "price": "$5.00",
+    "genre": "Herbal",
+    "origin": "Greece",
+    "details": "Detailed info about Oregano."
+  },
+  {
+    "id": 14,
+    "image": "Sample14.jpeg",
+    "name": "Garlic",
+    "price": "$3.00",
+    "genre": "Herbal",
+    "origin": "China",
+    "details": "Detailed info about Garlic."
+  },
+  {
+    "id": 15,
+    "image": "Sample15.jpeg",
+    "name": "Ginger",
+    "price": "$6.00",
+    "genre": "Herbal",
+    "origin": "India",
+    "details": "Detailed info about Ginger."
+  },
+  {
+    "id": 16,
+    "image": "Sample16.jpeg",
+    "name": "Cinnamon",
+    "price": "$7.00",
+    "genre": "Herbal",
+    "origin": "Sri Lanka",
+    "details": "Detailed info about Cinnamon."
+  }
+]

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./login_register.css";
-import logo from "../images/logo.jpeg";
+import logo from "../assets/images/logo.jpeg";
 import Footer from "./Footer";
 
 const Register: React.FC = () => {
