@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./login_register.css";
-import logo from "../assets/images/logo.jpeg";
-import Footer from "../components/Footer";
+import logo from "../../assets/images/logo.jpeg";
+import Footer from "../common/Footer";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();

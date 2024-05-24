@@ -1,10 +1,10 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./product.css";
-import products from "../data/products.json";
-import images from "../assets/images/products/index";
-import Header from "./Header";
-import Footer from "./Footer";
+import products from "../../data/products.json";
+import images from "../../assets/images/products/index";
+import Header from "../common/Header";
+import Footer from "../common/Footer";
 
 // Explicitly type the 'images' object
 const imagesTyped: { [key: string]: string } = images;

@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./home.css";
-import banner from "../assets/images/banner.jpeg";
-import products from "../data/products.json";
-import images from "../assets/images/products/index";
-import Header from "./Header";
-import Footer from "./Footer";
+import banner from "../../assets/images/banner.jpeg";
+import products from "../../data/products.json";
+import images from "../../assets/images/products/index";
+import Header from "../common/Header";
+import Footer from "../common/Footer";
 
 // Ensure TypeScript knows that 'images' is of type 'Images'
 const imagesTyped: { [key: string]: string } = images;
