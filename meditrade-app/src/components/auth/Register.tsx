@@ -6,27 +6,36 @@ import Footer from "../common/Footer";
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
+  const [mode, setMode] = useState<"customer" | "supplier">("customer");
   const [formData, setFormData] = useState({
     email: "",
     username: "",
     password: "",
     confirmPassword: "",
+    address: "", // For customer
+    companyName: "", // For supplier
   });
   const [errors, setErrors] = useState({
     email: "",
     username: "",
     password: "",
     confirmPassword: "",
+    address: "",
+    companyName: "",
   });
 
   // Check if all fields are valid
   const allFieldsValid = () => {
-    return (
+    const baseValid =
       formData.email.match(/\S+@\S+\.\S+/) &&
       formData.username &&
       formData.password.length >= 6 &&
-      formData.password === formData.confirmPassword
-    );
+      formData.password === formData.confirmPassword;
+    if (mode === "customer") {
+      return baseValid && formData.address;
+    } else {
+      return baseValid && formData.companyName;
+    }
   };
 
   const validateForm = () => {
@@ -36,6 +45,8 @@ const Register: React.FC = () => {
       username: "",
       password: "",
       confirmPassword: "",
+      address: "",
+      companyName: "",
     };
 
     if (!formData.email) {
@@ -61,6 +72,16 @@ const Register: React.FC = () => {
       isValid = false;
     }
 
+    if (mode === "customer" && !formData.address) {
+      newErrors.address = "Address is required";
+      isValid = false;
+    }
+
+    if (mode === "supplier" && !formData.companyName) {
+      newErrors.companyName = "Company name is required";
+      isValid = false;
+    }
+
     setErrors(newErrors);
     return isValid;
   };
@@ -82,6 +103,20 @@ const Register: React.FC = () => {
       <div className="register-container">
         <img src={logo} alt="MediTrade Logo" className="logo-img" />
         <h1 className="register-header">Register</h1>
+        <div className="register-mode-toggle">
+          <button
+            className={`toggle-button ${mode === "customer" ? "active" : ""}`}
+            onClick={() => setMode("customer")}
+          >
+            Customer
+          </button>
+          <button
+            className={`toggle-button ${mode === "supplier" ? "active" : ""}`}
+            onClick={() => setMode("supplier")}
+          >
+            Supplier
+          </button>
+        </div>
         <form onSubmit={handleSubmit} className="register-form">
           <div className="form-group">
             <label htmlFor="email">Email</label>
@@ -137,6 +172,38 @@ const Register: React.FC = () => {
               <p className="error-message">{errors.confirmPassword}</p>
             )}
           </div>
+          {mode === "customer" && (
+            <div className="form-group">
+              <label htmlFor="address">Address</label>
+              <input
+                type="text"
+                id="address"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                className={errors.address ? "input-error" : ""}
+              />
+              {errors.address && (
+                <p className="error-message">{errors.address}</p>
+              )}
+            </div>
+          )}
+          {mode === "supplier" && (
+            <div className="form-group">
+              <label htmlFor="companyName">Company Name</label>
+              <input
+                type="text"
+                id="companyName"
+                name="companyName"
+                value={formData.companyName}
+                onChange={handleChange}
+                className={errors.companyName ? "input-error" : ""}
+              />
+              {errors.companyName && (
+                <p className="error-message">{errors.companyName}</p>
+              )}
+            </div>
+          )}
           <button
             type="submit"
             className="register-button"

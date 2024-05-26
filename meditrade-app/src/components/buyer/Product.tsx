@@ -21,6 +21,7 @@ const Product = () => {
   return (
     <div className="product-page">
       <Header />
+      <body className = "product-body">
       <div className="product-details">
         <img src={imagesTyped[product.image]} alt={product.name} className="product-image" />
         <div className="product-info">
@@ -32,6 +33,7 @@ const Product = () => {
           <button className="add-to-cart-button">Add to Cart</button>
         </div>
       </div>
+      </body>
       <Footer />
     </div>
   );

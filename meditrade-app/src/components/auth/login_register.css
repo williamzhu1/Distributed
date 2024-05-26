@@ -6,11 +6,7 @@ body {
   flex-direction: column;
 }
 
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
+
 
 .login-register-background {
   flex: 1;
@@ -69,6 +65,39 @@ body::before {
   margin: 0 auto;
   display: block;
   max-width: 200px; /* Set maximum width for responsiveness */
+}
+
+.register-mode-toggle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.login-mode-toggle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+
+.toggle-button {
+  background-color: #ddd;
+  border: none;
+  padding: 10px 20px;
+  margin: 0 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border-radius: 10px; /* Add this line */
+}
+
+.toggle-button.active {
+  background-color: #4caf50;
+  color: white;
+}
+
+.toggle-button:hover {
+  background-color: #4caf50;
+  color: white;
 }
 
 h1 {

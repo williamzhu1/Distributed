@@ -1,8 +1,5 @@
 html {
   scroll-behavior: smooth;
-}
-
-body {
   font-family: Arial, sans-serif;
 }
 
@@ -11,16 +8,10 @@ body {
   flex-direction: column;
   min-height: 100vh;
   background-color: #fff;
+
 }
 
-.home-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 40px;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+
 
 .logo_horizontal {
   height: 50px;

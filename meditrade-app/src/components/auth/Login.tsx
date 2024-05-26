@@ -6,6 +6,7 @@ import Footer from "../common/Footer";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const [mode, setMode] = useState<"customer" | "supplier">("customer");
   const [loginData, setLoginData] = useState({
     username: "",
     password: "",
@@ -40,7 +41,7 @@ const Login: React.FC = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (validateForm()) {
-      console.log("Logging in:", loginData);
+      console.log(`Logging in as ${mode}:`, loginData);
       // Submit form logic here or a call to API
     }
   };
@@ -54,6 +55,20 @@ const Login: React.FC = () => {
       <div className="login-container">
         <img src={logo} alt="MediTrade Logo" className="logo-img" />
         <h1 className="login-header">Sign In</h1>
+        <div className="login-mode-toggle">
+          <button
+            className={`toggle-button ${mode === "customer" ? "active" : ""}`}
+            onClick={() => setMode("customer")}
+          >
+            Customer
+          </button>
+          <button
+            className={`toggle-button ${mode === "supplier" ? "active" : ""}`}
+            onClick={() => setMode("supplier")}
+          >
+            Supplier
+          </button>
+        </div>
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
             <label htmlFor="username">Username</label>
