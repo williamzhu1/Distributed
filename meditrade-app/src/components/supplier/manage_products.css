@@ -8,6 +8,7 @@
 .manage-products-content {
   flex: 1;
   padding: 40px;
+  margin-top: 70px;
   text-align: center;
 }
 
@@ -33,6 +34,10 @@
   border-radius: 5px;
 }
 
+.add-product-form input[type="file"] {
+  padding: 5px;
+}
+
 .add-product-form button {
   background-color: #4caf50;
   color: white;
@@ -51,6 +56,13 @@
 .add-product-form button:active {
   background-color: #3e8e41;
   transform: translateY(0);
+}
+
+.image-preview {
+  width: 100px;
+  height: auto;
+  margin: 10px 0;
+  border-radius: 5px;
 }
 
 .product-list {
@@ -73,6 +85,13 @@
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: left;
+}
+
+.product-list img {
+  width: 100px;
+  height: auto;
+  border-radius: 5px;
+  margin-top: 10px;
 }
 
 .product-list button {

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "./home.css";
+import "./buyer_home.css";
 import banner from "../../assets/images/banner.jpeg";
 import products from "../../data/products.json";
 import images from "../../assets/images/products/index";

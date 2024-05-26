@@ -2,28 +2,21 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-image: url('../../assets/images/supplier.jpeg');
-  background-size: 100% 100%; /* Change this line */
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-color: #f9f9f9;
 }
 
 .supplier-content {
   flex: 1;
   padding: 40px;
+  margin-top: 70px;
   text-align: center;
-  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background to enhance readability */
-  margin: 100px;
-  border-radius: 10px;
 }
 
 .supplier-actions {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
-  margin-top: 20px;
+  flex-wrap: wrap;
 }
 
 .action-card {
@@ -32,7 +25,40 @@
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   text-align: center;
+}
+
+.image-container {
+  height: 200px; /* Adjust this height to ensure consistency */
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.image-container img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.action-card h2 {
+  margin: 10px 0;
+  height: 60px; /* Adjust this value to ensure consistency */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-card p {
+  margin: 10px 0;
+  height: 50px; /* Adjust this value to ensure consistency */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .action-button {
@@ -43,6 +69,7 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.3s;
+  margin-top: 10px;
 }
 
 .action-button:hover {
@@ -53,11 +80,4 @@
 .action-button:active {
   background-color: #3e8e41;
   transform: translateY(0);
-}
-
-/* Responsive Design */
-@media (min-width: 768px) {
-  .supplier-content {
-    padding: 60px;
-  }
 }

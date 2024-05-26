@@ -10,6 +10,7 @@ interface Product {
   genre: string;
   origin: string;
   details: string;
+  image: string | null;
 }
 
 const initialProducts: Product[] = [
@@ -19,7 +20,8 @@ const initialProducts: Product[] = [
     price: "$10.00",
     genre: "Herbal",
     origin: "China",
-    details: "A refreshing herbal tea from the mountains of China."
+    details: "A refreshing herbal tea from the mountains of China.",
+    image: null,
   },
   // Add more initial products as needed
 ];
@@ -32,11 +34,23 @@ const ManageProducts: React.FC = () => {
     price: "",
     genre: "",
     origin: "",
-    details: ""
+    details: "",
+    image: null,
   });
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setNewProduct({ ...newProduct, [e.target.name]: e.target.value });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setNewProduct({ ...newProduct, image: URL.createObjectURL(file) });
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
   const addProduct = () => {
@@ -47,31 +61,40 @@ const ManageProducts: React.FC = () => {
       price: "",
       genre: "",
       origin: "",
-      details: ""
+      details: "",
+      image: null,
     });
+    setImagePreview(null);
   };
 
   const deleteProduct = (id: number) => {
-    setProducts(products.filter(product => product.id !== id));
+    setProducts(products.filter((product) => product.id !== id));
   };
 
   const editProduct = (id: number) => {
-    const product = products.find(product => product.id === id);
+    const product = products.find((product) => product.id === id);
     if (product) {
       setNewProduct(product);
+      setImagePreview(product.image);
     }
   };
 
   const updateProduct = () => {
-    setProducts(products.map(product => (product.id === newProduct.id ? newProduct : product)));
+    setProducts(
+      products.map((product) =>
+        product.id === newProduct.id ? newProduct : product
+      )
+    );
     setNewProduct({
       id: products.length + 1,
       name: "",
       price: "",
       genre: "",
       origin: "",
-      details: ""
+      details: "",
+      image: null,
     });
+    setImagePreview(null);
   };
 
   return (
@@ -115,6 +138,13 @@ const ManageProducts: React.FC = () => {
             value={newProduct.details}
             onChange={handleChange}
           ></textarea>
+          <input
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+          {imagePreview && <img src={imagePreview} alt="Preview" className="image-preview" />}
           <button onClick={newProduct.id > products.length ? addProduct : updateProduct}>
             {newProduct.id > products.length ? "Add Product" : "Update Product"}
           </button>
@@ -122,13 +152,14 @@ const ManageProducts: React.FC = () => {
         <div className="product-list">
           <h2>Product List</h2>
           <ul>
-            {products.map(product => (
+            {products.map((product) => (
               <li key={product.id}>
                 <h3>{product.name}</h3>
                 <p>{product.price}</p>
                 <p>{product.genre}</p>
                 <p>{product.origin}</p>
                 <p>{product.details}</p>
+                {product.image && <img src={product.image} alt={product.name} className="product-list-image" />}
                 <button onClick={() => editProduct(product.id)}>Edit</button>
                 <button onClick={() => deleteProduct(product.id)}>Delete</button>
               </li>

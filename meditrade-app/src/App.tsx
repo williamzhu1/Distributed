@@ -2,10 +2,11 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
-import Home from "./components/buyer/Home";
+import Home from "./components/buyer/BuyerHome";
 import Product from "./components/buyer/Product"; // Import the Product component
 import SupplierHome from "./components/supplier/SupplierHome";
 import ManageProducts from "./components/supplier/ManageProducts";
+import ViewOrders from "./components/supplier/ViewOrders";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/product/:id" element={<Product />} />
         <Route path="/supplier" element={<SupplierHome />} />
         <Route path="/manage-products" element={<ManageProducts />} />
+        <Route path="/view-orders" element={<ViewOrders />} />
         <Route path="/" element={<Home />} />
       </Routes>
     </Router>

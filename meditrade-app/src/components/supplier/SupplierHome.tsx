@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Header from "../common/Header";
 import Footer from "../common/Footer";
 import "./supplier_home.css";
+import storageImg from "../../assets/images/storage.jpeg";
+import ordersImg from "../../assets/images/orders.jpeg";
 
 const SupplierHome: React.FC = () => {
     const navigate = useNavigate();
@@ -13,19 +15,24 @@ const SupplierHome: React.FC = () => {
         <h1>Welcome to the Supplier Page!</h1>
         <div className="supplier-actions">
           <div className="action-card">
+            <div className="image-container">
+              <img src={storageImg} alt="Manage Products" />
+            </div>
             <h2>Manage Products</h2>
             <p>Keep your inventory up-to-date with ease.</p>
-            <button className="action-button" onClick={() => navigate('/manage-products')}>Go to Product Management</button>
+            <button className="action-button" onClick={() => navigate('/manage-products')}>
+              Go to Product Management
+            </button>
           </div>
           <div className="action-card">
+            <div className="image-container">
+              <img src={ordersImg} alt="View Orders" />
+            </div>
             <h2>View Orders</h2>
             <p>Monitor your sales and fulfill orders efficiently.</p>
-            <button className="action-button">View Orders</button>
-          </div>
-          <div className="action-card">
-            <h2>Update Profile</h2>
-            <p>Ensure your information is always accurate and up-to-date.</p>
-            <button className="action-button">Update Profile</button>
+            <button className="action-button" onClick={() => navigate('/view-orders')}>
+              View Orders
+            </button>
           </div>
         </div>
       </div>
