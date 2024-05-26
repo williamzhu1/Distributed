@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: Arial, sans-serif;
 }
@@ -80,6 +84,10 @@ nav a:hover {
   display: flex;
   justify-content: center;
   margin: 20px;
+  position: sticky;
+  top: 70px; /* Adjust this value to match your header's height */
+  z-index: 999; /* Ensure the search bar appears above other content when it's sticky */
+  background-color: #fff; /* Add a background color to prevent content from showing through */
 }
 
 .search-bar input {
