@@ -31,3 +31,12 @@
 .nav-links a:hover {
   color: #4caf50;
 }
+
+@media (max-width: 800px) {
+  .nav-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px 5px; /* Adjust margin for better spacing on mobile */
+  }
+}

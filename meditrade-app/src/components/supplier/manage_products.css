@@ -45,7 +45,9 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
+  transition:
+    background-color 0.3s,
+    transform 0.3s;
 }
 
 .add-product-form button:hover {
@@ -101,7 +103,9 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
+  transition:
+    background-color 0.3s,
+    transform 0.3s;
   margin-right: 10px;
 }
 

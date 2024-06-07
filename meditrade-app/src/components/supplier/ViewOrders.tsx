@@ -38,8 +38,13 @@ const initialOrders: Order[] = [
 const ViewOrders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>(initialOrders);
 
-  const updateOrderStatus = (id: number, status: "Pending" | "Shipped" | "Delivered") => {
-    setOrders(orders.map(order => order.id === id ? { ...order, status } : order));
+  const updateOrderStatus = (
+    id: number,
+    status: "Pending" | "Shipped" | "Delivered",
+  ) => {
+    setOrders(
+      orders.map((order) => (order.id === id ? { ...order, status } : order)),
+    );
   };
 
   return (
@@ -48,21 +53,41 @@ const ViewOrders: React.FC = () => {
       <div className="view-orders-content">
         <h1>View Orders</h1>
         <div className="orders-list">
-          {orders.map(order => (
+          {orders.map((order) => (
             <div key={order.id} className="order-card">
               <h2>Order #{order.id}</h2>
-              <p><strong>Customer:</strong> {order.customerName}</p>
-              <p><strong>Product:</strong> {order.product}</p>
-              <p><strong>Quantity:</strong> {order.quantity}</p>
-              <p><strong>Total Price:</strong> {order.totalPrice}</p>
-              <p><strong>Address:</strong> {order.address}</p>
-              <p><strong>Status:</strong> {order.status}</p>
+              <p>
+                <strong>Customer:</strong> {order.customerName}
+              </p>
+              <p>
+                <strong>Product:</strong> {order.product}
+              </p>
+              <p>
+                <strong>Quantity:</strong> {order.quantity}
+              </p>
+              <p>
+                <strong>Total Price:</strong> {order.totalPrice}
+              </p>
+              <p>
+                <strong>Address:</strong> {order.address}
+              </p>
+              <p>
+                <strong>Status:</strong> {order.status}
+              </p>
               <div className="order-actions">
                 {order.status === "Pending" && (
-                  <button onClick={() => updateOrderStatus(order.id, "Shipped")}>Mark as Shipped</button>
+                  <button
+                    onClick={() => updateOrderStatus(order.id, "Shipped")}
+                  >
+                    Mark as Shipped
+                  </button>
                 )}
                 {order.status === "Shipped" && (
-                  <button onClick={() => updateOrderStatus(order.id, "Delivered")}>Mark as Delivered</button>
+                  <button
+                    onClick={() => updateOrderStatus(order.id, "Delivered")}
+                  >
+                    Mark as Delivered
+                  </button>
                 )}
               </div>
             </div>

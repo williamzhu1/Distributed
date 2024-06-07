@@ -40,7 +40,7 @@ const ManageProducts: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setNewProduct({ ...newProduct, [e.target.name]: e.target.value });
   };
@@ -82,8 +82,8 @@ const ManageProducts: React.FC = () => {
   const updateProduct = () => {
     setProducts(
       products.map((product) =>
-        product.id === newProduct.id ? newProduct : product
-      )
+        product.id === newProduct.id ? newProduct : product,
+      ),
     );
     setNewProduct({
       id: products.length + 1,
@@ -103,7 +103,11 @@ const ManageProducts: React.FC = () => {
       <div className="manage-products-content">
         <h1>Manage Products</h1>
         <div className="add-product-form">
-          <h2>{newProduct.id > products.length ? "Add New Product" : "Edit Product"}</h2>
+          <h2>
+            {newProduct.id > products.length
+              ? "Add New Product"
+              : "Edit Product"}
+          </h2>
           <input
             type="text"
             name="name"
@@ -144,8 +148,14 @@ const ManageProducts: React.FC = () => {
             accept="image/*"
             onChange={handleImageChange}
           />
-          {imagePreview && <img src={imagePreview} alt="Preview" className="image-preview" />}
-          <button onClick={newProduct.id > products.length ? addProduct : updateProduct}>
+          {imagePreview && (
+            <img src={imagePreview} alt="Preview" className="image-preview" />
+          )}
+          <button
+            onClick={
+              newProduct.id > products.length ? addProduct : updateProduct
+            }
+          >
             {newProduct.id > products.length ? "Add Product" : "Update Product"}
           </button>
         </div>
@@ -159,9 +169,17 @@ const ManageProducts: React.FC = () => {
                 <p>{product.genre}</p>
                 <p>{product.origin}</p>
                 <p>{product.details}</p>
-                {product.image && <img src={product.image} alt={product.name} className="product-list-image" />}
+                {product.image && (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="product-list-image"
+                  />
+                )}
                 <button onClick={() => editProduct(product.id)}>Edit</button>
-                <button onClick={() => deleteProduct(product.id)}>Delete</button>
+                <button onClick={() => deleteProduct(product.id)}>
+                  Delete
+                </button>
               </li>
             ))}
           </ul>

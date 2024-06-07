@@ -7,7 +7,7 @@ import storageImg from "../../assets/images/storage.jpeg";
 import ordersImg from "../../assets/images/orders.jpeg";
 
 const SupplierHome: React.FC = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   return (
     <div className="supplier-home-page">
       <Header />
@@ -20,7 +20,10 @@ const SupplierHome: React.FC = () => {
             </div>
             <h2>Manage Products</h2>
             <p>Keep your inventory up-to-date with ease.</p>
-            <button className="action-button" onClick={() => navigate('/manage-products')}>
+            <button
+              className="action-button"
+              onClick={() => navigate("/manage-products")}
+            >
               Go to Product Management
             </button>
           </div>
@@ -30,7 +33,10 @@ const SupplierHome: React.FC = () => {
             </div>
             <h2>View Orders</h2>
             <p>Monitor your sales and fulfill orders efficiently.</p>
-            <button className="action-button" onClick={() => navigate('/view-orders')}>
+            <button
+              className="action-button"
+              onClick={() => navigate("/view-orders")}
+            >
               View Orders
             </button>
           </div>

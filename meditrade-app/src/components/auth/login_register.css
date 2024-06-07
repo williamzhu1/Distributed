@@ -6,8 +6,6 @@ body {
   flex-direction: column;
 }
 
-
-
 .login-register-background {
   flex: 1;
   display: flex;
@@ -78,7 +76,6 @@ body::before {
   justify-content: center;
   margin-bottom: 20px;
 }
-
 
 .toggle-button {
   background-color: #ddd;

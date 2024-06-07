@@ -6,7 +6,11 @@ import "./header.css";
 const Header = () => {
   return (
     <header className="home-header">
-      <img src={logo_horizontal} alt="MediTrade Logo" className="logo_horizontal" />
+      <img
+        src={logo_horizontal}
+        alt="MediTrade Logo"
+        className="logo_horizontal"
+      />
       <div className="nav-links">
         <Link to="/home">Home</Link>
         <Link to="/login">Login</Link>
