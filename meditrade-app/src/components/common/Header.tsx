@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import logo_horizontal from "../../assets/images/logo_horizontal.jpeg";
+import cartIcon from "../../assets/images/cart.jpeg";
 import "./header.css";
 
 const Header = () => {
@@ -16,6 +17,9 @@ const Header = () => {
         <Link to="/login">Login</Link>
         <Link to="/register">Register</Link>
         <Link to="/contact">Contact</Link>
+        <Link to="/cart">
+          <img src={cartIcon} alt="Cart" className="cart-icon" />
+        </Link>
       </div>
     </header>
   );

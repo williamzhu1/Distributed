@@ -18,6 +18,7 @@
 
 .nav-links {
   display: flex;
+  align-items: center;
   margin-left: auto;
 }
 
@@ -32,11 +33,21 @@
   color: #4caf50;
 }
 
+.cart-icon {
+  height: 30px;
+  margin-left: 20px;
+}
+
 @media (max-width: 800px) {
   .nav-links {
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 5px 5px; /* Adjust margin for better spacing on mobile */
+  }
+
+  .cart-icon {
+    height: 25px; /* Adjust the size for mobile view */
+    margin-left: 10px;
   }
 }
