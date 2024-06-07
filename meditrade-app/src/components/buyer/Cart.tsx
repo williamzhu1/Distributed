@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { CartItem } from "./CartItem"; // Import the CartItem type
 import Header from "../common/Header";
 import Footer from "../common/Footer";
+import ordersImg from "../../assets/images/orders.jpeg";
 import "./cart.css";
 
 const Cart: React.FC = () => {
@@ -11,8 +12,8 @@ const Cart: React.FC = () => {
   useEffect(() => {
     // Mock data for demonstration
     const mockCartItems: CartItem[] = [
-      { id: 1, name: "Herbal Tea", price: "$10", quantity: 2, image: "path_to_image/herbal_tea.jpg" },
-      { id: 2, name: "Ginseng Extract", price: "$20", quantity: 1, image: "path_to_image/ginseng_extract.jpg" },
+      { id: 1, name: "Herbal Tea", price: "$10", quantity: 2, image: require("../../assets/images/products/Sample1.jpeg") },
+      { id: 2, name: "Ginseng Extract", price: "$20", quantity: 1, image: require("../../assets/images/products/Sample2.jpeg") },
     ];
 
     setCartItems(mockCartItems);
@@ -40,7 +41,12 @@ const Cart: React.FC = () => {
     <div className="cart-page">
       <Header />
       <div className="cart-container">
-        <h1>Your Cart</h1>
+        <div className="image-container">
+          <img src={ordersImg} alt="View Orders" />
+        </div>
+        <h2>Welcome to Your Cart!</h2>
+        <p>Did you forget something? Check your cart before you proceed to order.</p>
+        <hr className="divider" />
         {cartItems.length === 0 ? (
           <p>Your cart is empty.</p>
         ) : (
@@ -61,7 +67,7 @@ const Cart: React.FC = () => {
                     <td>
                       <Link to={`/product/${item.id}`}>
                         <img src={item.image} alt={item.name} className="cart-product-image" />
-                        {item.name}
+                        <div>{item.name}</div>
                       </Link>
                     </td>
                     <td>{item.price}</td>
