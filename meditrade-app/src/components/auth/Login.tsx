@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../../firebase-config'; // Import the auth instance from firebase-config
 import "./login_register.css";
 import logo from "../../assets/images/logo.jpeg";
 import Footer from "../common/Footer";
@@ -8,11 +10,11 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<"customer" | "supplier">("customer");
   const [loginData, setLoginData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
   const [errors, setErrors] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -20,12 +22,15 @@ const Login: React.FC = () => {
   const validateForm = () => {
     let isValid = true;
     const newErrors = {
-      username: "",
+      email: "",
       password: "",
     };
 
-    if (!loginData.username) {
-      newErrors.username = "Username is required";
+    if (!loginData.email) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(loginData.email)) {
+      newErrors.email = "Email is invalid";
       isValid = false;
     }
 
@@ -38,11 +43,18 @@ const Login: React.FC = () => {
     return isValid;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (validateForm()) {
-      console.log(`Logging in as ${mode}:`, loginData);
-      // Submit form logic here or a call to API
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, loginData.email, loginData.password);
+        console.log("User signed in:", userCredential);
+        // Navigate to the home page or dashboard after successful login
+        navigate("/home"); // Replace with your actual home or dashboard page
+      } catch (error: any) {
+        console.error("Error in user login:", error.message);
+        setErrors({ ...errors, password: error.message });
+      }
     }
   };
 
@@ -71,17 +83,17 @@ const Login: React.FC = () => {
         </div>
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="email">Email</label>
             <input
-              type="text"
-              id="username"
-              name="username"
-              value={loginData.username}
+              type="email"
+              id="email"
+              name="email"
+              value={loginData.email}
               onChange={handleChange}
-              className={errors.username ? "input-error" : ""}
+              className={errors.email ? "input-error" : ""}
             />
-            {errors.username && (
-              <p className="error-message">{errors.username}</p>
+            {errors.email && (
+              <p className="error-message">{errors.email}</p>
             )}
           </div>
           <div className="form-group">
@@ -120,3 +132,4 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+
