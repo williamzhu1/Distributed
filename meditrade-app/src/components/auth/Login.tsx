@@ -49,6 +49,12 @@ const Login: React.FC = () => {
       try {
         const userCredential = await signInWithEmailAndPassword(auth, loginData.email, loginData.password);
         console.log("User signed in:", userCredential);
+
+        // Obtain the token
+        const token = await userCredential.user.getIdToken();
+        // Store the token in localStorage
+        localStorage.setItem('authToken', token);
+
         // Navigate to the home page or dashboard after successful login
         navigate("/home"); // Replace with your actual home or dashboard page
       } catch (error: any) {
@@ -132,4 +138,3 @@ const Login: React.FC = () => {
 };
 
 export default Login;
-
