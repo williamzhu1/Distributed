@@ -27,7 +27,7 @@ public class ItemsRepository {
     }
 
     public void addItem(Item item){
-        Assert.notNull(item.getId(), "Meal ID must not be null");
+        Assert.notNull(item.getId(), "Item id must not be null");
         items.put(item.getId(), item);
     }
 

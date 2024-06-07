@@ -5,17 +5,18 @@ import org.springframework.util.Assert;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class Item {
 
-    private String id;
-    private String name;
-    private String category;
-    private String description;
-    private Double price;
-    private String manufacturer;
-    private Integer stock;
+    protected String id;
+    protected String name;
+    protected String category;
+    protected String description;
+    protected Double price;
+    protected String manufacturer;
+    protected Integer stock;
 
     public Item() {}
 
@@ -86,4 +87,16 @@ public class Item {
         this.manufacturer = manufacturer;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return Double.compare(item.price, price) == 0 && name.equals(item.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, price);
+    }
 }
