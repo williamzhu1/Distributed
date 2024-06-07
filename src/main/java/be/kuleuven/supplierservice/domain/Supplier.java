@@ -17,11 +17,7 @@ public class Supplier {
     /**
      * Full constructor initializing all attributes.
      */
-<<<<<<< HEAD
-    public Supplier(int id, String name, String logoUrl,String ip) {
-=======
     public Supplier(String id, String name, String logoUrl) {
->>>>>>> 0ea28a8047ca7f042dc34340284d41f789983679
         this.id = id;
         this.name = name;
         this.logoUrl = logoUrl;
