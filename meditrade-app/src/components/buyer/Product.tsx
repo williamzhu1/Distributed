@@ -13,7 +13,7 @@ const Product = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const product = products.find(
-    (product) => product.id === parseInt(id || "0")
+    (product) => product.id === parseInt(id || "0"),
   );
 
   if (!product) {

@@ -1,0 +1,88 @@
+.order-confirmation-page {
+  font-family: "Montserrat", sans-serif;
+  margin: 0;
+  padding-top: 30px; /* Adjust this value to match your header's height */
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+.order-confirmation-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: white;
+  margin: 20px auto;
+  padding: 20px;
+  margin-top: 50px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  width: 100%;
+}
+
+.order-confirmation-container h1 {
+  margin-bottom: 20px;
+}
+
+.order-confirmation-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.order-confirmation-container table th,
+.order-confirmation-container table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.order-confirmation-container table th {
+  background-color: #f4f4f4;
+}
+
+.order-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.order-form div {
+  margin-bottom: 10px;
+}
+
+.order-form label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.order-form input,
+.order-form select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.confirm-button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    transform 0.3s;
+}
+
+.confirm-button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+}
+
+.confirm-button:active {
+  background-color: #3e8e41;
+  transform: translateY(0);
+}

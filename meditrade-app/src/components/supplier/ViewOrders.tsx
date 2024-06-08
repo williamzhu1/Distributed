@@ -42,19 +42,24 @@ const ViewOrders: React.FC = () => {
 
   const updateOrderStatus = (
     id: number,
-    newStatus: "Pending" | "Shipped" | "Delivered"
+    newStatus: "Pending" | "Shipped" | "Delivered",
   ) => {
     setOrders((prevOrders) =>
       prevOrders.map((order) =>
         order.id === id
           ? { ...order, previousStatus: order.status, status: newStatus }
-          : order
-      )
+          : order,
+      ),
     );
   };
 
-  const handleStatusChange = (id: number, newStatus: "Pending" | "Shipped" | "Delivered") => {
-    const confirmation = window.confirm(`Are you sure you want to mark this order as ${newStatus}?`);
+  const handleStatusChange = (
+    id: number,
+    newStatus: "Pending" | "Shipped" | "Delivered",
+  ) => {
+    const confirmation = window.confirm(
+      `Are you sure you want to mark this order as ${newStatus}?`,
+    );
     if (confirmation) {
       updateOrderStatus(id, newStatus);
     }
@@ -64,13 +69,19 @@ const ViewOrders: React.FC = () => {
     setOrders((prevOrders) =>
       prevOrders.map((order) =>
         order.id === id && order.previousStatus
-          ? { ...order, status: order.previousStatus, previousStatus: undefined }
-          : order
-      )
+          ? {
+              ...order,
+              status: order.previousStatus,
+              previousStatus: undefined,
+            }
+          : order,
+      ),
     );
   };
 
-  const deliveredOrders = orders.filter(order => order.status === "Delivered");
+  const deliveredOrders = orders.filter(
+    (order) => order.status === "Delivered",
+  );
 
   return (
     <div className="view-orders-page">
@@ -148,8 +159,8 @@ const ViewOrders: React.FC = () => {
           ))}
         </div>
         <Link to="/order-history">
-                  <button className="view-history-button">View Order History</button>
-                </Link>
+          <button className="view-history-button">View Order History</button>
+        </Link>
       </div>
       <Footer />
     </div>

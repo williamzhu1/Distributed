@@ -41,9 +41,7 @@ const OrderHistory: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>(initialOrders);
 
   const revertOrderStatus = (id: number) => {
-    setOrders((prevOrders) =>
-      prevOrders.filter((order) => order.id !== id)
-    );
+    setOrders((prevOrders) => prevOrders.filter((order) => order.id !== id));
     // Ideally, you would move this order back to the view orders page
     // This is just a placeholder to simulate that action
     alert(`Order ${id} has been reverted to Shipped and removed from history.`);

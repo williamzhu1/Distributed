@@ -12,6 +12,7 @@
   align-items: center;
   background-color: white;
   margin: 20px auto;
+  margin-top: 50px;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -95,7 +96,9 @@
   cursor: pointer;
   text-align: center;
   text-decoration: none;
-  transition: background-color 0.3s, transform 0.3s;
+  transition:
+    background-color 0.3s,
+    transform 0.3s;
   margin-top: 30px;
   margin-bottom: 100px;
 }

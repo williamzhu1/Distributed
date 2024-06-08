@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CartItem } from "./CartItem"; // Import the CartItem type
 import Header from "../common/Header";
 import Footer from "../common/Footer";
@@ -8,12 +8,25 @@ import "./cart.css";
 
 const Cart: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Mock data for demonstration
     const mockCartItems: CartItem[] = [
-      { id: 1, name: "Herbal Tea", price: "$10", quantity: 2, image: require("../../assets/images/products/Sample1.jpeg") },
-      { id: 2, name: "Ginseng Extract", price: "$20", quantity: 1, image: require("../../assets/images/products/Sample2.jpeg") },
+      {
+        id: 1,
+        name: "Herbal Tea",
+        price: "$10",
+        quantity: 2,
+        image: require("../../assets/images/products/Sample1.jpeg"),
+      },
+      {
+        id: 2,
+        name: "Ginseng Extract",
+        price: "$20",
+        quantity: 1,
+        image: require("../../assets/images/products/Sample2.jpeg"),
+      },
     ];
 
     setCartItems(mockCartItems);
@@ -28,13 +41,17 @@ const Cart: React.FC = () => {
   const handleQuantityChange = (id: number, quantity: number) => {
     setCartItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: quantity } : item
-      )
+        item.id === id ? { ...item, quantity: quantity } : item,
+      ),
     );
   };
 
   const handleRemoveItem = (id: number) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  };
+
+  const handleProceedToOrder = () => {
+    navigate("/order", { state: { cartItems, total: calculateTotal() } });
   };
 
   return (
@@ -45,7 +62,9 @@ const Cart: React.FC = () => {
           <img src={ordersImg} alt="View Orders" />
         </div>
         <h2>Welcome to Your Cart!</h2>
-        <p>Did you forget something? Check your cart before you proceed to order.</p>
+        <p>
+          Did you forget something? Check your cart before you proceed to order.
+        </p>
         <hr className="divider" />
         {cartItems.length === 0 ? (
           <p>Your cart is empty.</p>
@@ -66,7 +85,11 @@ const Cart: React.FC = () => {
                   <tr key={item.id}>
                     <td>
                       <Link to={`/product/${item.id}`}>
-                        <img src={item.image} alt={item.name} className="cart-product-image" />
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="cart-product-image"
+                        />
                         <div>{item.name}</div>
                       </Link>
                     </td>
@@ -76,21 +99,33 @@ const Cart: React.FC = () => {
                         type="number"
                         min="1"
                         value={item.quantity}
-                        onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value))}
+                        onChange={(e) =>
+                          handleQuantityChange(
+                            item.id,
+                            parseInt(e.target.value),
+                          )
+                        }
                       />
                     </td>
-                    <td>${(parseFloat(item.price.slice(1)) * item.quantity).toFixed(2)}</td>
                     <td>
-                      <button onClick={() => handleRemoveItem(item.id)}>Remove</button>
+                      $
+                      {(
+                        parseFloat(item.price.slice(1)) * item.quantity
+                      ).toFixed(2)}
+                    </td>
+                    <td>
+                      <button onClick={() => handleRemoveItem(item.id)}>
+                        Remove
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
             <h2>Total: ${calculateTotal().toFixed(2)}</h2>
-            <Link to="/order">
-              <button className="order-button">Proceed to Order</button>
-            </Link>
+            <button className="order-button" onClick={handleProceedToOrder}>
+              Proceed to Order
+            </button>
           </div>
         )}
       </div>
