@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from '../../firebase-config'; // Import the auth instance from firebase-config
+import { doc, getDoc } from "firebase/firestore";
 import "./login_register.css";
 import logo from "../../assets/images/logo.jpeg";
 import Footer from "../common/Footer";
@@ -8,11 +11,11 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<"customer" | "supplier">("customer");
   const [loginData, setLoginData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
   const [errors, setErrors] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -20,12 +23,15 @@ const Login: React.FC = () => {
   const validateForm = () => {
     let isValid = true;
     const newErrors = {
-      username: "",
+      email: "",
       password: "",
     };
 
-    if (!loginData.username) {
-      newErrors.username = "Username is required";
+    if (!loginData.email) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(loginData.email)) {
+      newErrors.email = "Email is invalid";
       isValid = false;
     }
 
@@ -38,12 +44,78 @@ const Login: React.FC = () => {
     return isValid;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (validateForm()) {
-      console.log(`Logging in as ${mode}:`, loginData);
-      // Submit form logic here or a call to API
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, loginData.email, loginData.password);
+        console.log("User signed in:", userCredential);
+        const token = await userCredential.user.getIdToken();
+        const userId = userCredential.user.uid;
+        console.log("Token:", token);
+
+        const userRole = await fetchUserRole(userId);
+        console.log("User Role:", userRole);
+
+
+        localStorage.setItem("token", token);
+
+        await sendTokenToBackend();
+
+        if (userRole === "customer") {
+            navigate("/home");
+        } else if (userRole === "manager") {
+            navigate("/supplier");
+        } else {
+            throw new Error("Invalid user role");
+        }
+      } catch (error: any) {
+        console.error("Error in user login:", error.message);
+        setErrors({ ...errors, password: error.message });
+      }
     }
+  };
+
+  const fetchUserRole = async (uid: string | null) => {
+      if (!uid) throw new Error("No email found for the user");
+
+      const userDocRef = doc(db, "users", uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+          const userData = userDoc.data();
+          return userData.role;
+      } else {
+          throw new Error("User document does not exist");
+      }
+  };
+
+  const sendTokenToBackend = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+          console.error("No token found in local storage");
+          return;
+      }
+
+      try {
+          const response = await fetch("http://localhost:8080/api/usertest", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`
+              },
+              body: JSON.stringify({ additionalData: "yourData" })
+          });
+
+          if (!response.ok) {
+              throw new Error("Failed to send token to backend");
+          }
+
+          const responseData = await response.json();
+          console.log("Response data:", responseData);
+      } catch (error) {
+          console.error("Error sending token to backend:", error);
+      }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,17 +143,17 @@ const Login: React.FC = () => {
         </div>
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="email">Email</label>
             <input
-              type="text"
-              id="username"
-              name="username"
-              value={loginData.username}
+              type="email"
+              id="email"
+              name="email"
+              value={loginData.email}
               onChange={handleChange}
-              className={errors.username ? "input-error" : ""}
+              className={errors.email ? "input-error" : ""}
             />
-            {errors.username && (
-              <p className="error-message">{errors.username}</p>
+            {errors.email && (
+              <p className="error-message">{errors.email}</p>
             )}
           </div>
           <div className="form-group">

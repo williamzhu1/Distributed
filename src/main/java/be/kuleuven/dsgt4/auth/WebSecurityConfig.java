@@ -26,15 +26,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .cors().disable()
+                .cors().and()
                 .csrf().disable()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/**/*").authenticated()
+                .antMatchers("/api/getAllOrders", "/api/getAllCustomers").hasRole("MANAGER")
+                .antMatchers("/api/**").authenticated()
                 .anyRequest().permitAll()
                 .and()
                 .addFilterBefore(this.securityFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
+
