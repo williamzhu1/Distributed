@@ -8,23 +8,56 @@ import java.util.*;
 
 @Component
 public class ItemsRepository {
+    // map: id -> meal
     private static final Map<String, Item> items = new HashMap<>();
     private static final Map<String, Order> orders = new HashMap<>();
 
     @PostConstruct
-    public void initData(){
+    public void initData() {
+
         Item a = new Item();
         a.setId("5268203c-de76-4921-a3e3-439db69c462a");
-        items.put(a.getId(),a);
+        a.setName("Monkey Brain Soup");
+        a.setDescription("Good for brain");
+        a.setStock(10);
+        a.setPrice((10.00));
+
+        items.put(a.getId(), a);
+
+        Item b = new Item();
+        b.setId("4237681a-441f-47fc-a747-8e0169bacea1");
+        b.setName("Fish Bladder");
+        b.setDescription("BLU BLU BLU");
+        b.setStock(10);
+        b.setPrice((7.00));
+
+        items.put(b.getId(), b);
+
+        Item c = new Item();
+        c.setId("cfd1601f-29a0-485d-8d21-7607ec0340c8");
+        c.setName("Gingsen");
+        c.setDescription("100 year old GINGSEN");
+        c.setStock(10);
+        c.setPrice(5.00);
+
+        items.put(c.getId(), c);
+
+        Order estebanOrder = new Order();
+        estebanOrder.setId("cfd1601f-29a0-485d-8d21-7607ec0340c1");
+        estebanOrder.setAddress("Leuven");
+        estebanOrder.addItem(c,3);
+        estebanOrder.addItem(a,2);
+//        estebanOrder.setMeals(new ArrayList<>(Arrays.asList(c));
+        orders.put(estebanOrder.id,estebanOrder);
     }
 
-    public Optional<Item> findItem(String id) {
-        Assert.notNull(id, "The item id must not be null");
+    public Optional<Item> findMeal(String id) {
+        Assert.notNull(id, "The meal id must not be null");
         Item item = items.get(id);
         return Optional.ofNullable(item);
     }
 
-    public Optional<Item> addItem(Item newItem){
+    public Optional<Item> addMeal(Item newItem){
         Assert.notNull(newItem, "The meal object must not be null");
         do {
             newItem.setId(UUID.randomUUID().toString());
@@ -39,28 +72,36 @@ public class ItemsRepository {
         return Optional.of(newItem);
     }
 
-    public Optional<Item> updateItem(Item updateItem) {
-        Assert.notNull(updateItem, "The updated meal object must not be null");
+    public Optional<Item> updateMeal(Item updatedItem){
+        Assert.notNull(updatedItem, "The updated meal object must not be null");
 
         // Check if the meal exists in the repository
-        if (items.containsKey(updateItem.id)) {
-            items.put(updateItem.id, updateItem);
-            return Optional.of(updateItem);
+        if (items.containsKey(updatedItem.id)) {
+            items.put(updatedItem.id, updatedItem);
+            return Optional.of(updatedItem);
         } else {
             return Optional.empty();
         }
     }
 
-    // Method to delete a meal
-    public void deleteItem(String id) {
+    public void deleteMeal(String id){
+        Assert.notNull(id, "The meal id must not be null");
         items.remove(id);
     }
 
-    public Collection<Item> getAllItems() {
+    public Collection<Item> getAllMeal() {
         return items.values();
     }
 
-    // ORDERS
+    public Optional<Order> findOrder(String id) {
+        Assert.notNull(id, "The order id must not be null");
+        Order order = orders.get(id);
+        return Optional.ofNullable(order);
+    }
+
+    public Collection<Order> getAllOrder() {
+        return orders.values();
+    }
 
     // Adds an order to the repository and returns it
     public Optional<Order> addOrder(Order order) {
@@ -85,35 +126,4 @@ public class ItemsRepository {
             return Optional.empty();
         }
     }
-
-    // Finds an order by ID
-    public Optional<Order> findOrder(String id) {
-        Assert.notNull(id, "The order id must not be null");
-        Order order = orders.get(id);
-        return Optional.ofNullable(order);
-    }
-
-    // Updates an existing order and returns the updated order
-    public Optional<Order> updateOrder(Order updateOrder) {
-        Assert.notNull(updateOrder, "The updated order object must not be null");
-
-        // Check if the meal exists in the repository
-        if (orders.containsKey(updateOrder.id)) {
-            orders.put(updateOrder.id, updateOrder);
-            return Optional.of(updateOrder);
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    // Deletes an order by ID
-    public void deleteOrder(String orderId) {
-        orders.remove(orderId);
-    }
-
-    // Returns all orders
-    public Collection<Order> getAllOrders() {
-        return orders.values();
-    }
-
 }

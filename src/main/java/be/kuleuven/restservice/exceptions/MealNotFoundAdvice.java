@@ -1,14 +1,18 @@
 package be.kuleuven.restservice.exceptions;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-public class OrderNotFoundAdvice {
+@ControllerAdvice
+class MealNotFoundAdvice {
+
     @ResponseBody
-    @ExceptionHandler(OrderNotFoundException.class)
+    @ExceptionHandler(MealNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String orderNotFoundHandler(OrderNotFoundException ex) {
+    String mealNotFoundHandler(MealNotFoundException ex) {
         return ex.getMessage();
     }
 }

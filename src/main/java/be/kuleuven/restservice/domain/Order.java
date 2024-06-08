@@ -5,38 +5,6 @@ import java.util.Map;
 
 public class Order {
 
-    protected String id;
-    protected String address;
-    protected String status;
-    private final Map<Item, Integer> items = new HashMap<>();
-
-    public void addItem(Item item, int quantity) {
-        items.put(item, items.getOrDefault(item, 0) + quantity);
-    }
-
-    public void removeItem(Item item, int quantity) {
-        if (items.containsKey(item)) {
-            int currentQuantity = items.get(item);
-            if (currentQuantity <= quantity) {
-                items.remove(item);
-            } else {
-                items.put(item, currentQuantity - quantity);
-            }
-        }
-    }
-
-    public Map<Item, Integer> getItems() {
-        return items;
-    }
-
-    public int getQuantity(Item item) {
-        return items.getOrDefault(item, 0);
-    }
-
-    public Order(String id, String address) {
-        this.id = id; 
-        this.address = address;
-    }
 
     public String getId() {
         return id;
@@ -54,8 +22,37 @@ public class Order {
         this.address = address;
     }
 
-    public String getStatus() {return status;}
+    public void addItem(Item item, int quantity) {
+        if (item != null && quantity > 0 && item.getStock() >= quantity) {
+            int currentStock = item.getStock();
+            int newStock = currentStock - quantity;
+            item.setStock(newStock); // Update item stock
+            items.put(item, items.getOrDefault(item, 0) + quantity);
+        } else {
+            assert item != null;
+            System.out.println("Insufficient stock for item: " + item.getName());
+        }
+    }
 
-    public void setStatus(String status) {this.status = status;}
+    public void removeItem(Item item, int quantity) {
+        if (items.containsKey(item)) {
+            int currentQuantity = items.get(item);
+            if (currentQuantity <= quantity) {
+                items.remove(item);
+            } else {
+                items.put(item, currentQuantity - quantity);
+            }
+        }
+    }
+
+    public Map<Item, Integer> getItems() {
+        return items;
+    }
+
+    protected String id;
+    protected String address;
+    protected Map<Item, Integer> items = new HashMap<>();
+    protected OrderStatus status;
 
 }
+

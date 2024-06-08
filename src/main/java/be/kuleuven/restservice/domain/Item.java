@@ -1,36 +1,17 @@
 package be.kuleuven.restservice.domain;
 
-import org.springframework.util.Assert;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class Item {
 
     protected String id;
     protected String name;
-    protected String category;
     protected String description;
     protected Double price;
+    protected String category;
     protected String manufacturer;
     protected Integer stock;
 
-    public Item() {}
-
-    public Item(String id, String name, String description, Double price, Integer stock, String category, String manufacturer) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.stock = stock;
-        this.category = category;
-        this.manufacturer = manufacturer;
-    }
-
-    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -47,20 +28,20 @@ public class Item {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public Double getPrice() {
         return price;
     }
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Integer getStock() {
@@ -87,16 +68,22 @@ public class Item {
         this.manufacturer = manufacturer;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Item item = (Item) o;
-        return Double.compare(item.price, price) == 0 && name.equals(item.name);
+        return Objects.equals(name, item.name) &&
+                Objects.equals(price, item.price) &&
+                Objects.equals(manufacturer, item.manufacturer) &&
+                Objects.equals(category, item.category) &&
+                Objects.equals(description, item.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, price);
+        return Objects.hash(id, name, price, description, category, manufacturer);
     }
 }
+
