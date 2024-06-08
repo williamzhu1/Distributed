@@ -38,6 +38,11 @@
   margin-left: 20px;
 }
 
+.shipping-icon {
+  height: 30px;
+  margin-left: 20px;
+}
+
 @media (max-width: 800px) {
   .nav-links {
     display: flex;
@@ -47,6 +52,11 @@
   }
 
   .cart-icon {
+    height: 25px; /* Adjust the size for mobile view */
+    margin-left: 10px;
+  }
+
+  .shipping-icon {
     height: 25px; /* Adjust the size for mobile view */
     margin-left: 10px;
   }

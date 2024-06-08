@@ -11,6 +11,7 @@ import ManageProducts from "./components/supplier/ManageProducts";
 import ViewOrders from "./components/supplier/ViewOrders";
 import OrderHistory from "./components/supplier/OrderHistory";
 import Cart from "./components/buyer/Cart";
+import Trace from "./components/buyer/Trace";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/view-orders" element={<ViewOrders />} />
         <Route path="/order-history" element={<OrderHistory />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/trace" element={<Trace />} />
         <Route path="/" element={<Home />} />
       </Routes>
     </Router>
