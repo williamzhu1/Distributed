@@ -1,15 +1,18 @@
 # Meditrade App
 
-The Meditrade App is a React-based web application designed to facilitate the buying and selling of medical products across different countries. 
+The Meditrade App is a React-based web application designed to facilitate the buying and selling of medical products across different countries.
+
 ## Project Setup
 
 ### Prerequisites
 
 Before you begin, ensure you have the following installed on your system:
+
 - Node.js (v14 or higher)
 - npm (comes with Node.js)
 
 You can check your Node and npm versions by running:
+
 ```bash
 node -v
 npm -v
@@ -41,7 +44,7 @@ npm install
 To support SVG imports in TypeScript, a type definition for SVG modules is included. Ensure that the `custom.d.ts` file in the `src` directory contains the following:
 
 ```typescript
-declare module '*.svg' {
+declare module "*.svg" {
   const content: any;
   export default content;
 }

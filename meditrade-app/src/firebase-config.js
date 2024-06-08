@@ -2,7 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -12,9 +12,8 @@ const firebaseConfig = {
   storageBucket: "meditrade-c7526.appspot.com",
   messagingSenderId: "74852326524",
   appId: "1:74852326524:web:36ed444b7b04f9d4487df9",
-  measurementId: "G-DMBZY0JH85"
+  measurementId: "G-DMBZY0JH85",
 };
-
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

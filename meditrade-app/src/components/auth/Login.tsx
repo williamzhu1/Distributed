@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from '../../firebase-config'; // Import the auth instance from firebase-config
+import { auth, db } from "../../firebase-config"; // Import the auth instance from firebase-config
 import { doc, getDoc } from "firebase/firestore";
 import "./login_register.css";
 import logo from "../../assets/images/logo.jpeg";
@@ -48,7 +48,11 @@ const Login: React.FC = () => {
     event.preventDefault();
     if (validateForm()) {
       try {
-        const userCredential = await signInWithEmailAndPassword(auth, loginData.email, loginData.password);
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          loginData.email,
+          loginData.password,
+        );
         console.log("User signed in:", userCredential);
         const token = await userCredential.user.getIdToken();
         const userId = userCredential.user.uid;
@@ -57,17 +61,16 @@ const Login: React.FC = () => {
         const userRole = await fetchUserRole(userId);
         console.log("User Role:", userRole);
 
-
         localStorage.setItem("token", token);
 
         await sendTokenToBackend();
 
         if (userRole === "customer") {
-            navigate("/home");
+          navigate("/home");
         } else if (userRole === "manager") {
-            navigate("/supplier");
+          navigate("/supplier");
         } else {
-            throw new Error("Invalid user role");
+          throw new Error("Invalid user role");
         }
       } catch (error: any) {
         console.error("Error in user login:", error.message);
@@ -77,45 +80,45 @@ const Login: React.FC = () => {
   };
 
   const fetchUserRole = async (uid: string | null) => {
-      if (!uid) throw new Error("No email found for the user");
+    if (!uid) throw new Error("No email found for the user");
 
-      const userDocRef = doc(db, "users", uid);
-      const userDoc = await getDoc(userDocRef);
+    const userDocRef = doc(db, "users", uid);
+    const userDoc = await getDoc(userDocRef);
 
-      if (userDoc.exists()) {
-          const userData = userDoc.data();
-          return userData.role;
-      } else {
-          throw new Error("User document does not exist");
-      }
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      return userData.role;
+    } else {
+      throw new Error("User document does not exist");
+    }
   };
 
   const sendTokenToBackend = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-          console.error("No token found in local storage");
-          return;
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found in local storage");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/api/usertest", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ additionalData: "yourData" }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send token to backend");
       }
 
-      try {
-          const response = await fetch("http://localhost:8080/api/usertest", {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": `Bearer ${token}`
-              },
-              body: JSON.stringify({ additionalData: "yourData" })
-          });
-
-          if (!response.ok) {
-              throw new Error("Failed to send token to backend");
-          }
-
-          const responseData = await response.json();
-          console.log("Response data:", responseData);
-      } catch (error) {
-          console.error("Error sending token to backend:", error);
-      }
+      const responseData = await response.json();
+      console.log("Response data:", responseData);
+    } catch (error) {
+      console.error("Error sending token to backend:", error);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -152,9 +155,7 @@ const Login: React.FC = () => {
               onChange={handleChange}
               className={errors.email ? "input-error" : ""}
             />
-            {errors.email && (
-              <p className="error-message">{errors.email}</p>
-            )}
+            {errors.email && <p className="error-message">{errors.email}</p>}
           </div>
           <div className="form-group">
             <label htmlFor="password">Password</label>

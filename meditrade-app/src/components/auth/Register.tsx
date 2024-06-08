@@ -1,4 +1,4 @@
-import { auth, db } from '../../firebase-config'; // Import the auth instance from firebase-config
+import { auth, db } from "../../firebase-config"; // Import the auth instance from firebase-config
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import React, { useState } from "react";
@@ -92,21 +92,25 @@ const Register: React.FC = () => {
   // Update handleRegister to use formData and auth
   const handleRegister = async () => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password,
+      );
       console.log("User created:", userCredential);
 
       const user = userCredential.user;
 
       const userData = {
-          email: formData.email,
-          ...(mode === "customer"
+        email: formData.email,
+        ...(mode === "customer"
           ? { role: "customer" }
           : { company: formData.companyName, role: "manager" }),
       };
       if (user.uid) {
-          await setDoc(doc(db, "users", user.uid), userData);
-          console.log("User created and data saved:", userCredential);
-          navigate("/login");
+        await setDoc(doc(db, "users", user.uid), userData);
+        console.log("User created and data saved:", userCredential);
+        navigate("/login");
       }
     } catch (error: any) {
       console.error("Error in user registration:", error.message);
@@ -257,4 +261,3 @@ const Register: React.FC = () => {
 };
 
 export default Register;
-
