@@ -1,12 +1,13 @@
-package be.kuleuven.supplierservice;
-
+package be.kuleuven.restservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SupplierRestServiceApplication {
+public class RestService {
+
     public static void main(String[] args) {
-        SpringApplication.run(SupplierRestServiceApplication.class, args);
+        SpringApplication.run(RestService.class, args);
     }
+
 }

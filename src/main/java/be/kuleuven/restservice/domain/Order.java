@@ -7,7 +7,8 @@ public class Order {
 
     protected String id;
     protected String address;
-    private Map<Item, Integer> items = new HashMap<>();
+    protected String status;
+    private final Map<Item, Integer> items = new HashMap<>();
 
     public void addItem(Item item, int quantity) {
         items.put(item, items.getOrDefault(item, 0) + quantity);
@@ -22,6 +23,10 @@ public class Order {
                 items.put(item, currentQuantity - quantity);
             }
         }
+    }
+
+    public Map<Item, Integer> getItems() {
+        return items;
     }
 
     public int getQuantity(Item item) {
@@ -48,5 +53,9 @@ public class Order {
     public void setAddress(String address) {
         this.address = address;
     }
-    
+
+    public String getStatus() {return status;}
+
+    public void setStatus(String status) {this.status = status;}
+
 }
