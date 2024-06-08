@@ -5,7 +5,8 @@ public enum OrderStatus {
     PENDING("pending"),
     CONFIRMED("confirmed"),
     DELIVERED("delivered"),
-    CANCELLED("cancelled");
+    CANCELLED("cancelled"),
+    ROOTSTOCK("rootstock");
     private final String value;
 
     OrderStatus(String v) {

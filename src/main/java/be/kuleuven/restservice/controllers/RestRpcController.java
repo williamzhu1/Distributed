@@ -1,14 +1,18 @@
 package be.kuleuven.restservice.controllers;
 
+import be.kuleuven.restservice.domain.ApiResponse;
 import be.kuleuven.restservice.domain.Item;
 import be.kuleuven.restservice.domain.ItemsRepository;
 import be.kuleuven.restservice.domain.Order;
-import be.kuleuven.restservice.exceptions.MealNotFoundException;
+import be.kuleuven.restservice.exceptions.ItemNotFoundException;
 import be.kuleuven.restservice.exceptions.OrderNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Optional;
 
 @RestController
@@ -22,47 +26,62 @@ public class RestRpcController {
     }
 
     @GetMapping("/items/{id}")
-    Item getMealById(@PathVariable String id) {
-        Optional<Item> item = itemsRepository.findMeal(id);
-
-        return item.orElseThrow(() -> new MealNotFoundException(id));
+    ResponseEntity<ApiResponse<Item>> getItem(@PathVariable String id) {
+        Optional<Item> item = itemsRepository.findItem(id);
+        if (item.isPresent()) {
+            return ResponseEntity.ok(new ApiResponse<>(true, item.get(), "Item retrieved successfully."));
+        } else {
+            throw new ItemNotFoundException(id);
+        }
     }
 
     @GetMapping("/items")
-    Collection<Item> getItems() {
-        return itemsRepository.getAllMeal();
+    ResponseEntity<ApiResponse<Collection<Item>>> getItems() {
+        Collection<Item> items = itemsRepository.getAllItems();
+        return ResponseEntity.ok(new ApiResponse<>(true, items, "Items retrieved successfully."));
     }
 
     @PostMapping("/items")
-    Item addMeal(@RequestBody Item item) {
-        Optional<Item> newItem = itemsRepository.addMeal(item);
-        return newItem.orElseThrow();
+    ResponseEntity<ApiResponse<Item>> addItem(@RequestBody Item item) {
+        Optional<Item> newItem = itemsRepository.addItem(item);
+        return newItem.map(value -> ResponseEntity.ok(new ApiResponse<>(true, value, "Item added successfully.")))
+                .orElseThrow(() -> new RuntimeException("Failed to add item."));
     }
 
     @PutMapping("/items/{id}")
-    void updateMeal(@RequestBody Item item) {
-        itemsRepository.updateMeal(item);
+    ResponseEntity<ApiResponse<Void>> updateItem(@PathVariable String id, @RequestBody Item item) {
+        itemsRepository.updateItem(id, item);
+        return ResponseEntity.ok(new ApiResponse<>(true, null, "Item updated successfully."));
     }
 
     @DeleteMapping("/items/{id}")
-    void deleteItemById(@PathVariable String id) {
-        itemsRepository.deleteMeal(id);
+    ResponseEntity<ApiResponse<Void>> deleteItem(@PathVariable String id) {
+        itemsRepository.deleteItem(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, null, "Item deleted successfully."));
     }
 
-
     @GetMapping("/orders/{id}")
-    Order getOrderById(@PathVariable String id) {
-        return itemsRepository.findOrder(id).orElseThrow(() -> new OrderNotFoundException(id));
+    ResponseEntity<ApiResponse<Order>> getOrder(@PathVariable String id) {
+        Optional<Order> order = itemsRepository.findOrder(id);
+        return order.map(value -> ResponseEntity.ok(new ApiResponse<>(true, value, "Order retrieved successfully.")))
+                .orElseThrow(() -> new OrderNotFoundException(id));
     }
 
     @GetMapping("/orders")
-    Collection<Order> getOrders() {
-        return itemsRepository.getAllOrder();
+    ResponseEntity<ApiResponse<Collection<Order>>> getOrders() {
+        Collection<Order> orders = itemsRepository.getAllOrders();
+        return ResponseEntity.ok(new ApiResponse<>(true, orders, "Orders retrieved successfully."));
     }
 
     @PostMapping("/orders")
-    void addOrder(@RequestBody Order order) {
-        itemsRepository.addOrder(order);
+    ResponseEntity<ApiResponse<Order>> addOrder(@RequestBody Order order) {
+        if (order.setItems(new HashMap<>(order.getItems()))) {
+            itemsRepository.addOrder(order);
+            return ResponseEntity.ok(new ApiResponse<>(true, order, "Order added successfully."));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse<>(false, null, "Insufficient stock for one or more items."));
+        }
     }
 
 }

@@ -44,6 +44,8 @@ public class ItemsRepository {
 
         Order estebanOrder = new Order();
         estebanOrder.setId("cfd1601f-29a0-485d-8d21-7607ec0340c1");
+        estebanOrder.setMasterId("1");
+        estebanOrder.setStatus(OrderStatus.PENDING);
         estebanOrder.setAddress("Leuven");
         estebanOrder.addItem(c,3);
         estebanOrder.addItem(a,2);
@@ -51,13 +53,13 @@ public class ItemsRepository {
         orders.put(estebanOrder.id,estebanOrder);
     }
 
-    public Optional<Item> findMeal(String id) {
+    public Optional<Item> findItem(String id) {
         Assert.notNull(id, "The meal id must not be null");
         Item item = items.get(id);
         return Optional.ofNullable(item);
     }
 
-    public Optional<Item> addMeal(Item newItem){
+    public Optional<Item> addItem(Item newItem){
         Assert.notNull(newItem, "The meal object must not be null");
         do {
             newItem.setId(UUID.randomUUID().toString());
@@ -72,24 +74,24 @@ public class ItemsRepository {
         return Optional.of(newItem);
     }
 
-    public Optional<Item> updateMeal(Item updatedItem){
+    public Optional<Item> updateItem(String id,Item updatedItem){
         Assert.notNull(updatedItem, "The updated meal object must not be null");
 
         // Check if the meal exists in the repository
-        if (items.containsKey(updatedItem.id)) {
-            items.put(updatedItem.id, updatedItem);
+        if (items.containsKey(id)) {
+            items.put(id, updatedItem);
             return Optional.of(updatedItem);
         } else {
             return Optional.empty();
         }
     }
 
-    public void deleteMeal(String id){
+    public void deleteItem(String id){
         Assert.notNull(id, "The meal id must not be null");
         items.remove(id);
     }
 
-    public Collection<Item> getAllMeal() {
+    public Collection<Item> getAllItems() {
         return items.values();
     }
 
@@ -99,7 +101,7 @@ public class ItemsRepository {
         return Optional.ofNullable(order);
     }
 
-    public Collection<Order> getAllOrder() {
+    public Collection<Order> getAllOrders() {
         return orders.values();
     }
 

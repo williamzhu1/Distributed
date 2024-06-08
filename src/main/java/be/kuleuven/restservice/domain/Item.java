@@ -1,7 +1,12 @@
 package be.kuleuven.restservice.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.Objects;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Item {
 
     protected String id;
@@ -84,6 +89,11 @@ public class Item {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, price, description, category, manufacturer);
+    }
+
+    @Override
+    public String toString() {
+        return "{id='" + id + "', name='" + name + "', price=" + price + "}";
     }
 }
 
