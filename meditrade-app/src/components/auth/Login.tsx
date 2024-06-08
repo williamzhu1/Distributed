@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../../firebase-config'; // Import the auth instance from firebase-config
+import { auth, db } from '../../firebase-config'; // Import the auth instance from firebase-config
+import { doc, getDoc } from "firebase/firestore";
 import "./login_register.css";
 import logo from "../../assets/images/logo.jpeg";
 import Footer from "../common/Footer";
@@ -49,19 +50,72 @@ const Login: React.FC = () => {
       try {
         const userCredential = await signInWithEmailAndPassword(auth, loginData.email, loginData.password);
         console.log("User signed in:", userCredential);
-
-        // Obtain the token
         const token = await userCredential.user.getIdToken();
-        // Store the token in localStorage
-        localStorage.setItem('authToken', token);
+        const userId = userCredential.user.uid;
+        console.log("Token:", token);
 
-        // Navigate to the home page or dashboard after successful login
-        navigate("/home"); // Replace with your actual home or dashboard page
+        const userRole = await fetchUserRole(userId);
+        console.log("User Role:", userRole);
+
+
+        localStorage.setItem("token", token);
+
+        await sendTokenToBackend();
+
+        if (userRole === "customer") {
+            navigate("/home");
+        } else if (userRole === "manager") {
+            navigate("/supplier");
+        } else {
+            throw new Error("Invalid user role");
+        }
       } catch (error: any) {
         console.error("Error in user login:", error.message);
         setErrors({ ...errors, password: error.message });
       }
     }
+  };
+
+  const fetchUserRole = async (uid: string | null) => {
+      if (!uid) throw new Error("No email found for the user");
+
+      const userDocRef = doc(db, "users", uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+          const userData = userDoc.data();
+          return userData.role;
+      } else {
+          throw new Error("User document does not exist");
+      }
+  };
+
+  const sendTokenToBackend = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+          console.error("No token found in local storage");
+          return;
+      }
+
+      try {
+          const response = await fetch("http://localhost:8080/api/usertest", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`
+              },
+              body: JSON.stringify({ additionalData: "yourData" })
+          });
+
+          if (!response.ok) {
+              throw new Error("Failed to send token to backend");
+          }
+
+          const responseData = await response.json();
+          console.log("Response data:", responseData);
+      } catch (error) {
+          console.error("Error sending token to backend:", error);
+      }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
