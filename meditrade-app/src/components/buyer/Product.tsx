@@ -13,7 +13,7 @@ const Product = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const product = products.find(
-    (product) => product.id === parseInt(id || "0"),
+    (product) => product.id === parseInt(id || "0")
   );
 
   if (!product) {
@@ -36,6 +36,12 @@ const Product = () => {
             <p className="product-genre">Genre: {product.genre}</p>
             <p className="product-origin">Origin: {product.origin}</p>
             <p className="product-description">{product.details}</p>
+            <p className="product-manufacturer">
+              Manufacturer: {product.manufacturer}
+            </p>
+            <p className="manufacturer-info">
+              Info: {product.manufacturerInfo}
+            </p>
             <button className="add-to-cart-button">Add to Cart</button>
           </div>
         </div>

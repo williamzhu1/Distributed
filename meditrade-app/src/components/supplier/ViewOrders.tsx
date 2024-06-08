@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import Header from "../common/Header";
 import Footer from "../common/Footer";
 import "./view_orders.css";
@@ -11,6 +12,7 @@ interface Order {
   totalPrice: string;
   address: string;
   status: "Pending" | "Shipped" | "Delivered";
+  previousStatus?: "Pending" | "Shipped" | "Delivered"; // Optional field to track previous status
 }
 
 const initialOrders: Order[] = [
@@ -40,18 +42,42 @@ const ViewOrders: React.FC = () => {
 
   const updateOrderStatus = (
     id: number,
-    status: "Pending" | "Shipped" | "Delivered",
+    newStatus: "Pending" | "Shipped" | "Delivered"
   ) => {
-    setOrders(
-      orders.map((order) => (order.id === id ? { ...order, status } : order)),
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order.id === id
+          ? { ...order, previousStatus: order.status, status: newStatus }
+          : order
+      )
     );
   };
+
+  const handleStatusChange = (id: number, newStatus: "Pending" | "Shipped" | "Delivered") => {
+    const confirmation = window.confirm(`Are you sure you want to mark this order as ${newStatus}?`);
+    if (confirmation) {
+      updateOrderStatus(id, newStatus);
+    }
+  };
+
+  const revertOrderStatus = (id: number) => {
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order.id === id && order.previousStatus
+          ? { ...order, status: order.previousStatus, previousStatus: undefined }
+          : order
+      )
+    );
+  };
+
+  const deliveredOrders = orders.filter(order => order.status === "Delivered");
 
   return (
     <div className="view-orders-page">
       <Header />
       <div className="view-orders-content">
         <h1>View Orders</h1>
+
         <div className="orders-list">
           {orders.map((order) => (
             <div key={order.id} className="order-card">
@@ -76,23 +102,54 @@ const ViewOrders: React.FC = () => {
               </p>
               <div className="order-actions">
                 {order.status === "Pending" && (
-                  <button
-                    onClick={() => updateOrderStatus(order.id, "Shipped")}
-                  >
-                    Mark as Shipped
-                  </button>
+                  <>
+                    <button
+                      className="action-button"
+                      onClick={() => handleStatusChange(order.id, "Shipped")}
+                    >
+                      Mark as Shipped
+                    </button>
+                    {order.previousStatus && (
+                      <button
+                        className="revert-button"
+                        onClick={() => revertOrderStatus(order.id)}
+                      >
+                        Revert to {order.previousStatus}
+                      </button>
+                    )}
+                  </>
                 )}
                 {order.status === "Shipped" && (
+                  <>
+                    <button
+                      className="action-button"
+                      onClick={() => handleStatusChange(order.id, "Delivered")}
+                    >
+                      Mark as Delivered
+                    </button>
+                    <button
+                      className="revert-button"
+                      onClick={() => revertOrderStatus(order.id)}
+                    >
+                      Revert to Pending
+                    </button>
+                  </>
+                )}
+                {order.status === "Delivered" && (
                   <button
-                    onClick={() => updateOrderStatus(order.id, "Delivered")}
+                    className="revert-button"
+                    onClick={() => revertOrderStatus(order.id)}
                   >
-                    Mark as Delivered
+                    Revert to Shipped
                   </button>
                 )}
               </div>
             </div>
           ))}
         </div>
+        <Link to="/order-history">
+                  <button className="view-history-button">View Order History</button>
+                </Link>
       </div>
       <Footer />
     </div>

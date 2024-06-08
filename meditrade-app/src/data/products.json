@@ -6,7 +6,9 @@
     "price": "$10.00",
     "genre": "Herbal",
     "origin": "China",
-    "details": "Detailed info about Herbal Tea."
+    "details": "Detailed info about Herbal Tea.",
+    "manufacturer": "Tea Company",
+    "manufacturerInfo": "A reputable tea manufacturer known for high-quality herbal teas."
   },
   {
     "id": 2,
@@ -15,7 +17,9 @@
     "price": "$25.00",
     "genre": "Herbal",
     "origin": "Korea",
-    "details": "Detailed info about Ginseng Extract."
+    "details": "Detailed info about Ginseng Extract.",
+    "manufacturer": "Health Supplements Inc.",
+    "manufacturerInfo": "Leading in health supplements and wellness products."
   },
   {
     "id": 3,
@@ -24,7 +28,9 @@
     "price": "$15.00",
     "genre": "Topical",
     "origin": "Egypt",
-    "details": "Detailed info about Aloe Vera Gel."
+    "details": "Detailed info about Aloe Vera Gel.",
+    "manufacturer": "Natural Skin Care Co.",
+    "manufacturerInfo": "Specializes in natural and organic skin care products."
   },
   {
     "id": 4,
@@ -33,7 +39,9 @@
     "price": "$12.00",
     "genre": "Herbal",
     "origin": "USA",
-    "details": "Detailed info about Echinacea."
+    "details": "Detailed info about Echinacea.",
+    "manufacturer": "Herbals & More",
+    "manufacturerInfo": "Well-known for a wide range of herbal remedies."
   },
   {
     "id": 5,
@@ -42,7 +50,9 @@
     "price": "$8.00",
     "genre": "Herbal",
     "origin": "Germany",
-    "details": "Detailed info about Chamomile."
+    "details": "Detailed info about Chamomile.",
+    "manufacturer": "Tea Blends Ltd.",
+    "manufacturerInfo": "Specializes in herbal and floral tea blends."
   },
   {
     "id": 6,
@@ -51,7 +61,9 @@
     "price": "$20.00",
     "genre": "Essential Oil",
     "origin": "France",
-    "details": "Detailed info about Lavender Oil."
+    "details": "Detailed info about Lavender Oil.",
+    "manufacturer": "Aromatherapy Essentials",
+    "manufacturerInfo": "Offers a range of high-quality essential oils."
   },
   {
     "id": 7,
@@ -60,7 +72,9 @@
     "price": "$5.00",
     "genre": "Herbal",
     "origin": "USA",
-    "details": "Detailed info about Peppermint."
+    "details": "Detailed info about Peppermint.",
+    "manufacturer": "Fresh Herbs Co.",
+    "manufacturerInfo": "Known for their fresh and organic herbs."
   },
   {
     "id": 8,
@@ -69,7 +83,9 @@
     "price": "$7.00",
     "genre": "Herbal",
     "origin": "India",
-    "details": "Detailed info about Turmeric."
+    "details": "Detailed info about Turmeric.",
+    "manufacturer": "Spice World",
+    "manufacturerInfo": "Renowned for a variety of high-quality spices."
   },
   {
     "id": 9,
@@ -78,7 +94,9 @@
     "price": "$6.00",
     "genre": "Herbal",
     "origin": "Italy",
-    "details": "Detailed info about Rosemary."
+    "details": "Detailed info about Rosemary.",
+    "manufacturer": "Mediterranean Herbs",
+    "manufacturerInfo": "Specializes in Mediterranean herbs and spices."
   },
   {
     "id": 10,
@@ -87,7 +105,9 @@
     "price": "$5.50",
     "genre": "Herbal",
     "origin": "Turkey",
-    "details": "Detailed info about Sage."
+    "details": "Detailed info about Sage.",
+    "manufacturer": "Herbal Harmony",
+    "manufacturerInfo": "Offers a range of organic herbal products."
   },
   {
     "id": 11,
@@ -96,7 +116,9 @@
     "price": "$4.00",
     "genre": "Herbal",
     "origin": "Spain",
-    "details": "Detailed info about Thyme."
+    "details": "Detailed info about Thyme.",
+    "manufacturer": "Gourmet Herbs",
+    "manufacturerInfo": "Known for their premium quality culinary herbs."
   },
   {
     "id": 12,
@@ -105,7 +127,9 @@
     "price": "$4.50",
     "genre": "Herbal",
     "origin": "India",
-    "details": "Detailed info about Basil."
+    "details": "Detailed info about Basil.",
+    "manufacturer": "Fresh Herbs Co.",
+    "manufacturerInfo": "Known for their fresh and organic herbs."
   },
   {
     "id": 13,
@@ -114,7 +138,9 @@
     "price": "$5.00",
     "genre": "Herbal",
     "origin": "Greece",
-    "details": "Detailed info about Oregano."
+    "details": "Detailed info about Oregano.",
+    "manufacturer": "Mediterranean Herbs",
+    "manufacturerInfo": "Specializes in Mediterranean herbs and spices."
   },
   {
     "id": 14,
@@ -123,7 +149,9 @@
     "price": "$3.00",
     "genre": "Herbal",
     "origin": "China",
-    "details": "Detailed info about Garlic."
+    "details": "Detailed info about Garlic.",
+    "manufacturer": "Spice World",
+    "manufacturerInfo": "Renowned for a variety of high-quality spices."
   },
   {
     "id": 15,
@@ -132,7 +160,9 @@
     "price": "$6.00",
     "genre": "Herbal",
     "origin": "India",
-    "details": "Detailed info about Ginger."
+    "details": "Detailed info about Ginger.",
+    "manufacturer": "Herbals & More",
+    "manufacturerInfo": "Well-known for a wide range of herbal remedies."
   },
   {
     "id": 16,
@@ -141,6 +171,8 @@
     "price": "$7.00",
     "genre": "Herbal",
     "origin": "Sri Lanka",
-    "details": "Detailed info about Cinnamon."
+    "details": "Detailed info about Cinnamon.",
+    "manufacturer": "Spice World",
+    "manufacturerInfo": "Renowned for a variety of high-quality spices."
   }
 ]

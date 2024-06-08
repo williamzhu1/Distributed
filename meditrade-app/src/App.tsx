@@ -7,6 +7,7 @@ import Product from "./components/buyer/Product"; // Import the Product componen
 import SupplierHome from "./components/supplier/SupplierHome";
 import ManageProducts from "./components/supplier/ManageProducts";
 import ViewOrders from "./components/supplier/ViewOrders";
+import OrderHistory from "./components/supplier/OrderHistory";
 import Cart from './components/buyer/Cart';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/supplier" element={<SupplierHome />} />
         <Route path="/manage-products" element={<ManageProducts />} />
         <Route path="/view-orders" element={<ViewOrders />} />
+        <Route path="/order-history" element={<OrderHistory />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/" element={<Home />} />
       </Routes>

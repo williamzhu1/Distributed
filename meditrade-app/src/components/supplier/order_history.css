@@ -1,16 +1,35 @@
-.view-orders-page {
+.order-history-page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   background-color: #f9f9f9;
 }
 
-.view-orders-content {
+.order-history-content {
   flex: 1;
   padding: 40px;
   margin-top: 70px;
   text-align: center;
 }
+
+.image-container img {
+  width: auto%;
+  max-width: 600px;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.order-history-content h1 {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+.catchy-copy {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}
+
 
 .orders-list {
   display: flex;
@@ -42,27 +61,6 @@
   text-align: center;
 }
 
-.action-button {
-  background-color: #4caf50;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
-  margin: 5px;
-}
-
-.action-button:hover {
-  background-color: #45a049;
-  transform: translateY(-2px);
-}
-
-.action-button:active {
-  background-color: #3e8e41;
-  transform: translateY(0);
-}
-
 .revert-button {
   background-color: #ff0000; /* Red color for revert button */
   color: white;
@@ -84,7 +82,7 @@
   transform: translateY(0);
 }
 
-.view-history-button {
+.view-orders-button {
   background-color: gray;
   color: white;
   padding: 10px 20px;
@@ -92,15 +90,15 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.3s;
-  margin: 15px;
+  margin-top: 20px;
 }
 
-.view-history-button:hover {
+.view-orders-button:hover {
   background-color: darkgray;
   transform: translateY(-2px);
 }
 
-.view-history-button:active {
+.view-orders-button:active {
   background-color: lightgray;
   transform: translateY(0);
 }
