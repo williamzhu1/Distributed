@@ -5,7 +5,7 @@ import Footer from "../common/Footer";
 import confirmedIcon from "../../assets/images/shipping_status/confirmed.jpeg";
 import shippedIcon from "../../assets/images/shipping_status/shipped.jpeg";
 import deliveredIcon from "../../assets/images/shipping_status/delivered.jpeg";
-import classNames from 'classnames';
+import classNames from "classnames";
 import styles from "./trace.module.css";
 
 // Define the interface for the order status
@@ -46,8 +46,8 @@ const initialProducts: Product[] = [
 
 const statusIcons = {
   "Order Confirmed": confirmedIcon,
-  "Shipped": shippedIcon,
-  "Delivered": deliveredIcon,
+  Shipped: shippedIcon,
+  Delivered: deliveredIcon,
 };
 
 const Trace: React.FC = () => {
@@ -61,28 +61,43 @@ const Trace: React.FC = () => {
         {products.map((product) => (
           <div key={product.id} className={styles.productStatusContainer}>
             <Link to={`/product/${product.id}`} className={styles.productInfo}>
-              <img src={product.image} alt={product.name} className={styles.productImage} />
+              <img
+                src={product.image}
+                alt={product.name}
+                className={styles.productImage}
+              />
               <h2>{product.name}</h2>
             </Link>
             <div className={styles.statusTimeline}>
               {product.status.map((status, index) => (
-                <div key={index} className={classNames(styles.statusItem, {
-                  [styles.orderConfirmed]: status.status === 'Order Confirmed',
-                  [styles.shipped]: status.status === 'Shipped',
-                  [styles.delivered]: status.status === 'Delivered'
-                })}>
+                <div
+                  key={index}
+                  className={classNames(styles.statusItem, {
+                    [styles.orderConfirmed]:
+                      status.status === "Order Confirmed",
+                    [styles.shipped]: status.status === "Shipped",
+                    [styles.delivered]: status.status === "Delivered",
+                  })}
+                >
                   <div className={styles.statusIcon}>
                     <img src={statusIcons[status.status]} alt={status.status} />
                   </div>
                   <div className={styles.statusInfo}>
-                    <h2 className={classNames({
-                      [styles.orderConfirmed]: status.status === 'Order Confirmed',
-                      [styles.shipped]: status.status === 'Shipped',
-                      [styles.delivered]: status.status === 'Delivered'
-                    })}>{status.status}</h2>
+                    <h2
+                      className={classNames({
+                        [styles.orderConfirmed]:
+                          status.status === "Order Confirmed",
+                        [styles.shipped]: status.status === "Shipped",
+                        [styles.delivered]: status.status === "Delivered",
+                      })}
+                    >
+                      {status.status}
+                    </h2>
                     <p>{status.date}</p>
                   </div>
-                  {index < product.status.length - 1 && <div className={styles.statusLine}></div>}
+                  {index < product.status.length - 1 && (
+                    <div className={styles.statusLine}></div>
+                  )}
                 </div>
               ))}
             </div>
