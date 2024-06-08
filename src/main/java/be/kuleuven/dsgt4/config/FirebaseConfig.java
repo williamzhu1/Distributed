@@ -15,7 +15,7 @@ public class FirebaseConfig {
     @Bean
     public FirebaseApp firebaseApp() throws IOException {
         FileInputStream serviceAccount =
-                new FileInputStream("/home/aymeric/Downloads/meditrade-c7526-firebase-adminsdk-73foc-aa3e0b595b.json");
+                new FileInputStream("/home/shusaku/Downloads/meditrade-c7526-firebase-adminsdk-73foc-d4a8411161.json");
 
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
