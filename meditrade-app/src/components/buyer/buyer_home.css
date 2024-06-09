@@ -1,6 +1,7 @@
 html {
   scroll-behavior: smooth;
   font-family: Arial, sans-serif;
+  overflow-y: scroll; /* Add vertical scroll bar to prevent layout shifts */
 }
 
 .home-page {
@@ -30,8 +31,10 @@ nav a {
   font-weight: bold;
 }
 
-nav a:hover {
+nav a:hover,
+nav a:focus {
   color: #4caf50;
+  text-decoration: underline;
 }
 
 .hero {
@@ -78,19 +81,25 @@ nav a:hover {
 .search-bar {
   display: flex;
   justify-content: center;
+  align-items: center;
   margin: 20px;
   position: relative;
   z-index: 999;
   background-color: #fff;
   width: 80%;
+  max-width: 600px; /* Add max-width for better control */
   margin: 0 auto;
+  padding: 10px; /* Add padding for better spacing */
   box-sizing: border-box;
+  border: 1px solid #ccc; /* Add border for better visibility */
+  border-radius: 5px;
 }
 
 .search-bar input {
   padding: 10px;
   margin: 5px;
   width: 80%;
+  box-sizing: border-box; /* Ensure padding does not affect width */
 }
 
 .search-bar button {
@@ -98,18 +107,16 @@ nav a:hover {
   margin: 5px;
   background-color: white;
   color: gray;
-  border: true;
+  border: 1px solid #ccc; /* Add border for better visibility */
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   font-size: 16px;
   cursor: pointer;
-  transition:
-    background-color 0.3s,
-    transform 0.3s;
+  transition: background-color 0.3s, transform 0.3s;
 }
 
 .search-bar button:hover {
-  background-color: light-gray;
+  background-color: lightgray;
   color: black;
   transform: translateY(-2px);
 }
@@ -143,7 +150,8 @@ nav a:hover {
   border-bottom: none;
 }
 
-.suggestion-item:hover {
+.suggestion-item:hover,
+.suggestion-item:focus {
   background: #f0f0f0;
 }
 
@@ -162,6 +170,9 @@ nav a:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
   text-align: center;
+  display: flex;
+  flex-direction: column; /* Ensure content stacks vertically */
+  justify-content: space-between; /* Distribute space evenly */
 }
 
 .product-image {
@@ -170,6 +181,10 @@ nav a:hover {
   border-bottom: 1px solid #ccc;
   padding-bottom: 20px;
   margin-bottom: 20px;
+}
+
+.product-info {
+  text-align: left; /* Align text to the left */
 }
 
 .product-info h2 {
@@ -184,9 +199,14 @@ nav a:hover {
 }
 
 .product-genre,
-.product-origin {
+.product-origin,
+.product-details,
+.product-manufacturer {
   font-size: 14px;
   color: #555;
+  margin: 5px 0; /* Add margin for spacing */
+  word-wrap: break-word; /* Ensure long text wraps within the container */
+  white-space: pre-line; /* Preserve spaces and line breaks */
 }
 
 /* Additional styles for responsiveness */
@@ -194,6 +214,7 @@ nav a:hover {
   .results-section {
     grid-template-columns: repeat(4, 1fr);
   }
+
   .hero h1 {
     font-size: 1.8em;
   }
@@ -233,17 +254,19 @@ nav a:hover {
 
   .product-card {
     padding: 10px;
-    width: 50%;
-    margin: auto;
-    text-align: center;
+    width: 100%;
+    margin: 10px 0; /* Add margin for better spacing on mobile */
   }
 
   .product-info h2,
   .product-info .product-price,
   .product-info .product-genre,
-  .product-info .product-origin {
-    font-size: 0.8em;
+  .product-info .product-origin,
+  .product-info .product-details,
+  .product-info .product-manufacturer {
+    font-size: 0.9em; /* Adjust font size for better readability */
   }
+
   .product-image {
     width: 100%; /* Smaller images for mobile */
     margin: 0 auto; /* Center images */

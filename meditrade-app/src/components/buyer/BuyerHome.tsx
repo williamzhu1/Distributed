@@ -13,7 +13,12 @@ interface Product {
   price: string;
   genre: string;
   origin: string;
+  details: string;
   image: string;
+  manufacturer: {
+    name: string;
+    info: string;
+  };
 }
 
 // Ensure TypeScript knows that 'images' is of type 'Images'
@@ -26,14 +31,21 @@ const Home: React.FC = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
   useEffect(() => {
-    // Fetch products from the API (mocked for now)
     const fetchProducts = async () => {
       try {
-        // Replace the following line with actual API call
-        // const response = await axios.get<Product[]>(apiUrl);
-        const response = { data: require("../../data/products.json") }; // Mocked data
-        setProducts(response.data);
-        setFilteredProducts(response.data);
+        const response = await fetch('http://localhost:8080/api/products', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setProducts(data);
+        setFilteredProducts(data);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -51,7 +63,7 @@ const Home: React.FC = () => {
       (product) =>
         product.name.toLowerCase().includes(term.toLowerCase()) ||
         product.genre.toLowerCase().includes(term.toLowerCase()) ||
-        product.origin.toLowerCase().includes(term.toLowerCase()),
+        product.origin.toLowerCase().includes(term.toLowerCase())
     );
     setFilteredProducts(filtered);
 
@@ -63,10 +75,10 @@ const Home: React.FC = () => {
             (product) =>
               product.name.toLowerCase().includes(term.toLowerCase()) ||
               product.genre.toLowerCase().includes(term.toLowerCase()) ||
-              product.origin.toLowerCase().includes(term.toLowerCase()),
+              product.origin.toLowerCase().includes(term.toLowerCase())
           )
-          .map((product) => product.name),
-      ),
+          .map((product) => product.name)
+      )
     );
     setSuggestions(uniqueSuggestions);
   };
@@ -74,7 +86,7 @@ const Home: React.FC = () => {
   const handleSuggestionClick = (suggestion: string) => {
     setSearchTerm(suggestion);
     const filtered = products.filter((product) =>
-      product.name.toLowerCase().includes(suggestion.toLowerCase()),
+      product.name.toLowerCase().includes(suggestion.toLowerCase())
     );
     setFilteredProducts(filtered);
     setSuggestions([]);
@@ -127,7 +139,7 @@ const Home: React.FC = () => {
           >
             <div className="product-card">
               <img
-                src={imagesTyped[product.image]}
+                src={product.image}
                 alt={product.name}
                 className="product-image"
               />
@@ -136,6 +148,10 @@ const Home: React.FC = () => {
                 <p className="product-price">{product.price}</p>
                 <p className="product-genre">{product.genre}</p>
                 <p className="product-origin">{product.origin}</p>
+                <p className="product-details">{product.details}</p>
+                <p className="product-manufacturer">
+                  {product.manufacturer.name} - {product.manufacturer.info}
+                </p>
               </div>
             </div>
           </Link>

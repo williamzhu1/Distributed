@@ -24,7 +24,7 @@ const Product = () => {
     <div className="product-page">
       <Header />
       <body className="product-body">
-        <div className="product-details">
+        <div className="product-detail-page">
           <img
             src={imagesTyped[product.image]}
             alt={product.name}
