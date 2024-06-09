@@ -25,3 +25,5 @@ yarn-error.log*
 # IDE and Editor Configurations
 .vscode/
 .idea/
+
+/target/
