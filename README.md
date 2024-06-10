@@ -199,7 +199,7 @@ Order status is an enum
 
 #### Get All Orders
 
-**Endpoint:** `/items`  
+**Endpoint:** `/orders`  
 **Method:** `GET`  
 **Description:** Retrieves all orders.  
 **Response:**
