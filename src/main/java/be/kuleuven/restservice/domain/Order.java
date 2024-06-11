@@ -14,6 +14,9 @@ import java.util.Map;
 public class Order {
 
     public boolean addItem(Item item, int quantity) {
+        if(status != OrderStatus.PENDING){
+            return false;
+        }
         if (item != null && quantity > 0 && item.getStock() >= quantity) {
             int currentStock = item.getStock();
             int newStock = currentStock - quantity;
@@ -29,8 +32,10 @@ public class Order {
     }
 
     public boolean setItems(HashMap<Item, Integer> newItems) {
+        if(status != OrderStatus.PENDING){
+            return false;
+        }
         Map<Item, Integer> previousStocks = new HashMap<>();
-
         for (Map.Entry<Item, Integer> entry : newItems.entrySet()) {
             Item item = entry.getKey();
             int quantity = entry.getValue();
@@ -45,6 +50,7 @@ public class Order {
                 return false; // Exit the loop if out of stock
             }
         }
+        status = OrderStatus.CONFIRMED;
         return true; // All items added successfully
     }
 
