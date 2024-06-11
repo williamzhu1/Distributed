@@ -49,9 +49,13 @@ public class RestRpcController {
     }
 
     @PutMapping("/items/{id}")
-    ResponseEntity<ApiResponse<Void>> updateItem(@PathVariable String id, @RequestBody Item item) {
-        itemsRepository.updateItem(id, item);
-        return ResponseEntity.ok(new ApiResponse<>(true, null, "Item updated successfully."));
+    ResponseEntity<ApiResponse<Item>> updateItem(@PathVariable String id, @RequestBody Item item) {
+        Optional<Item> updatedItem = itemsRepository.updateItem(id, item);
+        if (updatedItem.isPresent()) {
+            return ResponseEntity.ok(new ApiResponse<>(true, updatedItem.get(), "Item updated successfully."));
+        } else {
+            throw new ItemNotFoundException(id);
+        }
     }
 
     @DeleteMapping("/items/{id}")
@@ -84,4 +88,19 @@ public class RestRpcController {
         }
     }
 
+    @PutMapping("/orders/{id}")
+    ResponseEntity<ApiResponse<Order>> updateOrder(@PathVariable String id, @RequestBody Order order) {
+        Optional<Order> updatedOrder = itemsRepository.editOrder(id, order);
+        if (updatedOrder.isPresent()) {
+            return ResponseEntity.ok(new ApiResponse<>(true, updatedOrder.get(), "Order updated successfully."));
+        } else {
+            throw new OrderNotFoundException(id);
+        }
+    }
+
+    @DeleteMapping("/orders/{id}")
+    ResponseEntity<ApiResponse<Void>> deleteOrder(@PathVariable String id) {
+        itemsRepository.deleteOrder(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, null, "Order deleted successfully."));
+    }
 }

@@ -49,7 +49,6 @@ public class ItemsRepository {
         estebanOrder.setAddress("Leuven");
         estebanOrder.addItem(c,3);
         estebanOrder.addItem(a,2);
-//        estebanOrder.setMeals(new ArrayList<>(Arrays.asList(c));
         orders.put(estebanOrder.id,estebanOrder);
     }
 
@@ -127,5 +126,25 @@ public class ItemsRepository {
         } else {
             return Optional.empty();
         }
+    }
+
+    // Updates an existing order by its ID
+    public Optional<Order> editOrder(String id, Order updatedOrder) {
+        Assert.notNull(updatedOrder, "The updated order object must not be null");
+
+        // Check if the order exists in the repository
+        if (orders.containsKey(id)) {
+            updatedOrder.setId(id);  // Ensure the ID remains the same
+            orders.put(id, updatedOrder);
+            return Optional.of(updatedOrder);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    // Deletes an order by its ID
+    public void deleteOrder(String id) {
+        Assert.notNull(id, "The order id must not be null");
+        orders.remove(id);
     }
 }

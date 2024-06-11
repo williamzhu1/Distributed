@@ -88,7 +88,14 @@ Order status is an enum
 ```json
 {
   "success": true,
-  "data": null,
+  "data": {
+  "name": "Updated Item",
+  "description": "Updated description",
+  "price": 14.99,
+  "category": "Updated Category",
+  "manufacturer": "Updated Manufacturer",
+  "stock": 15
+  },
   "message": "Item updated successfully."
 }
 ```
@@ -253,6 +260,53 @@ Order status is an enum
     "orderStatus": "PENDING"
   },
   "message": "Order added successfully."
+}
+```
+#### Udpate Order by ID
+
+**Endpoint:** `/order/{id}`  
+**Method:** `PUT`  
+**Description:** Updates an order by its ID.  
+**Request body:**
+```json
+{
+  "masterId": "1",
+  "address": "New Address",
+  "status": "COMPLETED",
+  "items": {
+    "5268203c-de76-4921-a3e3-439db69c462a": 1,
+    "cfd1601f-29a0-485d-8d21-7607ec0340c8": 4
+  }
+}
+```
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "cfd1601f-29a0-485d-8d21-7607ec0340c1",
+    "masterId": "1",
+    "address": "New Address",
+    "status": "COMPLETED",
+    "items": {
+      "5268203c-de76-4921-a3e3-439db69c462a": 1,
+      "cfd1601f-29a0-485d-8d21-7607ec0340c8": 4
+    }
+  },
+  "message": "Order updated successfully."
+}
+```
+
+#### Delete Order by ID
+
+**Endpoint:** `/order/{id}`  
+**Method:** `DELETE`  
+**Description:** Deletes an order by its ID.
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Order deleted successfully."
 }
 ```
 
