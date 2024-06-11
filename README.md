@@ -68,7 +68,7 @@ Order status is an enum
 }
 ```
 
-#### Udpate Item by ID
+#### Update Item by ID
 
 **Endpoint:** `/items/{id}`  
 **Method:** `PUT`  
@@ -262,7 +262,7 @@ Order status is an enum
   "message": "Order added successfully."
 }
 ```
-#### Udpate Order by ID
+#### Update Order by ID
 
 **Endpoint:** `/order/{id}`  
 **Method:** `PUT`  
@@ -307,7 +307,7 @@ Order status is an enum
 {
   "success": true,
   "message": "Order deleted successfully."
-}
+} 
 ```
 
 
