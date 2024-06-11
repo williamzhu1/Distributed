@@ -2,47 +2,16 @@ package be.kuleuven.restservice.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Order {
-
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getMasterId() {
-        return masterId;
-    }
-
-    public void setMasterId(String masterId) {
-        this.masterId = masterId;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public OrderStatus getOrderStatus(){
-        return status;
-    }
-
-    public void setStatus(OrderStatus status){
-        this.status = status;
-    }
-
 
     public boolean addItem(Item item, int quantity) {
         if (item != null && quantity > 0 && item.getStock() >= quantity) {
@@ -90,14 +59,14 @@ public class Order {
         }
     }
 
-    public Map<Item, Integer> getItems() {
-        return items;
-    }
-
+    @Setter
     protected String id;
+    @Setter
     protected String masterId;
+    @Setter
     protected String address;
     protected Map<Item, Integer> items = new HashMap<>();
+    @Setter
     protected OrderStatus status;
 
     @Override
