@@ -36,7 +36,7 @@ private String message; <br />
   "items": {
     "item": "quantity"
   },
-  "orderStatus": "string"
+  "status": "string"
 }
 ```
 Order status is an enum 
@@ -201,7 +201,7 @@ Order status is an enum
       "Item{id='item1', name='Widget', price=9.99}": 2,
       "Item{id='item2', name='Gizmo', price=19.99}": 1
     },
-    "orderStatus": "PENDING"
+    "status": "PENDING"
   },
   "message": "Order retrieved successfully."
 }
@@ -225,7 +225,7 @@ Order status is an enum
         "Item{id='item1', name='Widget', price=9.99}": 2,
         "Item{id='item2', name='Gizmo', price=19.99}": 1
       },
-      "orderStatus": "PENDING"
+      "status": "PENDING"
     }
   ],
   "message": "Orders retrieved successfully."
@@ -245,7 +245,7 @@ Order status is an enum
     "Item{id='item1', name='Widget', price=9.99}": 3,
     "Item{id='item3', name='Gadget', price=29.99}": 2
   },
-  "orderStatus": "PENDING"
+  "status": "PENDING"
 }
 ```
 **Response:**
@@ -260,7 +260,7 @@ Order status is an enum
       "Item{id='item1', name='Widget', price=9.99}": 3,
       "Item{id='item3', name='Gadget', price=29.99}": 2
     },
-    "orderStatus": "PENDING"
+    "status": "PENDING"
   },
   "message": "Order added successfully."
 }
