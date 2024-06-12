@@ -2,27 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./buyer_home.css";
 import banner from "../../assets/images/banner.jpeg";
-import images from "../../assets/images/products/index";
 import Header from "../common/Header";
 import Footer from "../common/Footer";
-
-// Interface for Product
-interface Product {
-  id: string;
-  name: string;
-  price: string;
-  genre: string;
-  origin: string;
-  details: string;
-  image: string;
-  manufacturer: {
-    name: string;
-    info: string;
-  };
-}
-
-// Ensure TypeScript knows that 'images' is of type 'Images'
-const imagesTyped: { [key: string]: string } = images;
+import { Product } from "../types"; // Import the Product type
 
 const Home: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
