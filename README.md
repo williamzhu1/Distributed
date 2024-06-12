@@ -4,6 +4,9 @@ scp 'filepath' dapp@dsgtwilliamzhu.japaneast.cloudapp.azure.com: <br />
 Unzip the tar file with and run inside the target folder  <br />
 java -jar food-rest-service-0.0.1-SNAPSHOT.jar <br />
 
+## Apikey
+'H' "ApiKey: {apikey}"
+
 ## Endpoints
 
 All API responses are wrapped as Api response class to standardize the response <br />
