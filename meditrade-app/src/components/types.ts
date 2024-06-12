@@ -14,10 +14,14 @@ export interface Product {
   };
 }
 
+// src/types.ts
+
 export interface CartItem {
   id: string;
   name: string;
-  price: string;
+  price: string | number;
   quantity: number;
   image: string;
 }
+
+
