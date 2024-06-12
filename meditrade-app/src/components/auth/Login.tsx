@@ -6,6 +6,7 @@ import { doc, getDoc } from "firebase/firestore";
 import "./login_register.css";
 import logo from "../../assets/images/logo.jpeg";
 import Footer from "../common/Footer";
+// import Item from "../../entities/Item"; 
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -92,6 +93,47 @@ const Login: React.FC = () => {
       throw new Error("User document does not exist");
     }
   };
+
+//   const sendTokenToBackend = async () => {
+//     const token = localStorage.getItem("token");
+//     if (!token) {
+//       console.error("No token found in local storage");
+//       return;
+//     }
+
+//     try {
+//       const response = await fetch("http://localhost:8080/api/getitems", {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify({ additionalData: "yourData" }),
+//       });
+
+//       if (!response.ok) {
+//         throw new Error("Failed to fetch items from backend");
+//       }
+
+//       const responseData = await response.json();
+      
+//       // Map response data to Item instances
+//       const items = responseData.map((itemData: { category: any; description: any; id: any; manufacturer: any; name: any; price: any; stock: any; }) => new Item(
+//         itemData.category,
+//         itemData.description,
+//         itemData.id,
+//         itemData.manufacturer,
+//         itemData.name,
+//         itemData.price,
+//         itemData.stock
+//       ));
+      
+//       console.log("Items:", items);
+//       return items; // Return the items if needed elsewhere
+//     } catch (error) {
+//       console.error("Error fetching items from backend:", error);
+//     }
+// };
 
   const sendTokenToBackend = async () => {
     const token = localStorage.getItem("token");
