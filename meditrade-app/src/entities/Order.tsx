@@ -1,4 +1,4 @@
-class Order{
+export class Order{
     id: number;
     orderDate: Date;
     orderStatus: string;
