@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { CartItem } from "./CartItem"; // Import the CartItem type
+import { CartItem } from "../types"; // Adjust this import according to your project structure
 import Header from "../common/Header";
 import Footer from "../common/Footer";
 import ordersImg from "../../assets/images/orders.jpeg";
+import { parsePrice } from "../utils/utils"; // Adjust this import according to your project structure
 import "./cart.css";
 
 const Cart: React.FC = () => {
@@ -11,43 +12,29 @@ const Cart: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Mock data for demonstration
-    const mockCartItems: CartItem[] = [
-      {
-        id: 1,
-        name: "Herbal Tea",
-        price: "$10",
-        quantity: 2,
-        image: require("../../assets/images/products/Sample1.jpeg"),
-      },
-      {
-        id: 2,
-        name: "Ginseng Extract",
-        price: "$20",
-        quantity: 1,
-        image: require("../../assets/images/products/Sample2.jpeg"),
-      },
-    ];
-
-    setCartItems(mockCartItems);
+    const storedCartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
+    setCartItems(storedCartItems);
   }, []);
 
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => {
-      return total + parseFloat(item.price.slice(1)) * item.quantity;
+      const itemPrice = parsePrice(item.price);
+      return total + itemPrice * item.quantity;
     }, 0);
   };
 
-  const handleQuantityChange = (id: number, quantity: number) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: quantity } : item,
-      ),
+  const handleQuantityChange = (id: string, quantity: number) => {
+    const updatedItems = cartItems.map((item) =>
+      item.id === id ? { ...item, quantity: Math.max(quantity, 1) } : item
     );
+    setCartItems(updatedItems);
+    localStorage.setItem("cartItems", JSON.stringify(updatedItems));
   };
 
-  const handleRemoveItem = (id: number) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  const handleRemoveItem = (id: string) => {
+    const updatedItems = cartItems.filter((item) => item.id !== id);
+    setCartItems(updatedItems);
+    localStorage.setItem("cartItems", JSON.stringify(updatedItems));
   };
 
   const handleProceedToOrder = () => {
@@ -93,25 +80,21 @@ const Cart: React.FC = () => {
                         <div>{item.name}</div>
                       </Link>
                     </td>
-                    <td>{item.price}</td>
+                    <td>{`$${parsePrice(item.price).toFixed(2)}`}</td>
                     <td>
                       <input
                         type="number"
                         min="1"
                         value={item.quantity}
                         onChange={(e) =>
-                          handleQuantityChange(
-                            item.id,
-                            parseInt(e.target.value),
-                          )
+                          handleQuantityChange(item.id, parseInt(e.target.value))
                         }
                       />
                     </td>
                     <td>
-                      $
-                      {(
-                        parseFloat(item.price.slice(1)) * item.quantity
-                      ).toFixed(2)}
+                      {`$${(
+                        parsePrice(item.price) * item.quantity
+                      ).toFixed(2)}`}
                     </td>
                     <td>
                       <button onClick={() => handleRemoveItem(item.id)}>
