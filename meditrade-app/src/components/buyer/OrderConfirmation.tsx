@@ -29,11 +29,41 @@ const OrderConfirmation: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    await sendCartCloud();
     // Process the order here (e.g., send to backend)
     navigate("/order-completed");
   };
+
+  async function sendCartCloud() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found in local storage");
+      return;
+    }
+    try {
+      const response = await fetch("http://localhost:8080/api/usertest", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userame: "abdo", items: cartItems.map(item => item.id), price: total }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send cart to firebase");
+      }
+
+      const responseData = await response.json();
+      console.log("Response data:", responseData);
+    } catch (error) {
+      console.error("Error sending cart to firebase:", error);
+    }
+  };
+
+
 
   return (
     <div className="order-confirmation-page">
