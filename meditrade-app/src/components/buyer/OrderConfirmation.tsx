@@ -33,6 +33,7 @@ const OrderConfirmation: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await sendCartCloud();
+    await sendOrderToDist(cartItems, formData);
     // Process the order here (e.g., send to backend)
     navigate("/order-completed");
   };
