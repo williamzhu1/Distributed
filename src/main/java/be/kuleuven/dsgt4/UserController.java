@@ -55,6 +55,44 @@ public class UserController {
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:3000") // Replace with your frontend's origin
+    @GetMapping("/getsuppliers")
+    public ResponseEntity<?> getSuppliers() {
+        Firestore db = FirestoreClient.getFirestore();
+
+        // Get all documents from the "users" collection
+        ApiFuture<QuerySnapshot> future = db.collection("users").get();
+
+        try {
+            // Wait for the query snapshot
+            QuerySnapshot querySnapshot = future.get();
+            List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
+
+            // Create a list to store users with the required fields
+            List<Map<String, Object>> users = new ArrayList<>();
+
+            // Iterate over the documents
+            for (QueryDocumentSnapshot document : documents) {
+                Map<String, Object> data = document.getData();
+                // Check if the document has all the required fields
+                if (data.containsKey("apiKey") && data.containsKey("company") && data.containsKey("endpoint")) {
+                    Map<String, Object> filteredData = new HashMap<>();
+                    filteredData.put("apiKey", data.get("apiKey"));
+                    filteredData.put("company", data.get("company"));
+                    filteredData.put("endpoint", data.get("endpoint"));
+                    users.add(filteredData);
+                }
+            }
+
+            // Return the list of users
+            return ResponseEntity.ok(users);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            // Return an error response
+            return ResponseEntity.status(500).body("Error getting user data");
+        }
+    }
+
     //put the new item in the body of the request
     @CrossOrigin(origins = "http://localhost:3000") 
     @PostMapping("/createitem")

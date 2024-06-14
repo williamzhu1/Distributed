@@ -1,14 +1,16 @@
-export class Order{
-    id: number;
-    orderDate: Date;
-    orderStatus: string;
-    items: number[]; //id
-    constructor(id: number, orderDate: Date, orderStatus: string, orderTotal: number, orderItems: number[]){
-        this.id = id;
-        this.orderDate = orderDate;
-        this.orderStatus = orderStatus;
-        this.items = orderItems;
-    }
+// Define a class to represent the structure of your JSON object
+export class Order {
+    id: string;
+    masterId: string;
+    address: string;
+    items: {[key: number]: number};
+    status: string;
 
-    
+    constructor(id: string, masterId: string, address: string, items: {[key: string]: number}, status: string) {
+        this.id = id;
+        this.masterId = masterId;
+        this.address = address;
+        this.items = items;
+        this.status = status;
+    }
 }

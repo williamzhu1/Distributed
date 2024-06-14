@@ -4,6 +4,7 @@ import Header from "../common/Header";
 import Footer from "../common/Footer";
 import { CartItem } from "./CartItem"; // Import the CartItem type
 import "./order_confirmation.css";
+import { Order } from "../../entities/Order";
 
 const OrderConfirmation: React.FC = () => {
   const navigate = useNavigate();
@@ -62,6 +63,87 @@ const OrderConfirmation: React.FC = () => {
       console.error("Error sending cart to firebase:", error);
     }
   };
+
+  // async function sendOrderToDist(cartItems: CartItem[], formData: any) {
+  //   const suppliers = await fetchSuppliers();
+  //   cartItems.forEach(element => {
+  //     const items = { [element.id]: element.quantity };
+  //     const order = new Order("1", "1", formData.address, items, "pending");
+  //   });
+  // }
+  async function sendOrderToDist(cartItems: CartItem[], formData: any) {
+    const suppliers = await fetchSuppliers();
+
+    // Group cart items by company
+    const groupedItems = cartItems.reduce((acc, item) => {
+      acc[item.supplier] = acc[item.supplier] || [];
+      acc[item.supplier].push(item);
+      return acc;
+    }, {} as { [key: string]: CartItem[] });
+
+    // For each group, send an order
+    for (const [company, items] of Object.entries(groupedItems)) {
+      const supplier = suppliers.find(s => s.company === company);
+      if (!supplier) {
+        console.error('Supplier not found for company:', company);
+        continue;
+      }
+
+      // Create an order object
+      const orderItems = items.reduce((acc, item) => {
+        acc[item.id] = item.quantity;
+        return acc;
+      }, {} as { [key: number]: number });
+
+      const order = new Order("1", "1", formData.address, orderItems, "pending");
+
+      // Send the order
+      await sendOrder(order, supplier.apiKey, supplier.endpoint);
+    }
+  }
+
+  interface Supplier {
+    apiKey: string;
+    company: string;
+    endpoint: string;
+  }
+
+  async function fetchSuppliers(): Promise<Supplier[]> {
+    try {
+      const response = await fetch('http://localhost:8080/getsuppliers');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const suppliers: Supplier[] = await response.json();
+      return suppliers;
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
+      return [];
+    }
+  }
+
+
+  async function sendOrder(order: Order, apiKey: string, endpoint: string) {
+    try {
+      const response = await fetch('http://localhost:8080/api/' + endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'ApiKey': apiKey
+        },
+        body: JSON.stringify(order)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send order');
+      }
+
+      const result = await response.json();
+      console.log('Order sent successfully:', result);
+    } catch (error) {
+      console.error('Error sending order:', error);
+    }
+  }
 
 
 
