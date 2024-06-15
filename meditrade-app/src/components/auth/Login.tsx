@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../../firebase-config"; // Import the auth instance from firebase-config
+import { auth, db } from "../../firebase-config";
 import { doc, getDoc } from "firebase/firestore";
 import "./login_register.css";
 import logo from "../../assets/images/logo.jpeg";
 import Footer from "../common/Footer";
+import { useUser } from "../../contexts/UserContext";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { setUser } = useUser();
   const [mode, setMode] = useState<"customer" | "supplier">("customer");
   const [loginData, setLoginData] = useState({
     email: "",
@@ -63,7 +65,15 @@ const Login: React.FC = () => {
 
         localStorage.setItem("token", token);
 
-        await sendTokenToBackend();
+        // await sendTokenToBackend();
+
+        const userDocRef = doc(db, "users", userId);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+            setUser({ ...userCredential.user, ...userDoc.data() });
+        } else {
+            setUser(userCredential.user);
+        }
 
         if (userRole === "customer") {
           navigate("/home");

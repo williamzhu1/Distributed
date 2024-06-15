@@ -89,7 +89,6 @@ const Register: React.FC = () => {
     return isValid;
   };
 
-  // Update handleRegister to use formData and auth
   const handleRegister = async () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -102,11 +101,12 @@ const Register: React.FC = () => {
       const user = userCredential.user;
 
       const userData = {
-        email: formData.email,
-        ...(mode === "customer"
-          ? { role: "customer" }
-          : { company: formData.companyName, role: "manager" }),
-      };
+              email: formData.email,
+              username: formData.username,
+              ...(mode === "customer"
+                ? { role: "customer", address: formData.address }
+                : { company: formData.companyName, role: "manager" }),
+            };
       if (user.uid) {
         await setDoc(doc(db, "users", user.uid), userData);
         console.log("User created and data saved:", userCredential);
