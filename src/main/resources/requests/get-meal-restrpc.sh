@@ -1,1 +1,1 @@
-curl -X GET localhost:8080/orders -H 'Apikey: 1234' -v
+curl -X GET localhost:8080/items -H 'Apikey: 1234' -v

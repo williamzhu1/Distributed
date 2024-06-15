@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -18,6 +19,10 @@ import java.util.concurrent.ExecutionException;
 @Component
 public class ItemsRepository {
     private Firestore db;
+    @Value("${firebase.collection.orders}")
+    private String ordersCollection;
+    @Value("${firebase.collection.items}")
+    private String itemsCollection;
 
     @PostConstruct
     public void initFirestore() throws IOException {
@@ -58,14 +63,14 @@ public class ItemsRepository {
 
     public Optional<Item> findItem(String id) throws ExecutionException, InterruptedException {
         Assert.notNull(id, "The item id must not be null");
-        DocumentReference docRef = db.collection("supplierItems").document(id);
+        DocumentReference docRef = db.collection(itemsCollection).document(id);
         ApiFuture<DocumentSnapshot> future = docRef.get();
         DocumentSnapshot document = future.get();
         return Optional.ofNullable(documentToItem(document));
     }
 
     public Collection<Item> getAllItems() throws ExecutionException, InterruptedException {
-        ApiFuture<QuerySnapshot> query = db.collection("supplierItems").get();
+        ApiFuture<QuerySnapshot> query = db.collection(itemsCollection).get();
         QuerySnapshot querySnapshot = query.get();
         List<Item> items = new ArrayList<>();
         for (QueryDocumentSnapshot document : querySnapshot) {
@@ -92,7 +97,7 @@ public class ItemsRepository {
         itemData.put("manufacturer", newItem.getManufacturer());
 
         // Add item data to Firestore
-        DocumentReference docRef = db.collection("supplierItems").document();
+        DocumentReference docRef = db.collection(itemsCollection).document();
         ApiFuture<WriteResult> future = docRef.set(itemData);
         future.get(); // Wait for operation to complete
 
@@ -139,28 +144,34 @@ public class ItemsRepository {
         }
 
         if (!updates.isEmpty()) {
-            ApiFuture<WriteResult> writeResult = db.collection("supplierItems").document(id).update(updates);
+            ApiFuture<WriteResult> writeResult = db.collection(itemsCollection).document(id).update(updates);
             writeResult.get(); // Wait for update to complete
         }
 
         return findItem(id); // Return updated item
     }
 
-    public void deleteItem(String id) {
+    public void deleteItem(String id) throws ExecutionException, InterruptedException {
         Assert.notNull(id, "The item id must not be null");
-        db.collection("supplierItems").document(id).delete();
+        // Check if the item exists
+        ApiFuture<DocumentSnapshot> future = db.collection(itemsCollection).document(id).get();
+        DocumentSnapshot document = future.get();
+        if (!document.exists()) {
+            throw new IllegalArgumentException("Item with id " + id + " does not exist.");
+        }
+        db.collection(itemsCollection).document(id).delete();
     }
 
     public Optional<Order> findOrder(String id) throws ExecutionException, InterruptedException {
         Assert.notNull(id, "The order id must not be null");
-        DocumentReference docRef = db.collection("supplierOrders").document(id);
+        DocumentReference docRef = db.collection(ordersCollection).document(id);
         ApiFuture<DocumentSnapshot> future = docRef.get();
         DocumentSnapshot document = future.get();
         return Optional.ofNullable(documentToOrder(document));
     }
-    //help
+
     public Collection<Order> getAllOrders() throws ExecutionException, InterruptedException {
-        ApiFuture<QuerySnapshot> query = db.collection("supplierOrders").get();
+        ApiFuture<QuerySnapshot> query = db.collection(ordersCollection).get();
         QuerySnapshot querySnapshot = query.get();
         List<Order> orders = new ArrayList<>();
         for (QueryDocumentSnapshot document : querySnapshot) {
@@ -190,7 +201,7 @@ public class ItemsRepository {
         orderData.put("items", itemsData);
 
         // Add order to Firestore
-        DocumentReference docRef = db.collection("supplierOrders").document();
+        DocumentReference docRef = db.collection(ordersCollection).document();
         ApiFuture<WriteResult> future = docRef.set(orderData);
         future.get(); // Wait for operation to complete
 
@@ -270,21 +281,50 @@ public class ItemsRepository {
         }
         if (updatedOrder.getStatus() != null) {
             updates.put("status", updatedOrder.getStatus().toString());
+
+            // Check if order status changes from CONFIRMED to CANCELLED
+            if (updatedOrder.getStatus() == OrderStatus.CANCELLED) {
+                // Retrieve the original order from Firestore
+                Optional<Order> originalOrder = findOrder(id);
+                if (originalOrder.isPresent() && originalOrder.get().getStatus() == OrderStatus.CONFIRMED) {
+                    // Add items back to stock
+                    originalOrder.get().getItems().forEach((itemId, quantity) -> {
+                        try {
+                            Optional<Item> foundItem = findItem(itemId);
+                            foundItem.ifPresent(item -> {
+                                item.setStock(item.getStock() + quantity); // Add quantity back to stock
+                                try {
+                                    updateItem(itemId, item); // Update item stock in Firestore
+                                } catch (InterruptedException | ExecutionException e) {
+                                    e.printStackTrace(); // Handle exception properly
+                                }
+                            });
+                        } catch (InterruptedException | ExecutionException e) {
+                            e.printStackTrace(); // Handle exception properly
+                        }
+                    });
+                }
+            }
         }
         if (updatedOrder.getAddress() != null) {
             updates.put("address", updatedOrder.getAddress());
         }
-        // Assuming items should not be updated directly
 
         // Perform the update in Firestore
-        ApiFuture<WriteResult> writeResult = db.collection("supplierOrders").document(id).update(updates);
+        ApiFuture<WriteResult> writeResult = db.collection(ordersCollection).document(id).update(updates);
         writeResult.get(); // Wait for update to complete
 
         return findOrder(id); // Return updated order
     }
 
-    public void deleteOrder(String id) {
+    public void deleteOrder(String id) throws ExecutionException, InterruptedException {
         Assert.notNull(id, "The order id must not be null");
-        db.collection("supplierOrders").document(id).delete();
+        // Check if the order exists
+        ApiFuture<DocumentSnapshot> future = db.collection(ordersCollection).document(id).get();
+        DocumentSnapshot document = future.get();
+        if (!document.exists()) {
+            throw new IllegalArgumentException("Order with id " + id + " does not exist.");
+        }
+        db.collection(ordersCollection).document(id).delete();
     }
 }
