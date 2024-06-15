@@ -1,0 +1,120 @@
+.manage-products-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+}
+
+.manage-products-content {
+  flex: 1;
+  padding: 40px;
+  margin-top: 70px;
+  text-align: center;
+}
+
+.add-product-form {
+  background-color: white;
+  padding: 20px;
+  margin: 20px auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+}
+
+.add-product-form h2 {
+  margin-bottom: 20px;
+}
+
+.add-product-form input,
+.add-product-form textarea {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.add-product-form input[type="file"] {
+  padding: 5px;
+}
+
+.add-product-form button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    transform 0.3s;
+}
+
+.add-product-form button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+}
+
+.add-product-form button:active {
+  background-color: #3e8e41;
+  transform: translateY(0);
+}
+
+.image-preview {
+  width: 100px;
+  height: auto;
+  margin: 10px 0;
+  border-radius: 5px;
+}
+
+.product-list {
+  margin-top: 40px;
+}
+
+.product-list h2 {
+  margin-bottom: 20px;
+}
+
+.product-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.product-list li {
+  background-color: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.product-list img {
+  width: 100px;
+  height: auto;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.product-list button {
+  background-color: #4caf50;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    transform 0.3s;
+  margin-right: 10px;
+}
+
+.product-list button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+}
+
+.product-list button:active {
+  background-color: #3e8e41;
+  transform: translateY(0);
+}
