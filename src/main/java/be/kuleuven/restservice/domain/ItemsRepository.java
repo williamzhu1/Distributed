@@ -142,7 +142,7 @@ public class ItemsRepository {
         DocumentSnapshot document = future.get();
         return Optional.ofNullable(documentToOrder(document));
     }
-
+    //help
     public Collection<Order> getAllOrders() throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> query = db.collection("supplierOrders").get();
         QuerySnapshot querySnapshot = query.get();
