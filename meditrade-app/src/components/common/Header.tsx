@@ -1,13 +1,19 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo_horizontal from "../../assets/images/logo_horizontal.jpeg";
 import cartIcon from "../../assets/images/cart.jpeg";
 import shippingIcon from "../../assets/images/shipping.jpeg";
-import { useUser } from "../../contexts/UserContext"; //
+import { useUser } from "../../contexts/UserContext"; // Adjust the import path accordingly
 import "./header.css";
 
 const Header: React.FC = () => {
-  const { user } = useUser();
+  const { user, logout } = useUser();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <header className="home-header">
@@ -20,9 +26,9 @@ const Header: React.FC = () => {
         <Link to="/home">Home</Link>
         {user ? (
           <>
-            <span>Welcome, {user.username || user.email}</span>
-            {/*  <Link to="/profile">Profile</Link>*/}
-            {/* Add logout functionality if needed */}
+            <span className="welcome-message">Welcome, {user.username || user.email}</span>
+            <Link to="/profile">Profile</Link>
+            <button onClick={handleLogout} className="logout-button">Logout</button>
           </>
         ) : (
           <>
@@ -42,4 +48,5 @@ const Header: React.FC = () => {
 };
 
 export default Header;
+
 

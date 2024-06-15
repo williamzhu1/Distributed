@@ -12,6 +12,7 @@ import ViewOrders from "./components/supplier/ViewOrders";
 import OrderHistory from "./components/supplier/OrderHistory";
 import Cart from "./components/buyer/Cart";
 import Trace from "./components/buyer/Trace";
+import Profile from "./components/common/Profile";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/order-history" element={<OrderHistory />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/trace" element={<Trace />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/" element={<Home />} />
       </Routes>
     </Router>
