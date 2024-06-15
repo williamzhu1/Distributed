@@ -96,7 +96,7 @@ public class UserController {
     }
 
     //put the new item in the body of the request
-    @CrossOrigin(origins = "http://localhost:3000") 
+
     @PostMapping("/createitem")
     public ResponseEntity<?> createItem(@RequestBody Map<String, Object> requestBody) {
         Firestore db = FirestoreClient.getFirestore();
@@ -116,7 +116,7 @@ public class UserController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000") 
+
     @PostMapping("/createorder")
     public ResponseEntity<?> createOrder(@RequestBody Map<String, Object> requestBody) {
         Firestore db = FirestoreClient.getFirestore();
@@ -140,7 +140,7 @@ public class UserController {
 
 //put in the body json: {"id":"id","orderStatus":"status"}
 //eg: body: JSON.stringify({ id, orderStatus: newStatus }),
-@CrossOrigin(origins = "http://localhost:3000")
+
 @PostMapping("/updateOrderStatus")
 public ResponseEntity<?> updateOrderStatus(@RequestBody Map<String, Object> requestBody) {
     Firestore db = FirestoreClient.getFirestore();
@@ -171,7 +171,7 @@ public ResponseEntity<?> updateOrderStatus(@RequestBody Map<String, Object> requ
     }
 }
 //            body: JSON.stringify({ orderId }),
-@CrossOrigin(origins = "http://localhost:3000")
+
 @PostMapping("/deleteOrder")
 public ResponseEntity<?> deleteOrder(@RequestBody Map<String, Object> requestBody) {
     Firestore db = FirestoreClient.getFirestore();

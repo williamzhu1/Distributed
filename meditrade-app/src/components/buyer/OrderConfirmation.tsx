@@ -45,7 +45,7 @@ const OrderConfirmation: React.FC = () => {
       return;
     }
     try {
-      const response = await fetch("/api/usertest", {
+      const response = await fetch("/api/createorder", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
