@@ -1,18 +1,9 @@
 {
-  "address": "Africa",
-  "meals": [{
-    "id" : "5268203c-de76-4921-a3e3-439db69c4677",
-    "name" : "Steak",
-    "kcal" : 1100,
-    "price" : 10.0,
-    "description" : "Steak with fries",
-    "mealType" : "MEAT"
-  },{
-    "id" : "4237681a-441f-47fc-a747-8e0169bacea1",
-    "name" : "Portobello",
-    "kcal" : 637,
-    "price" : 7.0,
-    "description" : "Portobello Mushroom Burger",
-    "mealType" : "VEGAN"
-  }]
+  "masterId": "123456",
+  "address": "123 Main St, City",
+  "items": {
+    "QpcSMdtrnxuG99mSwVUJ": 50,
+    "W2qnOd4oBdIvPV8lRyAO": 5
+  },
+  "status": "PENDING"
 }

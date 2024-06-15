@@ -1,7 +1,8 @@
 {
-  "name": "Double Cheese",
-  "kcal": 2000,
-  "price": 10.0,
-  "description": "Double Cheese Burger",
-  "mealType": "MEAT"
+  "name": "Dragon Fruit",
+  "description": "Exotic fruit with a vibrant color and unique taste",
+  "price": 12.50,
+  "category": "Fruits",
+  "manufacturer": "Tropical Farms",
+  "stock": 20
 }

@@ -1,1 +1,1 @@
-curl -X GET localhost:8080/restrpc/orders -H -v
+curl -X GET localhost:8080/orders -H -v

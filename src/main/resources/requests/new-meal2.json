@@ -1,0 +1,8 @@
+{
+  "name": "Lesser Fruit",
+  "description": "Exotic fruit with a color and unique taste",
+  "price": 6.50,
+  "category": "Fruits",
+  "manufacturer": "Tropical Farms",
+  "stock": 20
+}

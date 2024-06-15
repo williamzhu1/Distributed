@@ -1,7 +1,5 @@
 package be.kuleuven.restservice.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,8 +7,6 @@ import java.util.Objects;
 
 @Setter
 @Getter
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Item {
 
     protected String id;
