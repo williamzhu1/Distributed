@@ -33,6 +33,10 @@
   color: #4caf50;
 }
 
+.welcome-message {
+  margin-left: 20px; /* Add margin to the welcome message */
+}
+
 .cart-icon {
   height: 30px;
   margin-left: 20px;
@@ -41,6 +45,20 @@
 .shipping-icon {
   height: 30px;
   margin-left: 20px;
+}
+
+.logout-button {
+  background: none;
+  border: none;
+  margin-left: 20px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.logout-button:hover {
+  color: #4caf50;
 }
 
 @media (max-width: 800px) {

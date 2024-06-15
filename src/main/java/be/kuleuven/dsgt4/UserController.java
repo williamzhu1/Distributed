@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping("/api")
 public class UserController {
 
-    @CrossOrigin(origins = "http://localhost:3000") // Replace with your frontend's origin
+
     @PostMapping("/usertest")
     public ResponseEntity<?> handleRequest(@RequestHeader("Authorization") String authorizationHeader,
                                            @RequestBody Map<String, Object> requestBody) {
@@ -27,7 +27,7 @@ public class UserController {
     }
 
     //get all items
-    @CrossOrigin(origins = "http://localhost:3000") // Replace with your frontend's origin
+
     @GetMapping("/getitems")
     public ResponseEntity<?> getItems() {
         Firestore db = FirestoreClient.getFirestore();
@@ -57,7 +57,7 @@ public class UserController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000") // Replace with your frontend's origin
+
     @GetMapping("/getsuppliers")
     public ResponseEntity<?> getSuppliers() {
         Firestore db = FirestoreClient.getFirestore();
@@ -197,7 +197,7 @@ public ResponseEntity<?> deleteOrder(@RequestBody Map<String, Object> requestBod
     }
 }
 
-    // @CrossOrigin(origins = "http://localhost:3000") // Replace with your frontend's origin
+    //
     // @PostMapping("/createitem")
     // public ResponseEntity<?> createItem(@RequestBody Map<String, Object> requestBody) {
     //     Firestore db = FirestoreClient.getFirestore();

@@ -45,7 +45,7 @@ const OrderConfirmation: React.FC = () => {
       return;
     }
     try {
-      const response = await fetch("http://localhost:8080/api/usertest", {
+      const response = await fetch("/api/usertest", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,13 +65,6 @@ const OrderConfirmation: React.FC = () => {
     }
   };
 
-  // async function sendOrderToDist(cartItems: CartItem[], formData: any) {
-  //   const suppliers = await fetchSuppliers();
-  //   cartItems.forEach(element => {
-  //     const items = { [element.id]: element.quantity };
-  //     const order = new Order("1", "1", formData.address, items, "pending");
-  //   });
-  // }
   async function sendOrderToDist(cartItems: CartItem[], formData: any) {
     const suppliers = await fetchSuppliers();
 
@@ -111,7 +104,7 @@ const OrderConfirmation: React.FC = () => {
 
   async function fetchSuppliers(): Promise<Supplier[]> {
     try {
-      const response = await fetch('http://localhost:8080/getsuppliers');
+      const response = await fetch('/getsuppliers');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -126,7 +119,7 @@ const OrderConfirmation: React.FC = () => {
 
   async function sendOrder(order: Order, apiKey: string, endpoint: string) {
     try {
-      const response = await fetch('http://localhost:8080/api/' + endpoint, {
+      const response = await fetch('/api/' + endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -145,8 +138,6 @@ const OrderConfirmation: React.FC = () => {
       console.error('Error sending order:', error);
     }
   }
-
-
 
   return (
     <div className="order-confirmation-page">
@@ -169,8 +160,7 @@ const OrderConfirmation: React.FC = () => {
                 <td>{item.price}</td>
                 <td>{item.quantity}</td>
                 <td>
-                  $
-                  {(parseFloat(item.price.slice(1)) * item.quantity).toFixed(2)}
+                  ${typeof item.price === 'string' ? (parseFloat(item.price.slice(1)) * item.quantity).toFixed(2) : (item.price * item.quantity).toFixed(2)}
                 </td>
               </tr>
             ))}
