@@ -1,9 +1,10 @@
 {
   "masterId": "123456",
   "address": "123 Main St, City",
+  "firstName": "Luke",
+  "lastName": "Piplup",
   "items": {
-    "QpcSMdtrnxuG99mSwVUJ": 50,
-    "W2qnOd4oBdIvPV8lRyAO": 5
+    "T3aAlZufob1QYDFCEZyg": 5
   },
   "status": "PENDING"
 }

@@ -1,1 +1,1 @@
-curl -X PUT localhost:8080/orders/QwkzpPdnRCuURw0QaNxo -H 'Content-Type: application/json' -H 'Apikey: 1234' -d @new-order.json -v
+curl -X POST localhost:8080/orders -H 'Content-Type: application/json' -H 'Apikey: 292d594b-ff36-4ba4-9574-d441ce9e9ee5' -d @new-order.json -v

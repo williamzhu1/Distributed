@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Component
 public class ItemsRepository {
@@ -101,8 +102,10 @@ public class ItemsRepository {
         ApiFuture<WriteResult> future = docRef.set(itemData);
         future.get(); // Wait for operation to complete
 
+
         // Return the added item with only the correct data
         Item addedItem = new Item();
+        addedItem.setId(docRef.getId());
         addedItem.setName(newItem.getName());
         addedItem.setDescription(newItem.getDescription());
         addedItem.setStock(newItem.getStock());
@@ -184,12 +187,26 @@ public class ItemsRepository {
 
     public Optional<Order> addOrder(Order order) throws ExecutionException, InterruptedException {
         Assert.notNull(order, "The order object must not be null");
-        if (order.getMasterId() == null || order.getAddress() == null || order.getStatus() == null || order.getFirstName() == null || order.getLastName() == null) {
+        if (order.getMasterId() == null || order.getAddress() == null || order.getStatus() == null || order.getFirstName() == null || order.getLastName() == null || order.getItems() == null) {
             throw new IllegalArgumentException("One or more required fields of the order are null.");
         }
 
+        // Fetch all items from Firestore
+        Collection<Item> allItems = getAllItems(); // Wait for items to be fetched
+
+        // Check if all items in the order exist in the items collection
+        Set<String> availableItemIds = allItems.stream()
+                .map(Item::getId)
+                .collect(Collectors.toCollection(HashSet::new));
+
+        for (String itemsId : order.getItems().keySet()) {
+            if (!availableItemIds.contains(itemsId)) {
+                throw new IllegalArgumentException("Item with ID " + itemsId + " does not exist.");
+            }
+        }
+
+        // Create order data
         Map<String, Object> orderData = new HashMap<>();
-        orderData.put("id", order.getId());
         orderData.put("masterId", order.getMasterId());
         orderData.put("firstName", order.getFirstName());
         orderData.put("lastName", order.getLastName());
@@ -204,12 +221,11 @@ public class ItemsRepository {
         DocumentReference docRef = db.collection(ordersCollection).document();
         ApiFuture<WriteResult> future = docRef.set(orderData);
         future.get(); // Wait for operation to complete
+        order.setId(docRef.getId());
 
+        // Handle order status logic
         if (order.getStatus() == OrderStatus.PENDING) {
-            // Fetch all items from Firestore
-            Collection<Item> allItems = getAllItems();
-
-            // Check if all items in the order exist and have sufficient stock
+            // Check if all items are available with sufficient stock
             boolean allItemsAvailable = order.getItems().entrySet().stream()
                     .allMatch(entry -> {
                         String itemId = entry.getKey();
@@ -255,6 +271,7 @@ public class ItemsRepository {
 
         // Return the added order with only the correct data
         Order addedOrder = new Order();
+        addedOrder.setId(docRef.getId());
         addedOrder.setMasterId(order.getMasterId());
         addedOrder.setFirstName(order.getFirstName());
         addedOrder.setLastName(order.getLastName());
