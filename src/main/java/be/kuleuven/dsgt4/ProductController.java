@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000") // Replace with your frontend's origin
+
 public class ProductController {
 
     @PostMapping("/products")

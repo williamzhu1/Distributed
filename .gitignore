@@ -4,6 +4,9 @@
 /meditrade-app/node_modules
 /.pnp
 .pnp.js
+node/
+meditrade-app/build/
+package-lock.json
 
 # testing
 /coverage
