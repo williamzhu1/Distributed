@@ -1,1 +1,1 @@
-curl -X PUT localhost:8080/orders/rSiQWwrSkRz7KvIBo73v -H 'Content-Type: application/json' -H 'Apikey: 292d594b-ff36-4ba4-9574-d441ce9e9ee5' -d @update-order.json -v
+curl -X PUT http://20.52.252.170:8081/orders/XUpiPnxB76MLPjqBfGNU -H 'Content-Type: application/json' -H 'Apikey: 1e9d691b-a8a5-439e-af2f-6d88400f572d' -d @update-order.json -v

@@ -218,7 +218,8 @@ public class ItemsRepository {
         orderData.put("items", itemsData);
 
         // Add order to Firestore
-        DocumentReference docRef = db.collection(ordersCollection).document();
+        String orderId = order.getMasterId();
+        DocumentReference docRef = db.collection(ordersCollection).document(orderId);
         ApiFuture<WriteResult> future = docRef.set(orderData);
         future.get(); // Wait for operation to complete
         order.setId(docRef.getId());
@@ -257,7 +258,7 @@ public class ItemsRepository {
                         if (item.getStock() < quantity) {
                             order.setStatus(OrderStatus.ROOTSTOCK);
                         } else {
-                            order.setStatus(OrderStatus.CANCELLED);
+                            order.setStatus(OrderStatus.ROOTSTOCK);
                         }
                     });
                 });

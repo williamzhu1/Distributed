@@ -1,8 +1,8 @@
 {
-  "name": "Lesser Fruit",
-  "description": "Exotic fruit with a color and unique taste",
-  "price": 6.50,
-  "category": "Fruits",
-  "manufacturer": "Tropical Farms",
+  "name": "Eucalyptus Oil",
+  "description": "Best Eucalyptus Oil in the world",
+  "price": 76.66,
+  "category": "Oil",
+  "manufacturer": "Austria Farms",
   "stock": 20
 }
