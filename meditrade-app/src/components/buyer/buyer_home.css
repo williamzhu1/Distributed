@@ -78,6 +78,32 @@ nav a:focus {
   font-size: 1.5em;
 }
 
+.reload-button {
+  padding: 10px 20px;
+  margin: 20px auto;
+  background-color: #4caf50; /* Green background color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+  display: block;
+  text-align: center;
+  width: fit-content;
+}
+
+.reload-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+  transform: translateY(-2px);
+}
+
+.reload-button:active {
+  background-color: #388e3c; /* Even darker green on click */
+  transform: translateY(0);
+}
+
+
 .search-bar {
   display: flex;
   justify-content: center;

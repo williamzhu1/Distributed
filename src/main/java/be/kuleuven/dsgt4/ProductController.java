@@ -3,16 +3,68 @@ package be.kuleuven.dsgt4;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api")
-
 public class ProductController {
+    @PostMapping("/reload-products")
+    public ResponseEntity<?> reloadProducts() {
+        String apiUrl = "http://localhost:8081/items";
+        String apiKey = "1234";
+        System.out.println("Hello World");
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("ApiKey", apiKey);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<Map> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.GET, entity, Map.class);
+        Map<String, Object> response = responseEntity.getBody();
+
+        if (response == null || !Boolean.TRUE.equals(response.get("success"))) {
+            return ResponseEntity.status(500).body("Error fetching items from external API");
+        }
+
+        List<Map<String, Object>> items = (List<Map<String, Object>>) response.get("data");
+        Firestore db = FirestoreClient.getFirestore();
+        List<ApiFuture<WriteResult>> futures = new ArrayList<>();
+
+        for (Map<String, Object> item : items) {
+            ApiFuture<WriteResult> future = db.collection("products").document((String) item.get("id")).set(item);
+            futures.add(future);
+        }
+
+        try {
+            for (ApiFuture<WriteResult> future : futures) {
+                future.get();
+            }
+
+            // Retrieve the updated list of products from Firestore
+            List<Map<String, Object>> updatedProducts = new ArrayList<>();
+            ApiFuture<QuerySnapshot> query = db.collection("products").get();
+            QuerySnapshot querySnapshot = query.get();
+            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                Map<String, Object> product = document.getData();
+                product.put("id", document.getId());
+                updatedProducts.add(product);
+            }
+
+            return ResponseEntity.ok(updatedProducts);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error uploading products to Firestore");
+        }
+    }
 
     @PostMapping("/products")
     public ResponseEntity<?> addProduct(@RequestBody Map<String, Object> product) {

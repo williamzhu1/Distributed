@@ -15,7 +15,7 @@ interface Product {
   genre: string;
   origin: string;
   details: string;
-  manufacturer: { name: string; info: string };
+  manufacturer?: { name: string; info: string }; // Make manufacturer optional
   image: string;
 }
 
@@ -97,8 +97,12 @@ const Product: React.FC = () => {
             <p className="product-genre">Genre: {product.genre}</p>
             <p className="product-origin">Origin: {product.origin}</p>
             <p className="product-description">{product.details}</p>
-            <p className="product-manufacturer">Manufacturer: {product.manufacturer.name}</p>
-            <p className="manufacturer-info">Info: {product.manufacturer.info}</p>
+            {product.manufacturer && (
+              <>
+                <p className="product-manufacturer">Manufacturer: {product.manufacturer.name}</p>
+                <p className="manufacturer-info">Info: {product.manufacturer.info}</p>
+              </>
+            )}
             <button className="add-to-cart-button" onClick={addToCart}>
               Add to Cart
             </button>

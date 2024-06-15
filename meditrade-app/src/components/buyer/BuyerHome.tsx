@@ -12,34 +12,63 @@ const Home: React.FC = () => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
+  const fetchProducts = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+
+      const response = await fetch('/api/products', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("Fetched products:", data);
+      setProducts(data);
+      setFilteredProducts(data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  const handleReloadProducts = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+
+      const response = await fetch('/api/reload-products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const updatedProducts = await response.json();
+      console.log("Products reloaded successfully", updatedProducts);
+      setProducts(updatedProducts);
+      setFilteredProducts(updatedProducts);
+    } catch (error) {
+      console.error("Error reloading products:", error);
+    }
+  };
+
   useEffect(() => {
-      const fetchProducts = async () => {
-        try {
-          const token = localStorage.getItem('token');
-          if (!token) {
-            throw new Error('No token found');
-          }
-
-          const response = await fetch('/api/products', {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          const data = await response.json();
-          setProducts(data);
-          setFilteredProducts(data);
-        } catch (error) {
-          console.error("Error fetching products:", error);
-        }
-      };
-
-      fetchProducts();
-    }, []);
+    handleReloadProducts(); // Call handleReloadProducts on component mount
+  }, []);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value;
@@ -117,6 +146,7 @@ const Home: React.FC = () => {
         )}
         <button type="submit">Search</button>
       </form>
+      <button className="reload-button" onClick={handleReloadProducts}>Reload Products</button>
       <div className="results-section">
         {filteredProducts.map((product) => (
           <Link
@@ -136,9 +166,11 @@ const Home: React.FC = () => {
                 <p className="product-genre">{product.genre}</p>
                 <p className="product-origin">{product.origin}</p>
                 <p className="product-details">{product.details}</p>
-                <p className="product-manufacturer">
-                  {product.manufacturer.name} - {product.manufacturer.info}
-                </p>
+                {product.manufacturer && (
+                  <p className="product-manufacturer">
+                    {product.manufacturer.name} - {product.manufacturer.info}
+                  </p>
+                )}
               </div>
             </div>
           </Link>
