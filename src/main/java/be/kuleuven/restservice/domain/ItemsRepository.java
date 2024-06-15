@@ -78,6 +78,9 @@ public class ItemsRepository {
 
     public Optional<Item> addItem(Item newItem) throws ExecutionException, InterruptedException {
         Assert.notNull(newItem, "The item object must not be null");
+        if (newItem.getName() == null || newItem.getDescription() == null || newItem.getStock() == null || newItem.getPrice() == null || newItem.getCategory() == null || newItem.getManufacturer() == null) {
+            throw new IllegalArgumentException("One or more required fields of the item are null.");
+        }
 
         // Create a map to hold only the specified fields
         Map<String, Object> itemData = new HashMap<>();
@@ -93,14 +96,27 @@ public class ItemsRepository {
         ApiFuture<WriteResult> future = docRef.set(itemData);
         future.get(); // Wait for operation to complete
 
+        // Return the added item with only the correct data
+        Item addedItem = new Item();
+        addedItem.setName(newItem.getName());
+        addedItem.setDescription(newItem.getDescription());
+        addedItem.setStock(newItem.getStock());
+        addedItem.setPrice(newItem.getPrice());
+        addedItem.setCategory(newItem.getCategory());
+        addedItem.setManufacturer(newItem.getManufacturer());
+
         // Return the added item
-        return Optional.of(newItem);
+        return Optional.of(addedItem);
     }
 
 
     public Optional<Item> updateItem(String id, Item updatedItem) throws ExecutionException, InterruptedException {
         Assert.notNull(id, "The item id must not be null");
         Assert.notNull(updatedItem, "The updated item object must not be null");
+
+        if (updatedItem.getName() == null && updatedItem.getDescription() == null && updatedItem.getStock() == null && updatedItem.getPrice() == null && updatedItem.getCategory() == null && updatedItem.getManufacturer() == null) {
+            throw new IllegalArgumentException("No updatable values is sent.");
+        }
         Map<String, Object> updates = new HashMap<>();
 
         if (updatedItem.getName() != null) {
@@ -157,10 +173,25 @@ public class ItemsRepository {
 
     public Optional<Order> addOrder(Order order) throws ExecutionException, InterruptedException {
         Assert.notNull(order, "The order object must not be null");
+        if (order.getMasterId() == null || order.getAddress() == null || order.getStatus() == null || order.getFirstName() == null || order.getLastName() == null) {
+            throw new IllegalArgumentException("One or more required fields of the order are null.");
+        }
+
+        Map<String, Object> orderData = new HashMap<>();
+        orderData.put("id", order.getId());
+        orderData.put("masterId", order.getMasterId());
+        orderData.put("firstName", order.getFirstName());
+        orderData.put("lastName", order.getLastName());
+        orderData.put("address", order.getAddress());
+        orderData.put("status", order.getStatus().toString());
+
+        // Add items to order data
+        Map<String, Integer> itemsData = new HashMap<>(order.getItems());
+        orderData.put("items", itemsData);
 
         // Add order to Firestore
         DocumentReference docRef = db.collection("supplierOrders").document();
-        ApiFuture<WriteResult> future = docRef.set(order);
+        ApiFuture<WriteResult> future = docRef.set(orderData);
         future.get(); // Wait for operation to complete
 
         if (order.getStatus() == OrderStatus.PENDING) {
@@ -173,11 +204,7 @@ public class ItemsRepository {
                         String itemId = entry.getKey();
                         int quantity = entry.getValue();
                         Optional<Item> foundItem = allItems.stream().filter(item -> item.getId().equals(itemId)).findFirst();
-                        if (foundItem.isPresent()) {
-                            return foundItem.get().getStock() >= quantity; // Item found and has sufficient stock
-                        } else {
-                            return false; // Item not found
-                        }
+                        return foundItem.filter(item -> item.getStock() >= quantity).isPresent();
                     });
 
             // If all items are available with sufficient stock, set order status to CONFIRMED and update item stock
@@ -210,23 +237,46 @@ public class ItemsRepository {
             }
 
             // Update the order in Firestore with the updated status
-            docRef.set(order).get(); // Wait for operation to complete
+            Map<String, Object> updateData = new HashMap<>();
+            updateData.put("status", order.getStatus().toString());
+            docRef.update(updateData).get();
         }
 
-        // Return the added order
-        return Optional.of(order);
+        // Return the added order with only the correct data
+        Order addedOrder = new Order();
+        addedOrder.setMasterId(order.getMasterId());
+        addedOrder.setFirstName(order.getFirstName());
+        addedOrder.setLastName(order.getLastName());
+        addedOrder.setItems(order.getItems());
+        addedOrder.setAddress(order.getAddress());
+        addedOrder.setStatus(order.getStatus());
+
+        return Optional.of(addedOrder);
     }
 
     public Optional<Order> updateOrder(String id, Order updatedOrder) throws ExecutionException, InterruptedException {
         Assert.notNull(id, "The order id must not be null");
         Assert.notNull(updatedOrder, "The updated order object must not be null");
+        if ( updatedOrder.getFirstName() == null && updatedOrder.getLastName() == null && updatedOrder.getAddress() == null && updatedOrder.getStatus() == null) {
+            throw new IllegalArgumentException("No updatable values is sent.");
+        }
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put("masterId", updatedOrder.getMasterId());
-        updates.put("status", updatedOrder.getStatus().toString());
-        updates.put("address", updatedOrder.getAddress());
-        updates.put("items", updatedOrder.getItems());
+        if (updatedOrder.getFirstName() != null) {
+            updates.put("firstName", updatedOrder.getFirstName());
+        }
+        if (updatedOrder.getFirstName() != null) {
+            updates.put("lastName", updatedOrder.getLastName());
+        }
+        if (updatedOrder.getStatus() != null) {
+            updates.put("status", updatedOrder.getStatus().toString());
+        }
+        if (updatedOrder.getAddress() != null) {
+            updates.put("address", updatedOrder.getAddress());
+        }
+        // Assuming items should not be updated directly
 
+        // Perform the update in Firestore
         ApiFuture<WriteResult> writeResult = db.collection("supplierOrders").document(id).update(updates);
         writeResult.get(); // Wait for update to complete
 
