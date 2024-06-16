@@ -83,8 +83,7 @@ const BuyerHome: React.FC<BuyerHomeProps> = ({ user, onSwitchMode, onLogout, onP
    const filtered = products.filter(
      (product) =>
        product.name.toLowerCase().includes(term.toLowerCase()) ||
-       product.genre.toLowerCase().includes(term.toLowerCase()) ||
-       product.origin.toLowerCase().includes(term.toLowerCase())
+       product.category.toLowerCase().includes(term.toLowerCase())
    );
    setFilteredProducts(filtered);
 
@@ -94,8 +93,7 @@ const BuyerHome: React.FC<BuyerHomeProps> = ({ user, onSwitchMode, onLogout, onP
          .filter(
            (product) =>
              product.name.toLowerCase().includes(term.toLowerCase()) ||
-             product.genre.toLowerCase().includes(term.toLowerCase()) ||
-             product.origin.toLowerCase().includes(term.toLowerCase())
+             product.category.toLowerCase().includes(term.toLowerCase())
          )
          .map((product) => product.name)
      )
@@ -158,19 +156,18 @@ const BuyerHome: React.FC<BuyerHomeProps> = ({ user, onSwitchMode, onLogout, onP
          >
            <div className="product-card">
              <img
-               src={product.image}
+
                alt={product.name}
                className="product-image"
              />
              <div className="product-info">
                <h2>{product.name}</h2>
                <p className="product-price">{product.price}</p>
-               <p className="product-genre">{product.genre}</p>
-               <p className="product-origin">{product.origin}</p>
-               <p className="product-details">{product.details}</p>
+               <p className="product-category">{product.category}</p>
+               <p className="product-details">{product.description}</p>
                {product.manufacturer && (
                  <p className="product-manufacturer">
-                   {product.manufacturer.name} - {product.manufacturer.info}
+                   {product.manufacturer}
                  </p>
                )}
              </div>

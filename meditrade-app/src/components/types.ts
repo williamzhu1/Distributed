@@ -1,17 +1,16 @@
 // src/types.ts
 
 export interface Product {
-  id: string;
-  name: string;
-  price: string;
-  genre: string;
-  origin: string;
-  details: string;
-  image: string;
-  manufacturer: {
-    name: string;
-    info: string;
-  };
+      id: string;
+      name: string;
+      price: number;
+      category: string;
+      description: string;
+      manufacturer: string;
+      stock: number;
+      image: string | null;
+      supplierId: string;
+
 }
 
 // src/types.ts

@@ -6,17 +6,20 @@ import deliveredIcon from "../../assets/images/shipping_status/delivered.jpeg";
 import classNames from "classnames";
 import styles from "./trace.module.css";
 
+// Define the TraceProps interface
 interface TraceProps {
   user: any;
   onSwitchMode: (mode: "login" | "register" | "home" | "manageProducts" | "cart" | "trace" | "supplierHome" | "viewOrders") => void;
   onLogout: () => void;
 }
 
+// Define the OrderStatus interface
 interface OrderStatus {
   status: "Order Confirmed" | "Shipped" | "Delivered";
   date: string;
 }
 
+// Define the Product interface
 interface Product {
   id: number;
   name: string;
@@ -24,6 +27,7 @@ interface Product {
   status: OrderStatus[];
 }
 
+// Define initial products
 const initialProducts: Product[] = [
   {
     id: 1,
@@ -47,6 +51,7 @@ const initialProducts: Product[] = [
   },
 ];
 
+// Define the status icons
 const statusIcons = {
   "Order Confirmed": confirmedIcon,
   Shipped: shippedIcon,
