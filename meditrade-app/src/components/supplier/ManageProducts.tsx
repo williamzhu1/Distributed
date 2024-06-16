@@ -1,17 +1,6 @@
-// src/components/supplier/ManageProducts.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./manage_products.css";
-
-interface Product {
-  id: number;
-  name: string;
-  price: string;
-  genre: string;
-  origin: string;
-  details: string;
-  image: string | null;
-  supplierId: string; // Added supplierId to the Product interface
-}
+import { Product as Product } from "../types";
 
 interface ManageProductsProps {
   user: any;
@@ -19,33 +8,51 @@ interface ManageProductsProps {
   onLogout: () => void;
 }
 
-const initialProducts: Product[] = [
-  {
-    id: 1,
-    name: "Herbal Tea",
-    price: "$10.00",
-    genre: "Herbal",
-    origin: "China",
-    details: "A refreshing herbal tea from the mountains of China.",
-    image: null,
-    supplierId: "supplier1", // Example supplier ID
-  },
-  // Add more initial products as needed
-];
-
 const ManageProducts: React.FC<ManageProductsProps> = ({ user, onSwitchMode, onLogout }) => {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [newProduct, setNewProduct] = useState<Product>({
-    id: products.length + 1,
+    id: "",
     name: "",
-    price: "",
-    genre: "",
-    origin: "",
-    details: "",
+    price: 0,
+    category: "",
+    description: "",
+    manufacturer: "",
+    stock: 0,
     image: null,
-    supplierId: "supplier1", // Example supplier ID
+    supplierId: user.uid, // Set supplierId dynamically
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No token found');
+        }
+
+        const response = await fetch(`/api/products?supplierId=${user.uid}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, [user.uid]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -68,31 +75,46 @@ const ManageProducts: React.FC<ManageProductsProps> = ({ user, onSwitchMode, onL
         throw new Error('No token found');
       }
 
+      const productPayload = { ...newProduct, supplierId: user.uid };
+
       const response = await fetch('/api/products', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(newProduct),
+        body: JSON.stringify(productPayload),
       });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const data = await response.json(); // Parse the response as JSON
-      console.log(data);
-      setProducts([...products, { ...newProduct, id: data.id }]); // Use the returned ID
+      // Fetch the updated product list from the backend
+      const reloadResponse = await fetch('/api/reload-products', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!reloadResponse.ok) {
+        throw new Error(`HTTP error! Status: ${reloadResponse.status}`);
+      }
+
+      const reloadedProducts = await reloadResponse.json();
+      setProducts(reloadedProducts);
+
       setNewProduct({
-        id: products.length + 1,
+        id: "",
         name: "",
-        price: "",
-        genre: "",
-        origin: "",
-        details: "",
+        price: 0,
+        category: "",
+        description: "",
+        manufacturer: "",
+        stock: 0,
         image: null,
-        supplierId: "supplier1", // Example supplier ID
+        supplierId: user.uid,
       });
       setImagePreview(null);
     } catch (error) {
@@ -100,7 +122,8 @@ const ManageProducts: React.FC<ManageProductsProps> = ({ user, onSwitchMode, onL
     }
   };
 
-  const deleteProduct = async (id: number) => {
+
+  const deleteProduct = async (id: string) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -114,16 +137,18 @@ const ManageProducts: React.FC<ManageProductsProps> = ({ user, onSwitchMode, onL
           'Authorization': `Bearer ${token}`,
         },
       });
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
       setProducts(products.filter((product) => product.id !== id));
     } catch (error) {
       console.error("Error deleting product:", error);
     }
   };
 
-  const editProduct = (id: number) => {
+  const editProduct = (id: string) => {
     const product = products.find((product) => product.id === id);
     if (product) {
       setNewProduct(product);
@@ -146,25 +171,37 @@ const ManageProducts: React.FC<ManageProductsProps> = ({ user, onSwitchMode, onL
         },
         body: JSON.stringify(newProduct),
       });
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      const data = await response.json();
-      console.log(data);
-      setProducts(
-        products.map((product) =>
-          product.id === newProduct.id ? newProduct : product,
-        ),
-      );
+
+      // Fetch the updated product list from the backend
+      const reloadResponse = await fetch('/api/reload-products', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!reloadResponse.ok) {
+        throw new Error(`HTTP error! Status: ${reloadResponse.status}`);
+      }
+
+      const reloadedProducts = await reloadResponse.json();
+      setProducts(reloadedProducts);
+
+      // Reset the form to add product mode
       setNewProduct({
-        id: products.length + 1,
+        id: "",
         name: "",
-        price: "",
-        genre: "",
-        origin: "",
-        details: "",
+        price: 0,
+        category: "",
+        description: "",
+        manufacturer: "",
+        stock: 0,
         image: null,
-        supplierId: "supplier1", // Example supplier ID
+        supplierId: user.uid,
       });
       setImagePreview(null);
     } catch (error) {
@@ -172,77 +209,117 @@ const ManageProducts: React.FC<ManageProductsProps> = ({ user, onSwitchMode, onL
     }
   };
 
+
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.manufacturer.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="manage-products-page">
       <div className="manage-products-content">
         <h1>Manage Products</h1>
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
         <div className="add-product-form">
           <h2>
-            {newProduct.id > products.length
-              ? "Add New Product"
-              : "Edit Product"}
+            {newProduct.id === "" ? "Add New Product" : "Edit Product"}
           </h2>
-          <input
-            type="text"
-            name="name"
-            placeholder="Product Name"
-            value={newProduct.name}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="price"
-            placeholder="Price"
-            value={newProduct.price}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="genre"
-            placeholder="Genre"
-            value={newProduct.genre}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="origin"
-            placeholder="Origin"
-            value={newProduct.origin}
-            onChange={handleChange}
-          />
-          <textarea
-            name="details"
-            placeholder="Product Details"
-            value={newProduct.details}
-            onChange={handleChange}
-          ></textarea>
-          <input
-            type="file"
-            name="image"
-            accept="image/*"
-            onChange={handleImageChange}
-          />
+          <label>
+            Product Name:
+            <input
+              type="text"
+              name="name"
+              placeholder="Product Name"
+              value={newProduct.name}
+              onChange={handleChange}
+            />
+          </label>
+          <label>
+            Price:
+            <input
+              type="number"
+              name="price"
+              placeholder="Price"
+              value={newProduct.price}
+              onChange={handleChange}
+            />
+          </label>
+          <label>
+            Category:
+            <input
+              type="text"
+              name="category"
+              placeholder="Category"
+              value={newProduct.category}
+              onChange={handleChange}
+            />
+          </label>
+          <label>
+            Manufacturer:
+            <input
+              type="text"
+              name="manufacturer"
+              placeholder="Manufacturer"
+              value={newProduct.manufacturer}
+              onChange={handleChange}
+            />
+          </label>
+          <label>
+            Product Description:
+            <textarea
+              name="description"
+              placeholder="Product Description"
+              value={newProduct.description}
+              onChange={handleChange}
+            ></textarea>
+          </label>
+          <label>
+            Stock:
+            <input
+              type="number"
+              name="stock"
+              placeholder="Stock"
+              value={newProduct.stock}
+              onChange={handleChange}
+            />
+          </label>
+          <label>
+            Image:
+            <input
+              type="file"
+              name="image"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+          </label>
           {imagePreview && (
             <img src={imagePreview} alt="Preview" className="image-preview" />
           )}
           <button
             onClick={
-              newProduct.id > products.length ? addProduct : updateProduct
+              newProduct.id === "" ? addProduct : updateProduct
             }
           >
-            {newProduct.id > products.length ? "Add Product" : "Update Product"}
+            {newProduct.id === "" ? "Add Product" : "Update Product"}
           </button>
         </div>
         <div className="product-list">
           <h2>Product List</h2>
           <ul>
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <li key={product.id}>
                 <h3>{product.name}</h3>
-                <p>{product.price}</p>
-                <p>{product.genre}</p>
-                <p>{product.origin}</p>
-                <p>{product.details}</p>
+                <p><strong>Price:</strong> €{product.price}</p>
+                <p><strong>Category:</strong> {product.category}</p>
+                <p><strong>Description:</strong> {product.description}</p>
+                <p><strong>Manufacturer:</strong> {product.manufacturer}</p>
+                <p><strong>Stock:</strong> {product.stock}</p>
                 {product.image && (
                   <img
                     src={product.image}
