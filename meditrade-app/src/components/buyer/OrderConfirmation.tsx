@@ -46,11 +46,11 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cartItems, total,
     }
 
     try {
-      const response = await fetch("/api/createorder", {
+      const response = await fetch("/api/createorde", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           firstName: user?.firstName,
@@ -179,16 +179,6 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cartItems, total,
         </table>
         <h2>Total: ${total.toFixed(2)}</h2>
         <form className="order-form" onSubmit={handleSubmit}>
-          <div>
-            <label>Name:</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
           <div>
             <label>Address:</label>
             <input

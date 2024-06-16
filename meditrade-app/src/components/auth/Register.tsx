@@ -262,11 +262,11 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchMode }) => {
                 )}
               </div>
               <div className="form-group">
-                <label htmlFor="apiKey">API Key</label>
+                <label htmlFor="apikey">API Key</label>
                 <input
                   type="text"
-                  id="apiKey"
-                  name="apiKey"
+                  id="apikey"
+                  name="apikey"
                   value={formData.apiKey}
                   onChange={handleChange}
                   className={errors.apiKey ? "input-error" : ""}
