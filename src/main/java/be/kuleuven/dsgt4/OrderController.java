@@ -31,14 +31,37 @@ public class OrderController {
         String firstName = (String) orderData.get("firstName");
         String lastName = (String) orderData.get("lastName");
         String address = (String) orderData.get("address");
-        List<Map<String, Object>> items = (List<Map<String, Object>>) orderData.get("items");
-        double total = (double) orderData.get("price");
+        List<Map<String, Integer>> items = (List<Map<String, Integer>>) orderData.get("items");
 
-        // Split items by supplier
-        Map<String, List<Map<String, Object>>> itemsBySupplier = new HashMap<>();
-        for (Map<String, Object> item : items) {
-            String supplierId = (String) item.get("supplierId");
-            itemsBySupplier.computeIfAbsent(supplierId, k -> new ArrayList<>()).add(item);
+        // Map to store product details fetched from the database
+        Map<String, Map<String, Integer>> itemsBySupplier = new HashMap<>();
+
+        // Fetch product details for each item
+        for (Map<String, Integer> itemEntry : items) {
+            for (Map.Entry<String, Integer> entry : itemEntry.entrySet()) {
+                String itemId = entry.getKey();
+                int quantity = entry.getValue();
+
+                // Fetch product details from the database
+                DocumentReference productDocRef = db.collection("products").document(itemId);
+                ApiFuture<DocumentSnapshot> productFuture = productDocRef.get();
+
+                try {
+                    DocumentSnapshot productDoc = productFuture.get();
+                    if (productDoc.exists()) {
+                        String supplierId = productDoc.getString("supplierId");
+                        // Add item details to the corresponding supplier
+                        itemsBySupplier.computeIfAbsent(supplierId, k -> new HashMap<>()).put(itemId, quantity);
+                    } else {
+                        // Handle if product not found
+                        System.err.println("Product not found for ID: " + itemId);
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    // Handle exceptions
+                    e.printStackTrace();
+                    System.err.println("Error fetching product details for ID: " + itemId);
+                }
+            }
         }
 
         // Create order for customer
@@ -46,7 +69,6 @@ public class OrderController {
         customerOrder.put("firstName", firstName);
         customerOrder.put("lastName", lastName);
         customerOrder.put("address", address);
-        customerOrder.put("totalPrice", total);
         customerOrder.put("shippingStatus", "PENDING");
         customerOrder.put("items", items);
 
@@ -57,9 +79,9 @@ public class OrderController {
 
             // Create orders for suppliers and send requests
             int confirmedSuppliers = 0;
-            for (Map.Entry<String, List<Map<String, Object>>> entry : itemsBySupplier.entrySet()) {
+            for (Map.Entry<String, Map<String, Integer>> entry : itemsBySupplier.entrySet()) {
                 String supplierId = entry.getKey();
-                List<Map<String, Object>> supplierItems = entry.getValue();
+                Map<String, Integer> supplierItems = entry.getValue();
 
                 // Create supplier order
                 Map<String, Object> supplierOrder = new HashMap<>();
@@ -73,7 +95,7 @@ public class OrderController {
                 // Get supplier details (API endpoint and API key)
                 DocumentSnapshot supplierDoc = db.collection("users").document(supplierId).get().get();
                 if (supplierDoc.exists()) {
-                    String apiUrl = supplierDoc.getString("endpoint").trim() + "/orders";
+                    String apiUrl = supplierDoc.getString("endpoint").trim() + "/orders".trim();
                     String apiKey = supplierDoc.getString("apikey").trim();
 
                     // Send POST request to supplier API
@@ -95,19 +117,21 @@ public class OrderController {
                 }
             }
 
-            // If all suppliers confirmed, update customer order status to confirmed
+            // Check if all suppliers confirmed the order
             if (confirmedSuppliers == itemsBySupplier.size()) {
-                db.collection("orders").document(customerOrderId)
-                        .update("shippingStatus", "CONFIRMED");
+                // Update customer order status to CONFIRMED
+                Map<String, Object> updateOrder = new HashMap<>();
+                updateOrder.put("shippingStatus", "CONFIRMED");
+                db.collection("orders_customer").document(customerOrderId).update(updateOrder);
+            } else {
+                // Handle if not all suppliers confirmed
+                System.out.println("Not all suppliers confirmed the order");
             }
-
-            return ResponseEntity.ok("Order created successfully with ID: " + customerOrderId);
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException | IOException e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Error creating order");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println("Error creating order or sending requests to suppliers");
         }
+        return ResponseEntity.ok("Order created successfully" );
     }
 
     // Method to send a POST request to supplier API

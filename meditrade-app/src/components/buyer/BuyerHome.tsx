@@ -1,22 +1,22 @@
 // src/components/buyer/BuyerHome.tsx
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import "./buyer_home.css";
 import banner from "../../assets/images/banner.jpeg";
 import Header from "../common/Header";
 import Footer from "../common/Footer";
-import { Product } from "../types";
+import { Product as ProductType } from "../types";
 
 interface BuyerHomeProps {
   user: any;
-  onSwitchMode: (mode: "login" | "register" | "home" | "manageProducts" | "cart" | "trace" | "supplierHome" | "viewOrders") => void;
+  onSwitchMode: (mode: "login" | "register" | "home" | "manageProducts" | "cart" | "trace" | "supplierHome" | "viewOrders" | "product") => void;
   onLogout: () => void;
+  onProductClick: (productId: string) => void; // Add this line
 }
 
-const BuyerHome: React.FC<BuyerHomeProps> = ({ user, onSwitchMode, onLogout }) => {
-  const [products, setProducts] = useState<Product[]>([]);
+const BuyerHome: React.FC<BuyerHomeProps> = ({ user, onSwitchMode, onLogout, onProductClick }) => {
+  const [products, setProducts] = useState<ProductType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<ProductType[]>([]);
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
   const fetchProducts = async () => {
@@ -30,11 +30,11 @@ const BuyerHome: React.FC<BuyerHomeProps> = ({ user, onSwitchMode, onLogout }) =
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: Bearer ${token},
           },
         });
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          throw new Error(HTTP error! Status: ${response.status});
         }
         const data = await response.json();
         console.log("Response from server:", data); // Log the response
@@ -56,12 +56,12 @@ const BuyerHome: React.FC<BuyerHomeProps> = ({ user, onSwitchMode, onLogout }) =
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: Bearer ${token},
           },
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          throw new Error(HTTP error! Status: ${response.status});
         }
 
         const data = await response.text();
@@ -160,10 +160,10 @@ const BuyerHome: React.FC<BuyerHomeProps> = ({ user, onSwitchMode, onLogout }) =
       <button className="reload-button" onClick={handleReloadProducts}>Reload Products</button>
       <div className="results-section">
         {filteredProducts.map((product) => (
-          <Link
+          <div
             key={product.id}
-            to={`/product/${product.id}`}
             className="product-link"
+            onClick={() => onProductClick(product.id)} // Update this line
           >
             <div className="product-card">
               <img
@@ -184,7 +184,7 @@ const BuyerHome: React.FC<BuyerHomeProps> = ({ user, onSwitchMode, onLogout }) =
                 )}
               </div>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
       <Footer />
@@ -192,4 +192,4 @@ const BuyerHome: React.FC<BuyerHomeProps> = ({ user, onSwitchMode, onLogout }) =
   );
 };
 
-export default BuyerHome;
+export default BuyerHome;

@@ -11,23 +11,25 @@
   margin: 0 auto;
 }
 
-.header {
+.header, .register-header {
   text-align: center;
 }
 
-.form {
+.form, .register-form {
   max-width: 400px;
   margin: 0 auto;
 }
 
 .form input,
-.form textarea {
+.form textarea,
+.register-form input {
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
 }
 
-.form button {
+.form button,
+.register-form button { /* Ensure the register button has the same styles */
   width: 100%;
   padding: 10px;
   background-color: #007bff;
@@ -54,7 +56,8 @@
 
 .supplier-home-page,
 .manage-products-container,
-.view-orders-page {
+.view-orders-page,
+.register-container {
   max-width: 800px;
   margin: 0 auto;
 }
@@ -91,4 +94,69 @@
   border: none;
   cursor: pointer;
   margin-top: 10px;
+}
+
+.register-mode-toggle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.toggle-button {
+  padding: 10px 20px;
+  margin: 0 5px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  border: none;
+}
+
+.toggle-button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.875em;
+}
+
+.input-error {
+  border: 1px solid red;
+}
+
+.switch-to-register {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.switch-to-register a {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.switch-to-register a:hover {
+  background-color: #218838;
+}
+
+.switch-to-login {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.switch-to-login a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.switch-to-login a:hover {
+  text-decoration: underline;
 }

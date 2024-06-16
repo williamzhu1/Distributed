@@ -1,4 +1,3 @@
-// src/components/SinglePageApp.tsx
 import React, { useState } from "react";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebase-config";
@@ -15,18 +14,20 @@ import Trace from "./buyer/Trace";
 import ViewOrders from "./supplier/ViewOrders";
 import Profile from "./common/Profile";
 import OrderConfirmation from "./buyer/OrderConfirmation";
-import OrderCompleted from "./buyer/OrderCompleted"; // Import the new component
+import OrderCompleted from "./buyer/OrderCompleted";
+import Product from "./buyer/Product"; // Import the Product component
 import "./auth/login_register.css";
 import { CartItem } from "./buyer/CartItem"; // Adjust this import according to your project structure
 
 const SinglePageApp: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mode, setMode] = useState<
-    "login" | "register" | "home" | "manageProducts" | "cart" | "trace" | "supplierHome" | "viewOrders" | "profile" | "orderConfirmation" | "orderCompleted"
+    "login" | "register" | "home" | "manageProducts" | "cart" | "trace" | "supplierHome" | "viewOrders" | "profile" | "orderConfirmation" | "orderCompleted" | "product"
   >("login");
   const [user, setUser] = useState<any>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [total, setTotal] = useState<number>(0);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null); // State to handle selected product
 
   const handleLogin = async (email: string, password: string) => {
       try {
@@ -49,22 +50,36 @@ const SinglePageApp: React.FC = () => {
     };
 
   const handleRegister = async (registerData: any) => {
-    if (registerData.password !== registerData.confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, registerData.email, registerData.password);
       const user = userCredential.user;
-      await setDoc(doc(db, "users", user.uid), {
-        ...registerData,
-        role: registerData.role === "supplier" ? "manager" : "customer",
-      });
-      setIsLoggedIn(true);
-      setUser(user);
-      setMode(registerData.role === "supplier" ? "supplierHome" : "home");
-    } catch (error) {
-      console.error("Error registering:", error);
+
+      const userData = {
+        email: registerData.email,
+        username: registerData.username,
+        ...(registerData.role === "customer"
+          ? {
+              role: "customer",
+              firstName: registerData.firstName,
+              lastName: registerData.lastName,
+              address: registerData.address,
+            }
+          : {
+              companyName: registerData.companyName,
+              apiKey: registerData.apiKey,
+              endpoint: registerData.endpoint,
+              role: "manager",
+            }),
+      };
+
+      if (user.uid) {
+        await setDoc(doc(db, "users", user.uid), userData);
+        setUser(user);
+        setIsLoggedIn(true);
+        setMode(registerData.role === "customer" ? "home" : "supplierHome");
+      }
+    } catch (error: any) {
+      console.error("Error in user registration:", error.message);
     }
   };
 
@@ -84,12 +99,17 @@ const SinglePageApp: React.FC = () => {
     setMode("orderCompleted");
   };
 
+  const handleProductClick = (productId: string) => {
+    setSelectedProductId(productId);
+    setMode("product");
+  };
+
   return (
     <div className="single-page-app">
       <Header user={user} onSwitchMode={setMode} onLogout={handleLogout} />
       {mode === "login" && <Login onLogin={handleLogin} onSwitchMode={() => setMode("register")} />}
       {mode === "register" && <Register onRegister={handleRegister} onSwitchMode={() => setMode("login")} />}
-      {mode === "home" && <BuyerHome user={user} onSwitchMode={setMode} onLogout={handleLogout} />}
+      {mode === "home" && <BuyerHome user={user} onSwitchMode={setMode} onLogout={handleLogout} onProductClick={handleProductClick} />}
       {mode === "manageProducts" && <ManageProducts user={user} onSwitchMode={setMode} onLogout={handleLogout} />}
       {mode === "supplierHome" && <SupplierHome user={user} onSwitchMode={setMode} onLogout={handleLogout} />}
       {mode === "viewOrders" && <ViewOrders user={user} onSwitchMode={setMode} onLogout={handleLogout} />}
@@ -97,6 +117,7 @@ const SinglePageApp: React.FC = () => {
       {mode === "trace" && <Trace user={user} onSwitchMode={setMode} onLogout={handleLogout} />}
       {mode === "orderConfirmation" && <OrderConfirmation cartItems={cartItems} total={total} onOrderCompleted={handleOrderCompleted} />}
       {mode === "orderCompleted" && <OrderCompleted />}
+      {mode === "product" && selectedProductId && <Product productId={selectedProductId} onSwitchMode={setMode} />}
       <Footer />
     </div>
   );

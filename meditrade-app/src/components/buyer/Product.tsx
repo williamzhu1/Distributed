@@ -1,5 +1,5 @@
+// src/components/buyer/Product.tsx
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import "./product.css";
 import images from "../../assets/images/products/index";
 import Header from "../common/Header";
@@ -19,9 +19,12 @@ interface Product {
   image: string;
 }
 
-const Product: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+interface ProductProps {
+  productId: string;
+  onSwitchMode: (mode: "login" | "register" | "home" | "manageProducts" | "cart" | "trace" | "supplierHome" | "viewOrders" | "product") => void;
+}
+
+const Product: React.FC<ProductProps> = ({ productId, onSwitchMode }) => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,9 +32,9 @@ const Product: React.FC = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/products/${id}`, {
+        const response = await fetch(http://localhost:8080/api/products/${productId}, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Authorization': Bearer ${localStorage.getItem('token')},
           },
         });
         if (!response.ok) {
@@ -47,7 +50,7 @@ const Product: React.FC = () => {
     };
 
     fetchProduct();
-  }, [id]);
+  }, [productId]);
 
   const addToCart = () => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
@@ -66,7 +69,7 @@ const Product: React.FC = () => {
     }
 
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
-    navigate("/cart");
+    onSwitchMode("cart");
   };
 
   if (loading) {
@@ -83,7 +86,7 @@ const Product: React.FC = () => {
 
   return (
     <div className="product-page">
-
+      <Header user={null} onSwitchMode={onSwitchMode} onLogout={() => {}} />
       <div className="product-body">
         <div className="product-detail-page">
           <img
@@ -114,4 +117,4 @@ const Product: React.FC = () => {
   );
 };
 
-export default Product;
+export default Product;
