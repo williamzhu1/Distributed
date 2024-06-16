@@ -13,17 +13,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api")
 public class OrderController {
 
-    @PostMapping("/createorde")
+    @PostMapping("/order")
     public ResponseEntity<?> createOrder(@RequestBody Map<String, Object> orderData) {
         Firestore db = FirestoreClient.getFirestore();
 
@@ -127,8 +125,8 @@ public class OrderController {
                 // Get supplier details (API endpoint and API key)
                 DocumentSnapshot supplierDoc = db.collection("users").document(supplierId).get().get();
                 if (supplierDoc.exists()) {
-                    String apiUrl = supplierDoc.getString("endpoint").trim() + "orders".trim();
-                    String apiKey = supplierDoc.getString("apikey").trim();
+                    String apiUrl = Objects.requireNonNull(supplierDoc.getString("endpoint")).trim() + "orders".trim();
+                    String apiKey = Objects.requireNonNull(supplierDoc.getString("apikey")).trim();
 
                     // Send POST request to supplier API
                     Map<String, Object> response = sendPostRequest(apiUrl, supplierOrder, apiKey);
@@ -232,11 +230,11 @@ public class OrderController {
         con.setDoOutput(true);
 
         try (OutputStream os = con.getOutputStream()) {
-            byte[] input = new Gson().toJson(data).getBytes("utf-8");
+            byte[] input = new Gson().toJson(data).getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         }
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
             StringBuilder response = new StringBuilder();
             String responseLine = null;
             while ((responseLine = br.readLine()) != null) {
@@ -257,13 +255,13 @@ public class OrderController {
         con.setDoOutput(true);
 
         try (OutputStream os = con.getOutputStream()) {
-            byte[] input = new Gson().toJson(data).getBytes("utf-8");
+            byte[] input = new Gson().toJson(data).getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         }
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
             StringBuilder response = new StringBuilder();
-            String responseLine = null;
+            String responseLine;
             while ((responseLine = br.readLine()) != null) {
                 response.append(responseLine.trim());
             }

@@ -45,7 +45,7 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cartItems, total,
     }
 
     try {
-      const response = await fetch("/api/createorde", {
+      const response = await fetch("/api/order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
