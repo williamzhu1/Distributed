@@ -109,6 +109,16 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>appengine-maven-plugin</artifactId>
+				<version>2.7.0</version>
+				<configuration>
+					<deploy.projectId>distributed-426520</deploy.projectId> <!-- Replace with your project ID -->
+					<deploy.version>1</deploy.version> <!-- Specify your desired version -->
+					<deploy.promote>false</deploy.promote>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>2.7.3</version>
