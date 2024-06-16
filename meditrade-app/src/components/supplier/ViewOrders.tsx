@@ -1,7 +1,5 @@
 // src/components/supplier/ViewOrders.tsx
 import React, { useState } from "react";
-import Header from "../common/Header"; // Ensure this path is correct
-import Footer from "../common/Footer";
 import "./view_orders.css";
 
 interface Order {
@@ -91,7 +89,6 @@ const ViewOrders: React.FC<ViewOrdersProps> = ({ user, onSwitchMode, onLogout })
 
   return (
     <div className="view-orders-page">
-      <Header user={user} onSwitchMode={onSwitchMode} onLogout={onLogout} />
       <div className="view-orders-content">
         <h1>View Orders</h1>
 
@@ -171,7 +168,6 @@ const ViewOrders: React.FC<ViewOrdersProps> = ({ user, onSwitchMode, onLogout })
           View Order History
         </button>
       </div>
-      <Footer />
     </div>
   );
 };

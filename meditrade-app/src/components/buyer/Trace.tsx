@@ -1,7 +1,5 @@
 // src/components/buyer/Trace.tsx
 import React, { useState } from "react";
-import Header from "../common/Header";
-import Footer from "../common/Footer";
 import confirmedIcon from "../../assets/images/shipping_status/confirmed.jpeg";
 import shippedIcon from "../../assets/images/shipping_status/shipped.jpeg";
 import deliveredIcon from "../../assets/images/shipping_status/delivered.jpeg";
@@ -60,7 +58,6 @@ const Trace: React.FC<TraceProps> = ({ user, onSwitchMode, onLogout }) => {
 
   return (
     <div className={styles.tracePage}>
-      <Header user={user} onSwitchMode={onSwitchMode} onLogout={onLogout} />
       <div className={styles.traceContainer}>
         <h1>Order Status</h1>
         {products.map((product) => (
@@ -109,7 +106,6 @@ const Trace: React.FC<TraceProps> = ({ user, onSwitchMode, onLogout }) => {
           </div>
         ))}
       </div>
-      <Footer />
     </div>
   );
 };

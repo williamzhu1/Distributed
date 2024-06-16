@@ -1,8 +1,6 @@
 // src/components/buyer/Cart.tsx
 import React, { useState, useEffect } from "react";
 import { CartItem } from "./CartItem"; // Adjust this import according to your project structure
-import Header from "../common/Header";
-import Footer from "../common/Footer";
 import ordersImg from "../../assets/images/orders.jpeg";
 import { parsePrice } from "../utils/utils"; // Adjust this import according to your project structure
 import "./cart.css";
@@ -50,7 +48,6 @@ const Cart: React.FC<CartProps> = ({ user, onSwitchMode, onLogout, onProceedToOr
 
   return (
     <div className="cart-page">
-      <Header user={user} onSwitchMode={onSwitchMode} onLogout={onLogout} />
       <div className="cart-container">
         <div className="image-container">
           <img src={ordersImg} alt="View Orders" />
@@ -105,7 +102,6 @@ const Cart: React.FC<CartProps> = ({ user, onSwitchMode, onLogout, onProceedToOr
           </div>
         )}
       </div>
-      <Footer />
     </div>
   );
 };

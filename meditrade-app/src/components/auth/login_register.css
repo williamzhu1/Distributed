@@ -18,6 +18,7 @@
 .form, .register-form {
   max-width: 400px;
   margin: 0 auto;
+  margin-top: 100px;
 }
 
 .form input,
@@ -29,7 +30,7 @@
 }
 
 .form button,
-.register-form button { /* Ensure the register button has the same styles */
+.register-form button {
   width: 100%;
   padding: 10px;
   background-color: #007bff;

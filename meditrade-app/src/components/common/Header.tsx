@@ -34,12 +34,12 @@ const Header: React.FC<HeaderProps> = ({ user, onSwitchMode, onLogout }) => {
             <Link to="#" onClick={() => onSwitchMode("register")}>Register</Link>
           </>
         )}
-        <button onClick={() => onSwitchMode("trace")}>
+        <Link to ="#" onClick={() => onSwitchMode("trace")}>
           <img src={shippingIcon} alt="Shipping" className="shipping-icon" />
-        </button>
-        <button onClick={() => onSwitchMode("cart")}>
+        </Link>
+        <Link to ="#" onClick={() => onSwitchMode("cart")}>
           <img src={cartIcon} alt="Cart" className="cart-icon" />
-        </button>
+        </Link>
       </div>
     </header>
   );

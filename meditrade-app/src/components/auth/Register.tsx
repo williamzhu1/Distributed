@@ -4,7 +4,6 @@ import { doc, setDoc } from "firebase/firestore";
 import React, { useState, useEffect } from "react";
 import logo from "../../assets/images/logo.jpeg";
 import "./login_register.css";
-import Footer from "../common/Footer";
 
 interface RegisterProps {
   onRegister: (registerData: any) => void;
@@ -312,7 +311,6 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchMode }) => {
                           </div>
                         </form>
                       </div>
-                      <Footer />
                     </div>
                   );
                 };

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./product.css";
 import images from "../../assets/images/products/index";
-import Header from "../common/Header";
-import Footer from "../common/Footer";
 
 // Explicitly type the 'images' object
 const imagesTyped: { [key: string]: string } = images;
@@ -85,7 +83,6 @@ const Product: React.FC<ProductProps> = ({ productId, onSwitchMode }) => {
 
  return (
    <div className="product-page">
-     <Header user={null} onSwitchMode={onSwitchMode} onLogout={() => {}} />
      <div className="product-body">
        <div className="product-detail-page">
          <img
@@ -111,7 +108,6 @@ const Product: React.FC<ProductProps> = ({ productId, onSwitchMode }) => {
          </div>
        </div>
      </div>
-     <Footer />
    </div>
  );
 };

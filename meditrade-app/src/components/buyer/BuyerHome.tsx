@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./buyer_home.css";
 import banner from "../../assets/images/banner.jpeg";
-import Header from "../common/Header";
-import Footer from "../common/Footer";
 import { Product as ProductType } from "../types";
 
 interface BuyerHomeProps {
@@ -120,7 +118,6 @@ const BuyerHome: React.FC<BuyerHomeProps> = ({ user, onSwitchMode, onLogout, onP
 
  return (
    <div className="home-page">
-     <Header user={user} onSwitchMode={onSwitchMode} onLogout={onLogout} />
      <div className="hero">
        <img src={banner} alt="Herbal Banner" className="banner-image" />
        <h1>Discover Ancient Remedies from Around the World</h1>
@@ -181,7 +178,6 @@ const BuyerHome: React.FC<BuyerHomeProps> = ({ user, onSwitchMode, onLogout, onP
          </div>
        ))}
      </div>
-     <Footer />
    </div>
  );
 };

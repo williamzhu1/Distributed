@@ -1,8 +1,6 @@
 // src/components/buyer/OrderConfirmation.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../common/Header";
-import Footer from "../common/Footer";
 import { CartItem } from "./CartItem"; // Import the CartItem type correctly
 import "./order_confirmation.css";
 import { Order } from "../../entities/Order";
@@ -155,7 +153,6 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cartItems, total,
 
   return (
     <div className="order-confirmation-page">
-      <Header user={user} onSwitchMode={() => {}} onLogout={() => {}} /> {/* Adjust Header props as necessary */}
       <div className="order-confirmation-container">
         <h1>Order Confirmation</h1>
         <table>
@@ -219,7 +216,6 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cartItems, total,
           </button>
         </form>
       </div>
-      <Footer />
     </div>
   );
 };

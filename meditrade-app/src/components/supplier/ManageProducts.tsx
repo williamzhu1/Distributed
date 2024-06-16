@@ -1,7 +1,5 @@
 // src/components/supplier/ManageProducts.tsx
 import React, { useState } from "react";
-import Header from "../common/Header";
-import Footer from "../common/Footer";
 import "./manage_products.css";
 
 interface Product {
@@ -176,7 +174,6 @@ const ManageProducts: React.FC<ManageProductsProps> = ({ user, onSwitchMode, onL
 
   return (
     <div className="manage-products-page">
-      <Header user={user} onSwitchMode={onSwitchMode} onLogout={onLogout} />
       <div className="manage-products-content">
         <h1>Manage Products</h1>
         <div className="add-product-form">
@@ -260,7 +257,6 @@ const ManageProducts: React.FC<ManageProductsProps> = ({ user, onSwitchMode, onL
           </ul>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

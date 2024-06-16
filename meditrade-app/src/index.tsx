@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { UserProvider } from "./contexts/UserContext"; // Adjust the import path accordingly
+import { UserProvider } from "./contexts/UserContext";
 import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.render(

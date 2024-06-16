@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import Header from "../common/Header";
-import Footer from "../common/Footer";
 import { Link } from "react-router-dom";
 import orderHistoryImg from "../../assets/images/orderHistory.jpeg"; // Import the image
 import "./order_history.css";
@@ -49,7 +47,6 @@ const OrderHistory: React.FC = () => {
 
   return (
     <div className="order-history-page">
-
       <div className="order-history-content">
         <div className="image-container">
           <img src={orderHistoryImg} alt="Order History" />
@@ -98,7 +95,6 @@ const OrderHistory: React.FC = () => {
           <button className="view-orders-button">Back to Orders</button>
         </Link>
       </div>
-      <Footer />
     </div>
   );
 };

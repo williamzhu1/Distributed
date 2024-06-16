@@ -1,7 +1,5 @@
 import React from "react";
 import { useUser } from "../../contexts/UserContext";
-import Header from "../common/Header";
-import Footer from "../common/Footer";
 import "./profile.css";
 
 const Profile: React.FC = () => {
@@ -13,7 +11,6 @@ const Profile: React.FC = () => {
 
   return (
     <div className="profile-page">
-
       <div className="profile-container">
         <h1>Profile</h1>
         <div className="profile-field">
@@ -37,7 +34,6 @@ const Profile: React.FC = () => {
           </div>
         )}
       </div>
-      <Footer />
     </div>
   );
 };
