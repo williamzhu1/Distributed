@@ -115,6 +115,7 @@ const Trace: React.FC<TraceProps> = ({ user, onSwitchMode, onLogout }) => {
     for (const [productName, quantity] of Object.entries(items)) {
       formattedItems[productName] = Math.trunc(quantity);
     }
+    console.log("Items in retry order", formattedItems);
     return formattedItems;
   };
 
