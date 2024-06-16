@@ -234,6 +234,13 @@ body::before {
   margin-bottom: 20px;
 }
 
+.footer {
+  margin-top: auto; /* Ensure the footer is at the bottom */
+  padding: 10px;
+  background-color: #f1f1f1;
+  text-align: center;
+}
+
 /* Responsive styles */
 @media only screen and (max-width: 600px) {
   .register-container,
