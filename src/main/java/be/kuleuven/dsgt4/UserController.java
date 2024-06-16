@@ -116,28 +116,6 @@ public class UserController {
         }
     }
 
-
-    @PostMapping("/createorder")
-    public ResponseEntity<?> createOrder(@RequestBody Map<String, Object> requestBody) {
-        Firestore db = FirestoreClient.getFirestore();
-
-        // Add a new document to the "items" collection
-        ApiFuture<DocumentReference> future = db.collection("orders").add(requestBody);
-
-        try {
-            // Wait for the document reference
-            DocumentReference docRef = future.get();
-            System.out.println("Item created with ID: " + docRef.getId());
-            return ResponseEntity.ok("Item created successfully with ID: " + docRef.getId());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            // Return an error response
-            return ResponseEntity.status(500).body("Error creating item");
-        }
-    }
-
-
-
 //put in the body json: {"id":"id","orderStatus":"status"}
 //eg: body: JSON.stringify({ id, orderStatus: newStatus }),
 
@@ -196,38 +174,4 @@ public ResponseEntity<?> deleteOrder(@RequestBody Map<String, Object> requestBod
         return ResponseEntity.status(500).body("Error deleting order");
     }
 }
-
-    //
-    // @PostMapping("/createitem")
-    // public ResponseEntity<?> createItem(@RequestBody Map<String, Object> requestBody) {
-    //     Firestore db = FirestoreClient.getFirestore();
-
-    //     // Create a Map to store the item details
-    //     Map<String, Object> item = new HashMap<>();
-    //     item.put("name", "Generic Item Name");
-    //     item.put("description", "Generic Item Description");
-    //     item.put("price", 100);
-    //     item.put("quantity", 10);
-
-    //     // Add a new document to the "items" collection
-    //     ApiFuture<DocumentReference> future = db.collection("items").add(item);
-
-    //     try {
-    //         // Wait for the document reference
-    //         DocumentReference docRef = future.get();
-    //         System.out.println("Item created with ID: " + docRef.getId());
-
-    //         // Optionally, you can update the document and get a WriteResult if you need to ensure the update
-    //         // ApiFuture<WriteResult> writeResult = docRef.update("status", "created");
-    //         // WriteResult result = writeResult.get();
-    //         // System.out.println("Write result: " + result.getUpdateTime());
-
-    //         // Return a success response
-    //         return ResponseEntity.ok("Item created successfully with ID: " + docRef.getId());
-    //     } catch (InterruptedException | ExecutionException e) {
-    //         e.printStackTrace();
-    //         // Return an error response
-    //         return ResponseEntity.status(500).body("Error creating item");
-    //     }
-    // }
 }

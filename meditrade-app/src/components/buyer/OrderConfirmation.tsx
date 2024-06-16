@@ -52,6 +52,7 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cartItems, total,
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
+          userId: user?.uid,
           firstName: user?.firstName,
           lastName: user?.lastName,
           address: address,

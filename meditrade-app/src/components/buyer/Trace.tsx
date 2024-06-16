@@ -1,5 +1,5 @@
 // src/components/buyer/Trace.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import confirmedIcon from "../../assets/images/shipping_status/confirmed.jpeg";
 import shippedIcon from "../../assets/images/shipping_status/shipped.jpeg";
 import deliveredIcon from "../../assets/images/shipping_status/delivered.jpeg";
@@ -24,29 +24,6 @@ interface Product {
   status: OrderStatus[];
 }
 
-const initialProducts: Product[] = [
-  {
-    id: 1,
-    name: "Herbal Tea",
-    image: require("../../assets/images/products/Sample1.jpeg"),
-    status: [
-      { status: "Order Confirmed", date: "2023-06-01" },
-      { status: "Shipped", date: "2023-06-02" },
-      { status: "Delivered", date: "2023-06-03" },
-    ],
-  },
-  {
-    id: 2,
-    name: "Ginseng Extract",
-    image: require("../../assets/images/products/Sample2.jpeg"),
-    status: [
-      { status: "Order Confirmed", date: "2023-06-01" },
-      { status: "Shipped", date: "2023-06-02" },
-      { status: "Delivered", date: "2023-06-03" },
-    ],
-  },
-];
-
 const statusIcons = {
   "Order Confirmed": confirmedIcon,
   Shipped: shippedIcon,
@@ -54,7 +31,44 @@ const statusIcons = {
 };
 
 const Trace: React.FC<TraceProps> = ({ user, onSwitchMode, onLogout }) => {
-  const [products] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found in local storage");
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/getorders?firstName=${user.firstName}&lastName=${user.lastName}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const orderData = await response.json();
+        const fetchedProducts: Product[] = orderData.map((order: any) => ({
+          id: order.id,
+          name: order.name,
+          image: order.image,
+          status: order.status,
+        }));
+        setProducts(fetchedProducts);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+
+    fetchOrders();
+  }, [user.firstName, user.lastName]);
 
   return (
     <div className={styles.tracePage}>
