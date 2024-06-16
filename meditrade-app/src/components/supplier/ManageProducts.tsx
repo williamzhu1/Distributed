@@ -90,8 +90,21 @@ const ManageProducts: React.FC<ManageProductsProps> = ({ user, onSwitchMode, onL
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const data = await response.json();
-      setProducts([...products, { ...newProduct, id: data.id }]);
+      // Fetch the updated product list from the backend
+      const reloadResponse = await fetch('/api/reload-products', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!reloadResponse.ok) {
+        throw new Error(`HTTP error! Status: ${reloadResponse.status}`);
+      }
+
+      const reloadedProducts = await reloadResponse.json();
+      setProducts(reloadedProducts);
+
       setNewProduct({
         id: "",
         name: "",
@@ -108,6 +121,7 @@ const ManageProducts: React.FC<ManageProductsProps> = ({ user, onSwitchMode, onL
       console.error("Error adding product:", error);
     }
   };
+
 
   const deleteProduct = async (id: string) => {
     try {
@@ -162,12 +176,22 @@ const ManageProducts: React.FC<ManageProductsProps> = ({ user, onSwitchMode, onL
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const data = await response.json();
-      setProducts(
-        products.map((product) =>
-          product.id === newProduct.id ? newProduct : product,
-        ),
-      );
+      // Fetch the updated product list from the backend
+      const reloadResponse = await fetch('/api/reload-products', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!reloadResponse.ok) {
+        throw new Error(`HTTP error! Status: ${reloadResponse.status}`);
+      }
+
+      const reloadedProducts = await reloadResponse.json();
+      setProducts(reloadedProducts);
+
+      // Reset the form to add product mode
       setNewProduct({
         id: "",
         name: "",
@@ -184,6 +208,7 @@ const ManageProducts: React.FC<ManageProductsProps> = ({ user, onSwitchMode, onL
       console.error("Error updating product:", error);
     }
   };
+
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -205,53 +230,74 @@ const ManageProducts: React.FC<ManageProductsProps> = ({ user, onSwitchMode, onL
           <h2>
             {newProduct.id === "" ? "Add New Product" : "Edit Product"}
           </h2>
-          <input
-            type="text"
-            name="name"
-            placeholder="Product Name"
-            value={newProduct.name}
-            onChange={handleChange}
-          />
-          <input
-            type="number"
-            name="price"
-            placeholder="Price"
-            value={newProduct.price}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="category"
-            placeholder="Category"
-            value={newProduct.category}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="manufacturer"
-            placeholder="Manufacturer"
-            value={newProduct.manufacturer}
-            onChange={handleChange}
-          />
-          <textarea
-            name="description"
-            placeholder="Product Description"
-            value={newProduct.description}
-            onChange={handleChange}
-          ></textarea>
-          <input
-            type="number"
-            name="stock"
-            placeholder="Stock"
-            value={newProduct.stock}
-            onChange={handleChange}
-          />
-          <input
-            type="file"
-            name="image"
-            accept="image/*"
-            onChange={handleImageChange}
-          />
+          <label>
+            Product Name:
+            <input
+              type="text"
+              name="name"
+              placeholder="Product Name"
+              value={newProduct.name}
+              onChange={handleChange}
+            />
+          </label>
+          <label>
+            Price:
+            <input
+              type="number"
+              name="price"
+              placeholder="Price"
+              value={newProduct.price}
+              onChange={handleChange}
+            />
+          </label>
+          <label>
+            Category:
+            <input
+              type="text"
+              name="category"
+              placeholder="Category"
+              value={newProduct.category}
+              onChange={handleChange}
+            />
+          </label>
+          <label>
+            Manufacturer:
+            <input
+              type="text"
+              name="manufacturer"
+              placeholder="Manufacturer"
+              value={newProduct.manufacturer}
+              onChange={handleChange}
+            />
+          </label>
+          <label>
+            Product Description:
+            <textarea
+              name="description"
+              placeholder="Product Description"
+              value={newProduct.description}
+              onChange={handleChange}
+            ></textarea>
+          </label>
+          <label>
+            Stock:
+            <input
+              type="number"
+              name="stock"
+              placeholder="Stock"
+              value={newProduct.stock}
+              onChange={handleChange}
+            />
+          </label>
+          <label>
+            Image:
+            <input
+              type="file"
+              name="image"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+          </label>
           {imagePreview && (
             <img src={imagePreview} alt="Preview" className="image-preview" />
           )}

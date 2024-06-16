@@ -141,16 +141,15 @@ public class ProductController {
                 // Log the received payload for debugging
                 System.out.println("Received Product Payload: " + product);
 
-                // Add to Firestore
-                ApiFuture<DocumentReference> future = db.collection("products").add(product);
-                DocumentReference docRef = future.get();
-                System.out.println("Product created with ID: " + docRef.getId());
-
-                Map<String, String> response = new HashMap<>();
-                response.put("id", docRef.getId());
-                response.put("message", "Product added successfully");
-
-                return ResponseEntity.ok(response);
+                // Call reloadProducts method after successful addition in supplier's API
+                ResponseEntity<?> reloadResponse = reloadProducts();
+                if (reloadResponse.getStatusCode().is2xxSuccessful()) {
+                    System.out.println("Product added and products reloaded successfully");
+                    return ResponseEntity.ok("Product added successfully");
+                } else {
+                    System.err.println("Error reloading products: " + reloadResponse.getBody());
+                    return ResponseEntity.status(500).body("Product added in supplier's API, but error reloading products");
+                }
             } else {
                 return ResponseEntity.status(500).body("Error adding product to supplier's API");
             }
@@ -231,17 +230,76 @@ public class ProductController {
     public ResponseEntity<?> updateProduct(@PathVariable String id, @RequestBody Map<String, Object> product) {
         Firestore db = FirestoreClient.getFirestore();
 
-        ApiFuture<WriteResult> future = db.collection("products").document(id).set(product);
-
         try {
-            WriteResult result = future.get();
-            System.out.println("Product updated at: " + result.getUpdateTime());
-            return ResponseEntity.ok("Product updated successfully");
+            // Fetch the product details to get the supplierId
+            ApiFuture<DocumentSnapshot> productFuture = db.collection("products").document(id).get();
+            DocumentSnapshot productSnapshot = productFuture.get();
+            if (!productSnapshot.exists()) {
+                return ResponseEntity.status(404).body("Product not found");
+            }
+
+            String supplierId = (String) productSnapshot.get("supplierId");
+
+            // Retrieve supplier details
+            ApiFuture<DocumentSnapshot> futureSupplier = db.collection("users").document(supplierId).get();
+            DocumentSnapshot supplierDoc = futureSupplier.get();
+            if (!supplierDoc.exists()) {
+                return ResponseEntity.status(404).body("Supplier not found");
+            }
+
+            String apiUrl = supplierDoc.getString("endpoint");
+            String apiKey = supplierDoc.getString("apikey");
+
+            // Prepare to call supplier API
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Content-Type", "application/json");
+            headers.set("Apikey", apiKey);
+
+            // Prepare the request body for the supplier's API
+            Map<String, Object> supplierProduct = new HashMap<>();
+            supplierProduct.put("name", product.get("name"));
+            supplierProduct.put("description", product.get("description"));
+            supplierProduct.put("price", product.get("price"));
+            supplierProduct.put("category", product.get("category"));
+            supplierProduct.put("manufacturer", product.get("manufacturer"));
+            supplierProduct.put("stock", product.get("stock"));
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(supplierProduct, headers);
+
+            // Log the request details for debugging
+            System.out.println("Request URL: " + apiUrl + "items/" + id);
+            System.out.println("Request Headers: " + headers);
+            System.out.println("Request Body: " + supplierProduct);
+
+            ResponseEntity<Map> supplierResponse = restTemplate.exchange(apiUrl + "items/" + id, HttpMethod.PUT, request, Map.class);
+
+            // Check response from supplier API
+            if (supplierResponse.getStatusCode().is2xxSuccessful() && Boolean.TRUE.equals(supplierResponse.getBody().get("success"))) {
+                // Call reloadProducts method after successful update in supplier's API
+                ResponseEntity<?> reloadResponse = reloadProducts();
+                if (reloadResponse.getStatusCode().is2xxSuccessful()) {
+                    System.out.println("Product updated and products reloaded successfully");
+                    return ResponseEntity.ok("Product updated successfully");
+                } else {
+                    System.err.println("Error reloading products: " + reloadResponse.getBody());
+                    return ResponseEntity.status(500).body("Product updated in supplier's API, but error reloading products");
+                }
+            } else {
+                System.err.println("Error updating product in supplier's API: " + supplierResponse.getBody().get("message"));
+                return ResponseEntity.status(500).body("Error updating product in supplier's API: " + supplierResponse.getBody().get("message"));
+            }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Error updating product");
+            return ResponseEntity.status(500).body("Error retrieving product or supplier details");
+        } catch (RestClientException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error calling supplier's API: " + e.getMessage());
         }
     }
+
+
+
 
     @DeleteMapping("/products/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable String id) {
