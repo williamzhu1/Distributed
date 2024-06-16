@@ -241,5 +241,28 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/getorders")
+    public ResponseEntity<?> getOrders(@RequestParam String firstName, @RequestParam String lastName) {
+        Firestore db = FirestoreClient.getFirestore();
+
+        // Fetch orders from the Firestore database for the given firstName and lastName
+        ApiFuture<QuerySnapshot> future = db.collection("orders")
+                .whereEqualTo("firstName", firstName)
+                .whereEqualTo("lastName", lastName)
+                .get();
+        List<Map<String, Object>> orders = new ArrayList<>();
+        try {
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+            for (QueryDocumentSnapshot document : documents) {
+                orders.add(document.getData());
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error fetching orders");
+        }
+
+        return ResponseEntity.ok(orders);
+    }
+
 
 }
