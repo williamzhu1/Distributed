@@ -1,6 +1,7 @@
 // src/components/supplier/ViewOrders.tsx
 import React, { useState, useEffect } from "react";
 import "./view_orders.css";
+import { useUser } from "../../contexts/UserContext";
 
 interface Order {
   id: number;
@@ -20,18 +21,19 @@ interface ViewOrdersProps {
 }
 
 async function fetchOrders() {
+  const { user } = useUser();
+  const uid = user?.uid;
   try {
     const token = localStorage.getItem("token");
     if (!token) {
       throw new Error("No token found");
     }
-    const response = await fetch("/api/supplierorders", {
+    const response = await fetch(`/api/supplierorders?uid=${uid}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({  }),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
@@ -85,10 +87,10 @@ const ViewOrders: React.FC<ViewOrdersProps> = ({ user, onSwitchMode, onLogout })
       prevOrders.map((order) =>
         order.id === id && order.previousStatus
           ? {
-              ...order,
-              status: order.previousStatus,
-              previousStatus: undefined,
-            }
+            ...order,
+            status: order.previousStatus,
+            previousStatus: undefined,
+          }
           : order,
       ),
     );
