@@ -34,7 +34,6 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cartItems, total,
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await sendCartCloud(formData.address);
-    await sendOrderToDist(cartItems, formData);
     onOrderCompleted(); // Notify the parent component that the order is completed
   };
 
@@ -46,18 +45,21 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cartItems, total,
     }
 
     try {
-      const response = await fetch("/api/createorder", {
+      const response = await fetch("/api/order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
+          userId: user?.uid,
           firstName: user?.firstName,
           lastName: user?.lastName,
           address: address,
-          items: cartItems.map(item => ({ id: item.id, quantity: item.quantity })),
-          price: total
+          items: cartItems.reduce((acc: { [key: string]: number }, item) => {
+              acc[item.id] = parseInt(item.quantity.toString(), 10);
+              return acc;
+          }, {})
         }),
       });
 
@@ -77,79 +79,6 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cartItems, total,
       console.error("Error sending cart to firebase:", error);
     }
   };
-
-  async function sendOrderToDist(cartItems: CartItem[], formData: any) {
-    const suppliers = await fetchSuppliers();
-
-    // Group cart items by company
-    const groupedItems = cartItems.reduce((acc, item) => {
-      acc[item.supplier] = acc[item.supplier] || [];
-      acc[item.supplier].push(item);
-      return acc;
-    }, {} as { [key: string]: CartItem[] });
-
-    // For each group, send an order
-    for (const [company, items] of Object.entries(groupedItems)) {
-      const supplier = suppliers.find(s => s.company === company);
-      if (!supplier) {
-        console.error('Supplier not found for company:', company);
-        continue;
-      }
-
-      // Create an order object
-      const orderItems = items.reduce((acc, item) => {
-        acc[item.id] = item.quantity;
-        return acc;
-      }, {} as { [key: string]: number });
-
-      const order = new Order("1", "1", formData.address, orderItems, "pending");
-
-      // Send the order
-      await sendOrder(order, supplier.apiKey, supplier.endpoint);
-    }
-  }
-
-  interface Supplier {
-    apiKey: string;
-    company: string;
-    endpoint: string;
-  }
-
-  async function fetchSuppliers(): Promise<Supplier[]> {
-    try {
-      const response = await fetch('/getsuppliers');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const suppliers: Supplier[] = await response.json();
-      return suppliers;
-    } catch (error) {
-      console.error('Failed to fetch users:', error);
-      return [];
-    }
-  }
-
-  async function sendOrder(order: Order, apiKey: string, endpoint: string) {
-    try {
-      const response = await fetch('/api/' + endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'ApiKey': apiKey
-        },
-        body: JSON.stringify(order)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send order');
-      }
-
-      const result = await response.json();
-      console.log('Order sent successfully:', result);
-    } catch (error) {
-      console.error('Error sending order:', error);
-    }
-  }
 
   return (
     <div className="order-confirmation-page">
@@ -179,16 +108,6 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cartItems, total,
         </table>
         <h2>Total: ${total.toFixed(2)}</h2>
         <form className="order-form" onSubmit={handleSubmit}>
-          <div>
-            <label>Name:</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
           <div>
             <label>Address:</label>
             <input

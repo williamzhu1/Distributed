@@ -5,6 +5,7 @@ import logo_horizontal from "../../assets/images/logo_horizontal.jpeg";
 import cartIcon from "../../assets/images/cart.jpeg";
 import shippingIcon from "../../assets/images/shipping.jpeg";
 import "./header.css";
+import SupplierHome from "../supplier/SupplierHome";
 
 interface HeaderProps {
   user: any;
@@ -27,6 +28,11 @@ const Header: React.FC<HeaderProps> = ({ user, onSwitchMode, onLogout }) => {
             <span className="welcome-message">Welcome, {user.username || user.email}</span>
 
             <button onClick={onLogout} className="logout-button">Logout</button>
+            {/* <button onClick={supplierHome} className="logout-button">Supplier Menu</button> */}
+            {/* <button onClick={() => onSwitchMode("supplierHome")} className="logout-button">Supplier Menu</button>  */}
+            {user.role === "manager" && (
+              <button onClick={() => onSwitchMode("supplierHome")} className="logout-button">Supplier Menu</button>
+            )}
           </>
         ) : (
           <>

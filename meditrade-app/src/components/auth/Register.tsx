@@ -21,7 +21,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchMode }) => {
     lastName: "",
     address: "", // For customer
     companyName: "", // For supplier
-    apiKey: "", // For supplier
+    apikey: "", // For supplier
     endpoint: "", // For supplier
   });
   const [errors, setErrors] = useState({
@@ -33,7 +33,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchMode }) => {
     lastName: "",
     address: "",
     companyName: "",
-    apiKey: "",
+    apikey: "",
     endpoint: "",
   });
   const [isFormValid, setIsFormValid] = useState(false);
@@ -49,7 +49,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchMode }) => {
       lastName: "",
       address: "",
       companyName: "",
-      apiKey: "",
+      apikey: "",
       endpoint: "",
     };
 
@@ -96,8 +96,8 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchMode }) => {
         newErrors.companyName = "Company name is required";
         isValid = false;
       }
-      if (!formData.apiKey) {
-        newErrors.apiKey = "API key is required";
+      if (!formData.apikey) {
+        newErrors.apikey = "API key is required";
         isValid = false;
       }
       if (!formData.endpoint) {
@@ -262,17 +262,17 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchMode }) => {
                 )}
               </div>
               <div className="form-group">
-                <label htmlFor="apiKey">API Key</label>
+                <label htmlFor="apikey">API Key</label>
                 <input
                   type="text"
-                  id="apiKey"
-                  name="apiKey"
-                  value={formData.apiKey}
+                  id="apikey"
+                  name="apikey"
+                  value={formData.apikey}
                   onChange={handleChange}
-                  className={errors.apiKey ? "input-error" : ""}
+                  className={errors.apikey ? "input-error" : ""}
                 />
-                {errors.apiKey && (
-                  <p className="error-message">{errors.apiKey}</p>
+                {errors.apikey && (
+                  <p className="error-message">{errors.apikey}</p>
                 )}
               </div>
               <div className="form-group">
