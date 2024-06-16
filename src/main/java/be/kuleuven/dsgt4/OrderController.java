@@ -105,6 +105,7 @@ public class OrderController {
 
             // Create orders for suppliers and send requests
             int confirmedSuppliers = 0;
+            boolean outOfStock = false;
             for (Map.Entry<String, Map<String, Integer>> entry : itemsBySupplier.entrySet()) {
                 String supplierId = entry.getKey();
                 Map<String, Integer> supplierItems = entry.getValue();
@@ -141,7 +142,11 @@ public class OrderController {
                             confirmedSuppliers++;
                         }
                         if (status.equals("ROOTSTOCK")){
-
+                            System.out.println("ROOTSOCK on:");
+                            for (Map.Entry<String, Integer> entrystock : supplierItems.entrySet()) {
+                                System.out.println(entrystock.getKey() + ": " + entrystock.getValue());
+                            }
+                            outOfStock = true;
                         }
 
                     } else {
@@ -153,12 +158,35 @@ public class OrderController {
             }
 
             // Check if all suppliers confirmed the order
-            if (confirmedSuppliers == itemsBySupplier.size()) {
+            if (confirmedSuppliers >= itemsBySupplier.size()) {
                 // Update customer order status to CONFIRMED
                 Map<String, Object> updateOrder = new HashMap<>();
                 updateOrder.put("status", "CONFIRMED");
                 db.collection("orders").document(customerOrderId).update(updateOrder);
                 System.out.println("Suppliers confirmed the order");
+            } else if(outOfStock) {
+                // Handle if not all suppliers confirmed
+                System.out.println("Some items out of stock or not enough stock");
+                for (Map.Entry<String, Map<String, Integer>> entry : itemsBySupplier.entrySet()) {
+                    String supplierId = entry.getKey();
+
+                    // Get supplier details (API endpoint and API key)
+                    DocumentSnapshot supplierDoc = db.collection("users").document(supplierId).get().get();
+                    if (supplierDoc.exists()) {
+                        String apiUrl = supplierDoc.getString("endpoint").trim() + "orders".trim() + "/" + customerOrderId;
+                        String apiKey = supplierDoc.getString("apikey").trim();
+
+                        // Create request body to update status to CANCELLED
+                        Map<String, Object> cancelRequest = new HashMap<>();
+                        cancelRequest.put("status", "CANCELLED");
+
+                        // Send PUT request to supplier API
+                        sendPutRequest(apiUrl, cancelRequest, apiKey);
+                    }
+                    Map<String, Object> updateOrder = new HashMap<>();
+                    updateOrder.put("status", "ROOTSTOCK");
+                    db.collection("orders").document(customerOrderId).update(updateOrder);
+                }
             } else {
                 // Handle if not all suppliers confirmed
                 System.out.println("Not all suppliers confirmed the order");
@@ -182,7 +210,6 @@ public class OrderController {
                     updateOrder.put("status", "CANCELLED");
                     db.collection("orders").document(customerOrderId).update(updateOrder);
                 }
-
             }
         } catch (InterruptedException | ExecutionException | IOException e) {
             e.printStackTrace();
