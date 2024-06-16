@@ -56,8 +56,7 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cartItems, total,
           firstName: user?.firstName,
           lastName: user?.lastName,
           address: address,
-          items: cartItems.map(item => ({ id: item.id, quantity: item.quantity })),
-          price: total
+          items: cartItems.map(item => ({ id: item.id, quantity: item.quantity }))
         }),
       });
 
