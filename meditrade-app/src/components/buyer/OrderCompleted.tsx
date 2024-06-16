@@ -6,7 +6,7 @@ import "./order_completed.css";
 const OrderCompleted: React.FC = () => {
   return (
     <div className="order-completed-page">
-      <Header />
+
       <div className="order-completed-container">
         <h1>Order Completed</h1>
         <p>

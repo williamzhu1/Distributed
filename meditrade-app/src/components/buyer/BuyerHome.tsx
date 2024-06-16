@@ -1,12 +1,19 @@
+// src/components/buyer/BuyerHome.tsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./buyer_home.css";
 import banner from "../../assets/images/banner.jpeg";
 import Header from "../common/Header";
 import Footer from "../common/Footer";
-import { Product } from "../types"; // Import the Product type
+import { Product } from "../types";
 
-const Home: React.FC = () => {
+interface BuyerHomeProps {
+  user: any;
+  onSwitchMode: (mode: "login" | "register" | "home" | "manageProducts" | "cart" | "trace" | "supplierHome" | "viewOrders") => void;
+  onLogout: () => void;
+}
+
+const BuyerHome: React.FC<BuyerHomeProps> = ({ user, onSwitchMode, onLogout }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -30,7 +37,6 @@ const Home: React.FC = () => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const data = await response.json();
-      console.log("Fetched products:", data);
       setProducts(data);
       setFilteredProducts(data);
     } catch (error) {
@@ -58,7 +64,6 @@ const Home: React.FC = () => {
       }
 
       const updatedProducts = await response.json();
-      console.log("Products reloaded successfully", updatedProducts);
       setProducts(updatedProducts);
       setFilteredProducts(updatedProducts);
     } catch (error) {
@@ -67,14 +72,13 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
-    handleReloadProducts(); // Call handleReloadProducts on component mount
+    handleReloadProducts();
   }, []);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value;
     setSearchTerm(term);
 
-    // Filter products based on the search term
     const filtered = products.filter(
       (product) =>
         product.name.toLowerCase().includes(term.toLowerCase()) ||
@@ -83,7 +87,6 @@ const Home: React.FC = () => {
     );
     setFilteredProducts(filtered);
 
-    // Generate suggestions based on the search term
     const uniqueSuggestions = Array.from(
       new Set(
         products
@@ -110,12 +113,11 @@ const Home: React.FC = () => {
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Additional logic for search submit can be added here
   };
 
   return (
     <div className="home-page">
-      <Header />
+      <Header user={user} onSwitchMode={onSwitchMode} onLogout={onLogout} />
       <div className="hero">
         <img src={banner} alt="Herbal Banner" className="banner-image" />
         <h1>Discover Ancient Remedies from Around the World</h1>
@@ -181,4 +183,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default BuyerHome;

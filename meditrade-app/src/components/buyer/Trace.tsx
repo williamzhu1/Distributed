@@ -1,5 +1,5 @@
+// src/components/buyer/Trace.tsx
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import Header from "../common/Header";
 import Footer from "../common/Footer";
 import confirmedIcon from "../../assets/images/shipping_status/confirmed.jpeg";
@@ -8,7 +8,12 @@ import deliveredIcon from "../../assets/images/shipping_status/delivered.jpeg";
 import classNames from "classnames";
 import styles from "./trace.module.css";
 
-// Define the interface for the order status
+interface TraceProps {
+  user: any;
+  onSwitchMode: (mode: "login" | "register" | "home" | "manageProducts" | "cart" | "trace" | "supplierHome" | "viewOrders") => void;
+  onLogout: () => void;
+}
+
 interface OrderStatus {
   status: "Order Confirmed" | "Shipped" | "Delivered";
   date: string;
@@ -50,24 +55,24 @@ const statusIcons = {
   Delivered: deliveredIcon,
 };
 
-const Trace: React.FC = () => {
+const Trace: React.FC<TraceProps> = ({ user, onSwitchMode, onLogout }) => {
   const [products] = useState<Product[]>(initialProducts);
 
   return (
     <div className={styles.tracePage}>
-      <Header />
+      <Header user={user} onSwitchMode={onSwitchMode} onLogout={onLogout} />
       <div className={styles.traceContainer}>
         <h1>Order Status</h1>
         {products.map((product) => (
           <div key={product.id} className={styles.productStatusContainer}>
-            <Link to={`/product/${product.id}`} className={styles.productInfo}>
+            <div className={styles.productInfo}>
               <img
                 src={product.image}
                 alt={product.name}
                 className={styles.productImage}
               />
               <h2>{product.name}</h2>
-            </Link>
+            </div>
             <div className={styles.statusTimeline}>
               {product.status.map((status, index) => (
                 <div

@@ -1,6 +1,6 @@
+// src/components/supplier/ViewOrders.tsx
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import Header from "../common/Header";
+import Header from "../common/Header"; // Ensure this path is correct
 import Footer from "../common/Footer";
 import "./view_orders.css";
 
@@ -13,6 +13,12 @@ interface Order {
   address: string;
   status: "Pending" | "Shipped" | "Delivered";
   previousStatus?: "Pending" | "Shipped" | "Delivered"; // Optional field to track previous status
+}
+
+interface ViewOrdersProps {
+  user: any;
+  onSwitchMode: (mode: "login" | "register" | "home" | "manageProducts" | "cart" | "trace" | "supplierHome" | "viewOrders" | "profile") => void;
+  onLogout: () => void;
 }
 
 const initialOrders: Order[] = [
@@ -37,7 +43,7 @@ const initialOrders: Order[] = [
   // Add more initial orders as needed
 ];
 
-const ViewOrders: React.FC = () => {
+const ViewOrders: React.FC<ViewOrdersProps> = ({ user, onSwitchMode, onLogout }) => {
   const [orders, setOrders] = useState<Order[]>(initialOrders);
 
   const updateOrderStatus = (
@@ -85,7 +91,7 @@ const ViewOrders: React.FC = () => {
 
   return (
     <div className="view-orders-page">
-      <Header />
+      <Header user={user} onSwitchMode={onSwitchMode} onLogout={onLogout} />
       <div className="view-orders-content">
         <h1>View Orders</h1>
 
@@ -158,9 +164,12 @@ const ViewOrders: React.FC = () => {
             </div>
           ))}
         </div>
-        <Link to="/order-history">
-          <button className="view-history-button">View Order History</button>
-        </Link>
+        <button
+          className="view-history-button"
+          onClick={() => onSwitchMode("viewOrders")}
+        >
+          View Order History
+        </button>
       </div>
       <Footer />
     </div>

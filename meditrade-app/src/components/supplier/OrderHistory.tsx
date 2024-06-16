@@ -49,7 +49,7 @@ const OrderHistory: React.FC = () => {
 
   return (
     <div className="order-history-page">
-      <Header />
+
       <div className="order-history-content">
         <div className="image-container">
           <img src={orderHistoryImg} alt="Order History" />

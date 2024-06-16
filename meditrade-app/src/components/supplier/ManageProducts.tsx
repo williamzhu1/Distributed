@@ -1,3 +1,4 @@
+// src/components/supplier/ManageProducts.tsx
 import React, { useState } from "react";
 import Header from "../common/Header";
 import Footer from "../common/Footer";
@@ -14,6 +15,12 @@ interface Product {
   supplierId: string; // Added supplierId to the Product interface
 }
 
+interface ManageProductsProps {
+  user: any;
+  onSwitchMode: (mode: "login" | "register" | "home" | "manageProducts" | "cart" | "trace" | "supplierHome" | "viewOrders" | "profile") => void;
+  onLogout: () => void;
+}
+
 const initialProducts: Product[] = [
   {
     id: 1,
@@ -28,7 +35,7 @@ const initialProducts: Product[] = [
   // Add more initial products as needed
 ];
 
-const ManageProducts: React.FC = () => {
+const ManageProducts: React.FC<ManageProductsProps> = ({ user, onSwitchMode, onLogout }) => {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [newProduct, setNewProduct] = useState<Product>({
     id: products.length + 1,
@@ -94,9 +101,6 @@ const ManageProducts: React.FC = () => {
       console.error("Error adding product:", error);
     }
   };
-
-
-
 
   const deleteProduct = async (id: number) => {
     try {
@@ -172,7 +176,7 @@ const ManageProducts: React.FC = () => {
 
   return (
     <div className="manage-products-page">
-      <Header />
+      <Header user={user} onSwitchMode={onSwitchMode} onLogout={onLogout} />
       <div className="manage-products-content">
         <h1>Manage Products</h1>
         <div className="add-product-form">

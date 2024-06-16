@@ -83,7 +83,7 @@ const Product: React.FC = () => {
 
   return (
     <div className="product-page">
-      <Header />
+
       <div className="product-body">
         <div className="product-detail-page">
           <img
