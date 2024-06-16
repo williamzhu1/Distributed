@@ -1,16 +1,14 @@
-// src/components/supplier/ViewOrders.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./view_orders.css";
+import { useUser } from "../../contexts/UserContext";
 
 interface Order {
-  id: number;
-  customerName: string;
-  product: string;
-  quantity: number;
-  totalPrice: string;
+  id: string;
+  firstName: string;
+  lastName: string;
   address: string;
-  status: "Pending" | "Shipped" | "Delivered";
-  previousStatus?: "Pending" | "Shipped" | "Delivered"; // Optional field to track previous status
+  items: { [key: string]: number };
+  status: "Pending" | "Shipped" | "Delivered" | "CANCELLED" | "CONFIRMED";
 }
 
 interface ViewOrdersProps {
@@ -19,73 +17,47 @@ interface ViewOrdersProps {
   onLogout: () => void;
 }
 
-const initialOrders: Order[] = [
-  {
-    id: 1,
-    customerName: "John Doe",
-    product: "Herbal Tea",
-    quantity: 2,
-    totalPrice: "$20.00",
-    address: "123 Main St, City, Country",
-    status: "Pending",
-  },
-  {
-    id: 2,
-    customerName: "Jane Smith",
-    product: "Ginseng Extract",
-    quantity: 1,
-    totalPrice: "$25.00",
-    address: "456 Elm St, City, Country",
-    status: "Shipped",
-  },
-  // Add more initial orders as needed
-];
-
 const ViewOrders: React.FC<ViewOrdersProps> = ({ user, onSwitchMode, onLogout }) => {
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const { user: loggedInUser } = useUser(); // Using useUser inside the component
 
-  const updateOrderStatus = (
-    id: number,
-    newStatus: "Pending" | "Shipped" | "Delivered",
-  ) => {
-    setOrders((prevOrders) =>
-      prevOrders.map((order) =>
-        order.id === id
-          ? { ...order, previousStatus: order.status, status: newStatus }
-          : order,
-      ),
-    );
-  };
+  useEffect(() => {
+    const fetchOrders = async () => {
+      const uid = loggedInUser?.uid;
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("No token found");
+        }
 
-  const handleStatusChange = (
-    id: number,
-    newStatus: "Pending" | "Shipped" | "Delivered",
-  ) => {
-    const confirmation = window.confirm(
-      `Are you sure you want to mark this order as ${newStatus}?`,
-    );
-    if (confirmation) {
-      updateOrderStatus(id, newStatus);
-    }
-  };
+        const response = await fetch(`/api/supplierOrder?userId=${uid}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-  const revertOrderStatus = (id: number) => {
-    setOrders((prevOrders) =>
-      prevOrders.map((order) =>
-        order.id === id && order.previousStatus
-          ? {
-              ...order,
-              status: order.previousStatus,
-              previousStatus: undefined,
-            }
-          : order,
-      ),
-    );
-  };
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-  const deliveredOrders = orders.filter(
-    (order) => order.status === "Delivered",
-  );
+        const data = await response.json();
+
+        // Ensure data contains the array of orders
+        if (data && Array.isArray(data.data)) {
+          setOrders(data.data);
+        } else {
+          console.error("Fetched data is not an array:", data);
+          setOrders([]);
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+
+    fetchOrders();
+  }, [loggedInUser?.uid]); // Depend on loggedInUser.uid
 
   return (
     <div className="view-orders-page">
@@ -97,76 +69,27 @@ const ViewOrders: React.FC<ViewOrdersProps> = ({ user, onSwitchMode, onLogout })
             <div key={order.id} className="order-card">
               <h2>Order #{order.id}</h2>
               <p>
-                <strong>Customer:</strong> {order.customerName}
-              </p>
-              <p>
-                <strong>Product:</strong> {order.product}
-              </p>
-              <p>
-                <strong>Quantity:</strong> {order.quantity}
-              </p>
-              <p>
-                <strong>Total Price:</strong> {order.totalPrice}
+                <strong>Customer:</strong> {order.firstName} {order.lastName}
               </p>
               <p>
                 <strong>Address:</strong> {order.address}
               </p>
               <p>
+                <strong>Items:</strong>
+                <ul>
+                  {Object.entries(order.items).map(([productId, quantity]) => (
+                    <li key={productId}>
+                      {productId}: {quantity}
+                    </li>
+                  ))}
+                </ul>
+              </p>
+              <p>
                 <strong>Status:</strong> {order.status}
               </p>
-              <div className="order-actions">
-                {order.status === "Pending" && (
-                  <>
-                    <button
-                      className="action-button"
-                      onClick={() => handleStatusChange(order.id, "Shipped")}
-                    >
-                      Mark as Shipped
-                    </button>
-                    {order.previousStatus && (
-                      <button
-                        className="revert-button"
-                        onClick={() => revertOrderStatus(order.id)}
-                      >
-                        Revert to {order.previousStatus}
-                      </button>
-                    )}
-                  </>
-                )}
-                {order.status === "Shipped" && (
-                  <>
-                    <button
-                      className="action-button"
-                      onClick={() => handleStatusChange(order.id, "Delivered")}
-                    >
-                      Mark as Delivered
-                    </button>
-                    <button
-                      className="revert-button"
-                      onClick={() => revertOrderStatus(order.id)}
-                    >
-                      Revert to Pending
-                    </button>
-                  </>
-                )}
-                {order.status === "Delivered" && (
-                  <button
-                    className="revert-button"
-                    onClick={() => revertOrderStatus(order.id)}
-                  >
-                    Revert to Shipped
-                  </button>
-                )}
-              </div>
             </div>
           ))}
         </div>
-        <button
-          className="view-history-button"
-          onClick={() => onSwitchMode("viewOrders")}
-        >
-          View Order History
-        </button>
       </div>
     </div>
   );
