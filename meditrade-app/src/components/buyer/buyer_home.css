@@ -224,8 +224,7 @@ nav a:focus {
   margin: 10px 0;
 }
 
-.product-genre,
-.product-origin,
+.product-category,
 .product-details,
 .product-manufacturer {
   font-size: 14px;
@@ -286,8 +285,7 @@ nav a:focus {
 
   .product-info h2,
   .product-info .product-price,
-  .product-info .product-genre,
-  .product-info .product-origin,
+  .product-info .product-category,
   .product-info .product-details,
   .product-info .product-manufacturer {
     font-size: 0.9em; /* Adjust font size for better readability */

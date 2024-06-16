@@ -155,23 +155,17 @@ const BuyerHome: React.FC<BuyerHomeProps> = ({ user, onSwitchMode, onLogout, onP
            onClick={() => onProductClick(product.id)} // Update this line
          >
            <div className="product-card">
-             <img
-
-               alt={product.name}
-               className="product-image"
-             />
              <div className="product-info">
                <h2>{product.name}</h2>
-               <p className="product-price">{product.price}</p>
-               <p className="product-category">{product.category}</p>
-               <p className="product-details">{product.description}</p>
+               <p className="product-price"><strong>Price:</strong> €{product.price}</p>
+               <p className="product-category"><strong>Category:</strong> {product.category}</p>
+               <p className="product-details"><strong>Description:</strong> {product.description}</p>
                {product.manufacturer && (
-                 <p className="product-manufacturer">
-                   {product.manufacturer}
-                 </p>
+                 <p className="product-manufacturer"><strong>Manufacturer:</strong> {product.manufacturer}</p>
                )}
              </div>
            </div>
+
          </div>
        ))}
      </div>

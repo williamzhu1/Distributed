@@ -75,20 +75,17 @@ const ProductDetail: React.FC<ProductProps> = ({ productId, onSwitchMode }) => {
     <div className="product-page">
       <div className="product-body">
         <div className="product-detail-page">
-          <img
 
-            alt={product.name}
-            className="product-image"
-          />
           <div className="product-info">
-            <h1>{product.name}</h1>
-            <p className="product-price">{product.price}</p>
-            <p className="product-description">{product.description}</p>
-            {product.manufacturer && (
-              <>
-                <p className="product-manufacturer">Manufacturer: {product.manufacturer}</p>
-              </>
-            )}
+              <h2>{product.name}</h2>
+              <p className="product-price"><strong>Price:</strong> €{product.price}</p>
+              <p className="product-category"><strong>Category:</strong> {product.category}</p>
+              <p className="product-details"><strong>Description:</strong> {product.description}</p>
+              {product.manufacturer && (
+                <p className="product-manufacturer"><strong>Manufacturer:</strong> {product.manufacturer}</p>
+              )}
+
+
             <button className="add-to-cart-button" onClick={addToCart}>
               Add to Cart
             </button>
