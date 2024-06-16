@@ -23,6 +23,191 @@ public class OrderController {
 
     @PostMapping("/order")
     public ResponseEntity<?> createOrder(@RequestBody Map<String, Object> orderData) {
+        return createOrUpdateOrder(orderData);
+    }
+
+    @DeleteMapping("/order/{orderId}")
+    public ResponseEntity<?> createOrder(@PathVariable String orderId) throws ExecutionException, InterruptedException {
+        return deleteOrderAndSupplierOrders(orderId);
+    }
+
+    @PutMapping("/retryOrder/{orderId}")
+    public ResponseEntity<?> updateOrderStatus(@PathVariable String orderId) throws IOException {
+        Firestore db = FirestoreClient.getFirestore();
+        try {
+            // Fetch the old order
+            DocumentReference orderRef = db.collection("orders").document(orderId);
+            ApiFuture<DocumentSnapshot> future = orderRef.get();
+            DocumentSnapshot oldOrderSnapshot = future.get();
+            if(oldOrderSnapshot.get("status") == "CONFIRMED" || oldOrderSnapshot.get("status") == "SHIPPED"|| oldOrderSnapshot.get("status") == "DELIVERED"){
+                return ResponseEntity.status(404).body("Order already CONFIRMED,SHIPPED or DELIVERED");
+            }
+
+            if (!oldOrderSnapshot.exists()) {
+                return ResponseEntity.status(404).body("Order not found");
+            }
+
+            // Copy the old order data and update status
+            Map<String, Object> oldOrderData = oldOrderSnapshot.getData();
+            if (oldOrderData == null) {
+                return ResponseEntity.status(404).body("Old order data is null");
+            }
+            // Call the createOrUpdateOrder function to create a new order with updated data
+
+            return createOrUpdateOrder(oldOrderData);
+
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error updating order");
+        }
+    }
+
+    @PutMapping("/supplierOrder")
+    public ResponseEntity<?> updateSupplierOrderStatus(@RequestParam String orderId, @RequestBody Map<String, Object> updateData) {
+        Firestore db = FirestoreClient.getFirestore();
+        String userId = (String) updateData.get("userId");
+        String newStatus = (String) updateData.get("status");
+
+        try {
+            // Fetch supplier document to get API endpoint and API key
+            DocumentReference supplierDocRef = db.collection("users").document(userId);
+            DocumentSnapshot supplierDoc = supplierDocRef.get().get();
+            if (supplierDoc.exists()) {
+                String apiUrl = supplierDoc.getString("endpoint").trim() + "orders" + "/" + orderId;
+                String apiKey = supplierDoc.getString("apikey").trim();
+
+                // Create request body to update status to CANCELLED
+                Map<String, Object> Request = new HashMap<>();
+                Request.put("status", newStatus);
+
+                // Send PUT request to supplier API
+                Map<String, Object> response = sendPutRequest(apiUrl, Request, apiKey);
+                return (ResponseEntity<?>) response;
+            } else {
+                return ResponseEntity.status(404).body("Supplier not found");
+            }
+        } catch (InterruptedException | ExecutionException | IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error updating order status");
+        }
+    }
+
+    // Method to send a POST request to supplier API
+    private Map<String, Object> sendPostRequest(String apiUrl, Map<String, Object> data, String apiKey) throws IOException {
+        // Implement your HTTP POST request logic here
+        // You can use libraries like Apache HttpClient or HttpURLConnection
+        // Here is a simplified example using HttpURLConnection
+
+        URL url = new URL(apiUrl);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Apikey", apiKey); // Set Apikey as a header
+        con.setDoOutput(true);
+
+        try (OutputStream os = con.getOutputStream()) {
+            byte[] input = new Gson().toJson(data).getBytes(StandardCharsets.UTF_8);
+            os.write(input, 0, input.length);
+        }
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine = null;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            // Parse response JSON string to Map
+            return new Gson().fromJson(response.toString(), Map.class);
+        }
+    }
+
+    // Method to send PUT request
+    private Map<String, Object> sendPutRequest(String apiUrl, Map<String, Object> data, String apiKey) throws IOException {
+        URL url = new URL(apiUrl);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("PUT");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Apikey", apiKey); // Set Apikey as a header
+        con.setDoOutput(true);
+
+        try (OutputStream os = con.getOutputStream()) {
+            byte[] input = new Gson().toJson(data).getBytes(StandardCharsets.UTF_8);
+            os.write(input, 0, input.length);
+        }
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            // Parse response JSON string to Map
+            return new Gson().fromJson(response.toString(), Map.class);
+        }
+    }
+
+    // Method to send DELETE request
+    private Map<String, Object> sendDeleteRequest(String apiUrl,  String apiKey) throws IOException {
+        URL url = new URL(apiUrl);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("DELETE");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Apikey", apiKey); // Set Apikey as a header
+        con.setDoOutput(true);
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            // Parse response JSON string to Map
+            return new Gson().fromJson(response.toString(), Map.class);
+        }
+    }
+
+
+    @GetMapping("/getorders")
+    public ResponseEntity<?> getOrders(@RequestParam String userId) {
+        Firestore db = FirestoreClient.getFirestore();
+
+        // Fetch orders from the Firestore database for the given userId
+        ApiFuture<QuerySnapshot> future = db.collection("orders")
+                .whereEqualTo("userId", userId)
+                .get();
+        List<Map<String, Object>> orders = new ArrayList<>();
+        try {
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+            for (QueryDocumentSnapshot document : documents) {
+                Map<String, Object> orderData = document.getData();
+                orderData.put("orderId", document.getId()); // Add order ID to the order data
+                Map<String, Object> items = (Map<String, Object>) orderData.get("items");
+
+                // Fetch product names for each item
+                Map<String, Object> itemsWithNames = new HashMap<>();
+                for (String itemId : items.keySet()) {
+                    DocumentReference productRef = db.collection("products").document(itemId);
+                    ApiFuture<DocumentSnapshot> productFuture = productRef.get();
+                    DocumentSnapshot productSnapshot = productFuture.get();
+                    if (productSnapshot.exists()) {
+                        String productName = productSnapshot.getString("name");
+                        itemsWithNames.put(productName, items.get(itemId));
+                    } else {
+                        itemsWithNames.put(itemId, items.get(itemId)); // Fallback to ID if name not found
+                    }
+                }
+                orderData.put("items", itemsWithNames);
+                orders.add(orderData);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error fetching orders");
+        }
+
+        return ResponseEntity.ok(orders);
+    }
+
+    private ResponseEntity<?> createOrUpdateOrder(Map<String, Object> orderData){
         Firestore db = FirestoreClient.getFirestore();
 
         System.out.println("Order Data:");
@@ -97,9 +282,10 @@ public class OrderController {
         }
 
         ApiFuture<DocumentReference> future = db.collection("orders").add(customerOrder);
+        String customerOrderId = null;
         try {
             DocumentReference docRef = future.get();
-            String customerOrderId = docRef.getId();
+            customerOrderId = docRef.getId();
 
             // Create orders for suppliers and send requests
             int confirmedSuppliers = 0;
@@ -139,7 +325,7 @@ public class OrderController {
                         if (status.equals("CONFIRMED")) {
                             confirmedSuppliers++;
                         }
-                        if (status.equals("ROOTSTOCK")){
+                        if (status.equals("ROOTSTOCK")) {
                             System.out.println("ROOTSOCK on:");
                             for (Map.Entry<String, Integer> entrystock : supplierItems.entrySet()) {
                                 System.out.println(entrystock.getKey() + ": " + entrystock.getValue());
@@ -151,6 +337,10 @@ public class OrderController {
                         // Handle other responses or errors
                         // For simplicity, you can just log them
                         System.out.println("Error or unexpected response from supplier API");
+                        Map<String, Object> updateOrder = new HashMap<>();
+                        updateOrder.put("status", "CANCELLED");
+                        db.collection("orders").document(customerOrderId).update(updateOrder);
+                        System.err.println("Error creating order or sending requests to suppliers");
                     }
                 }
             }
@@ -162,7 +352,7 @@ public class OrderController {
                 updateOrder.put("status", "CONFIRMED");
                 db.collection("orders").document(customerOrderId).update(updateOrder);
                 System.out.println("Suppliers confirmed the order");
-            } else if(outOfStock) {
+            } else if (outOfStock) {
                 // Handle if not all suppliers confirmed
                 System.out.println("Some items out of stock or not enough stock");
                 for (Map.Entry<String, Map<String, Integer>> entry : itemsBySupplier.entrySet()) {
@@ -211,103 +401,85 @@ public class OrderController {
             }
         } catch (InterruptedException | ExecutionException | IOException e) {
             e.printStackTrace();
+            Map<String, Object> updateOrder = new HashMap<>();
+            updateOrder.put("status", "CANCELLED");
+            assert customerOrderId != null;
+            db.collection("orders").document(customerOrderId).update(updateOrder);
             System.err.println("Error creating order or sending requests to suppliers");
         }
         return ResponseEntity.ok("Order created successfully");
     }
 
-    // Method to send a POST request to supplier API
-    private Map<String, Object> sendPostRequest(String apiUrl, Map<String, Object> data, String apiKey) throws IOException {
-        // Implement your HTTP POST request logic here
-        // You can use libraries like Apache HttpClient or HttpURLConnection
-        // Here is a simplified example using HttpURLConnection
-
-        URL url = new URL(apiUrl);
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("Apikey", apiKey); // Set Apikey as a header
-        con.setDoOutput(true);
-
-        try (OutputStream os = con.getOutputStream()) {
-            byte[] input = new Gson().toJson(data).getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
-        }
-
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
-            StringBuilder response = new StringBuilder();
-            String responseLine = null;
-            while ((responseLine = br.readLine()) != null) {
-                response.append(responseLine.trim());
-            }
-            // Parse response JSON string to Map
-            return new Gson().fromJson(response.toString(), Map.class);
-        }
-    }
-
-    // Method to send PUT request
-    private Map<String, Object> sendPutRequest(String apiUrl, Map<String, Object> data, String apiKey) throws IOException {
-        URL url = new URL(apiUrl);
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("PUT");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("Apikey", apiKey); // Set Apikey as a header
-        con.setDoOutput(true);
-
-        try (OutputStream os = con.getOutputStream()) {
-            byte[] input = new Gson().toJson(data).getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
-        }
-
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
-            StringBuilder response = new StringBuilder();
-            String responseLine;
-            while ((responseLine = br.readLine()) != null) {
-                response.append(responseLine.trim());
-            }
-            // Parse response JSON string to Map
-            return new Gson().fromJson(response.toString(), Map.class);
-        }
-    }
-
-    @GetMapping("/getorders")
-    public ResponseEntity<?> getOrders(@RequestParam String userId) {
-        Firestore db = FirestoreClient.getFirestore();
-
-        // Fetch orders from the Firestore database for the given userId
-        ApiFuture<QuerySnapshot> future = db.collection("orders")
-                .whereEqualTo("userId", userId)
-                .get();
-        List<Map<String, Object>> orders = new ArrayList<>();
+    private ResponseEntity<?> deleteOrderAndSupplierOrders(String orderId) throws InterruptedException, ExecutionException {
         try {
-            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-            for (QueryDocumentSnapshot document : documents) {
-                Map<String, Object> orderData = document.getData();
-                Map<String, Object> items = (Map<String, Object>) orderData.get("items");
+            Firestore db = FirestoreClient.getFirestore();
 
-                // Fetch product names for each item
-                Map<String, Object> itemsWithNames = new HashMap<>();
-                for (String itemId : items.keySet()) {
-                    DocumentReference productRef = db.collection("products").document(itemId);
-                    ApiFuture<DocumentSnapshot> productFuture = productRef.get();
-                    DocumentSnapshot productSnapshot = productFuture.get();
-                    if (productSnapshot.exists()) {
-                        String productName = productSnapshot.getString("name");
-                        itemsWithNames.put(productName, items.get(itemId));
-                    } else {
-                        itemsWithNames.put(itemId, items.get(itemId)); // Fallback to ID if name not found
+            // Fetch the customer order
+            DocumentReference orderDocRef = db.collection("orders").document(orderId);
+            ApiFuture<DocumentSnapshot> futureOrder = orderDocRef.get();
+            DocumentSnapshot orderSnapshot = futureOrder.get();
+
+            if (orderSnapshot.exists()) {
+                Map<String, Object> orderData = orderSnapshot.getData();
+                if (orderData != null && orderData.containsKey("items")) {
+                    Map<String, Object> items = (Map<String, Object>) orderData.get("items");
+
+                    // Map to store product details fetched from the database
+                    Map<String, Map<String, Integer>> itemsBySupplier = new HashMap<>();
+
+                    // Fetch product details for each item
+                    for (Map.Entry<String, Object> itemEntry : items.entrySet()) {
+                        String itemId = itemEntry.getKey();
+                        Integer quantity = (Integer) itemEntry.getValue();
+
+                        // Fetch product details from the database
+                        DocumentReference productDocRef = db.collection("products").document(itemId);
+                        ApiFuture<DocumentSnapshot> productFuture = productDocRef.get();
+                        DocumentSnapshot productDoc = productFuture.get();
+
+                        if (productDoc.exists()) {
+                            String supplierId = productDoc.getString("supplierId");
+                            // Add item details to the corresponding supplier
+                            itemsBySupplier.computeIfAbsent(supplierId, k -> new HashMap<>()).put(itemId, quantity);
+                        } else {
+                            // Handle if product not found
+                            System.err.println("Product not found for ID: " + itemId);
+                        }
+                    }
+
+                    // Delete supplier orders
+                    for (Map.Entry<String, Map<String, Integer>> entry : itemsBySupplier.entrySet()) {
+                        String supplierId = entry.getKey();
+                        Map<String, Integer> supplierItems = entry.getValue();
+
+                        // Get supplier details (API endpoint and API key)
+                        DocumentSnapshot supplierDoc = db.collection("users").document(supplierId).get().get();
+                        if (supplierDoc.exists()) {
+                            String apiUrl = Objects.requireNonNull(supplierDoc.getString("endpoint")).trim() + "orders".trim() + orderId;
+                            String apiKey = Objects.requireNonNull(supplierDoc.getString("apikey")).trim();
+
+                            // Send DELETE request to supplier API
+                            Map<String, Object> response = sendDeleteRequest(apiUrl, apiKey);
+
+                            // Handle supplier response
+                            if (response == null || !response.containsKey("success") || !(Boolean) response.get("success")) {
+                                System.out.println("Error or unexpected response from supplier API");
+                            }
+                        }
                     }
                 }
-                orderData.put("items", itemsWithNames);
-                orders.add(orderData);
+
+                // Delete the customer order document
+                orderDocRef.delete();
+                return ResponseEntity.ok("Order and related supplier orders deleted successfully.");
+            } else {
+                return ResponseEntity.status(403).body("EOrder not found");
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Error fetching orders");
+            return ResponseEntity.status(500).body("Error deleting the order: " + e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        return ResponseEntity.ok(orders);
     }
-
-
 }

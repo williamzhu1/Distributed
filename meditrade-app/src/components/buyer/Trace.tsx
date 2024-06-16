@@ -8,6 +8,7 @@ interface TraceProps {
 }
 
 interface Order {
+  orderId: string;
   firstName: string;
   lastName: string;
   address: string;
@@ -50,13 +51,41 @@ const Trace: React.FC<TraceProps> = ({ user, onSwitchMode, onLogout }) => {
     fetchOrders();
   }, [user.uid]);
 
+  const handleDelete = async (orderId: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found in local storage");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/order/${orderId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Remove the deleted order from the state
+      setOrders((prevOrders) => prevOrders.filter((order) => order.orderId !== orderId));
+    } catch (error) {
+      console.error("Error deleting order:", error);
+    }
+  };
+
   return (
     <div className={styles.tracePage}>
       <div className={styles.traceContainer}>
         <h1>Order Status</h1>
         {orders.map((order, index) => (
           <div key={index} className={styles.orderContainer}>
-            <h2>Order for {order.firstName} {order.lastName}</h2>
+            <h2>Order ID: {order.orderId}</h2>
+            <h3>Order for {order.firstName} {order.lastName}</h3>
             <p>Address: {order.address}</p>
             <p>Status: {order.status}</p>
             <h3>Items:</h3>
@@ -67,6 +96,7 @@ const Trace: React.FC<TraceProps> = ({ user, onSwitchMode, onLogout }) => {
                 </li>
               ))}
             </ul>
+            <button onClick={() => handleDelete(order.orderId)} className={styles.deleteButton}>Delete Order</button>
           </div>
         ))}
       </div>
