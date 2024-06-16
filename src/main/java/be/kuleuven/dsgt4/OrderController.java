@@ -140,6 +140,10 @@ public class OrderController {
                         if (status.equals("CONFIRMED")) {
                             confirmedSuppliers++;
                         }
+                        if (status.equals("ROOTSTOCK")){
+
+                        }
+
                     } else {
                         // Handle other responses or errors
                         // For simplicity, you can just log them
