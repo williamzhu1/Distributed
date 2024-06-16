@@ -80,6 +80,8 @@ const SinglePageApp: React.FC = () => {
         setUser(user);
         setIsLoggedIn(true);
         setMode(registerData.role === "customer" ? "home" : "supplierHome");
+        const token = await userCredential.user.getIdToken();
+        localStorage.setItem("token", token);
       }
     } catch (error: any) {
       console.error("Error in user registration:", error.message);
