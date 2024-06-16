@@ -1,205 +1,334 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import React, { useState, useEffect } from "react";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../firebase-config";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import "./login_register.css";
 import logo from "../../assets/images/logo.jpeg";
+import storageImg from "../../assets/images/storage.jpeg";
+import ordersImg from "../../assets/images/orders.jpeg";
 import Footer from "../common/Footer";
-import { useUser } from "../../contexts/UserContext";
 
-const Login: React.FC = () => {
-  const navigate = useNavigate();
-  const { setUser } = useUser();
-  const [mode, setMode] = useState<"customer" | "supplier">("customer");
-  const [loginData, setLoginData] = useState({
+const SinglePageApp: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [mode, setMode] = useState<"login" | "register" | "home" | "manageProducts" | "supplierHome" | "viewOrders">("login");
+  const [user, setUser] = useState<any>(null);
+  const [loginData, setLoginData] = useState({ email: "", password: "" });
+  const [registerData, setRegisterData] = useState({
     email: "",
+    username: "",
     password: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
+    address: "",
+    companyName: "",
+    role: "customer",
   });
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
+  const [products, setProducts] = useState<any[]>([]);
+  const [newProduct, setNewProduct] = useState({
+    id: 0,
+    name: "",
+    price: "",
+    genre: "",
+    origin: "",
+    details: "",
+    supplierId: "",
   });
 
-  // Validate form data
-  const validateForm = () => {
-    let isValid = true;
-    const newErrors = {
-      email: "",
-      password: "",
-    };
-
-    if (!loginData.email) {
-      newErrors.email = "Email is required";
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(loginData.email)) {
-      newErrors.email = "Email is invalid";
-      isValid = false;
-    }
-
-    if (loginData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-      isValid = false;
-    }
-
-    setErrors(newErrors);
-    return isValid;
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (validateForm()) {
-      try {
-        const userCredential = await signInWithEmailAndPassword(
-          auth,
-          loginData.email,
-          loginData.password,
-        );
-        console.log("User signed in:", userCredential);
-        const token = await userCredential.user.getIdToken();
-        const userId = userCredential.user.uid;
-        console.log("Token:", token);
-
-        const userRole = await fetchUserRole(userId);
-        console.log("User Role:", userRole);
-
-        localStorage.setItem("token", token);
-
-        // await sendTokenToBackend();
-
-        const userDocRef = doc(db, "users", userId);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-            setUser({ ...userCredential.user, ...userDoc.data() });
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, loginData.email, loginData.password);
+      setIsLoggedIn(true);
+      const userId = userCredential.user.uid;
+      const userDoc = await getDoc(doc(db, "users", userId));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        setUser({ ...userCredential.user, ...userData });
+        if (userData.role === "manager") {
+          setMode("supplierHome");
         } else {
-            setUser(userCredential.user);
+          setMode("home");
         }
-
-        if (userRole === "customer") {
-          navigate("/home");
-        } else if (userRole === "manager") {
-          navigate("/supplier");
-        } else {
-          throw new Error("Invalid user role");
-        }
-      } catch (error: any) {
-        console.error("Error in user login:", error.message);
-        setErrors({ ...errors, password: error.message });
       }
+    } catch (error) {
+      console.error("Error logging in:", error);
     }
   };
 
-  const fetchUserRole = async (uid: string | null) => {
-    if (!uid) throw new Error("No email found for the user");
-
-    const userDocRef = doc(db, "users", uid);
-    const userDoc = await getDoc(userDocRef);
-
-    if (userDoc.exists()) {
-      const userData = userDoc.data();
-      return userData.role;
-    } else {
-      throw new Error("User document does not exist");
-    }
-  };
-
-  const sendTokenToBackend = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("No token found in local storage");
+  const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (registerData.password !== registerData.confirmPassword) {
+      alert("Passwords do not match");
       return;
     }
-
     try {
-      const response = await fetch("http://localhost:8080/api/usertest", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ additionalData: "yourData" }),
+      const userCredential = await createUserWithEmailAndPassword(auth, registerData.email, registerData.password);
+      const user = userCredential.user;
+      await setDoc(doc(db, "users", user.uid), {
+        ...registerData,
+        role: registerData.role === "supplier" ? "manager" : "customer",
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to send token to backend");
-      }
-
-      const responseData = await response.json();
-      console.log("Response data:", responseData);
+      setIsLoggedIn(true);
+      setUser(user);
+      setMode(registerData.role === "supplier" ? "supplierHome" : "home");
     } catch (error) {
-      console.error("Error sending token to backend:", error);
+      console.error("Error registering:", error);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLoginData({ ...loginData, [e.target.name]: e.target.value });
+  const fetchProducts = async () => {
+    // Implement the fetch products logic here
+  };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchProducts();
+    }
+  }, [isLoggedIn]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (mode === "login") {
+      setLoginData({ ...loginData, [e.target.name]: e.target.value });
+    } else if (mode === "register") {
+      setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+    } else {
+      setNewProduct({ ...newProduct, [e.target.name]: e.target.value });
+    }
+  };
+
+  const handleAddProduct = async () => {
+    // Implement the add product logic here
+  };
+
+  const handleDeleteProduct = async (id: number) => {
+    // Implement the delete product logic here
+  };
+
+  const handleEditProduct = (id: number) => {
+    const product = products.find((product) => product.id === id);
+    if (product) {
+      setNewProduct(product);
+    }
+  };
+
+  const handleUpdateProduct = async () => {
+    // Implement the update product logic here
   };
 
   return (
-    <div className="login-register-background">
-      <div className="login-container">
-        <img src={logo} alt="MediTrade Logo" className="logo-img" />
-        <h1 className="login-header">Sign In</h1>
-        <div className="login-mode-toggle">
-          <button
-            className={`toggle-button ${mode === "customer" ? "active" : ""}`}
-            onClick={() => setMode("customer")}
-          >
-            Customer
-          </button>
-          <button
-            className={`toggle-button ${mode === "supplier" ? "active" : ""}`}
-            onClick={() => setMode("supplier")}
-          >
-            Supplier
-          </button>
-        </div>
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
+    <div className="single-page-app">
+      {mode === "login" && (
+        <div className="login-container">
+          <img src={logo} alt="Logo" className="logo-img" />
+          <h1 className="header">Sign In</h1>
+          <form onSubmit={handleLogin} className="form">
             <input
               type="email"
-              id="email"
               name="email"
+              placeholder="Email"
               value={loginData.email}
               onChange={handleChange}
-              className={errors.email ? "input-error" : ""}
             />
-            {errors.email && <p className="error-message">{errors.email}</p>}
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
             <input
               type="password"
-              id="password"
               name="password"
+              placeholder="Password"
               value={loginData.password}
               onChange={handleChange}
-              className={errors.password ? "input-error" : ""}
             />
-            {errors.password && (
-              <p className="error-message">{errors.password}</p>
-            )}
-          </div>
-          <button type="submit" className="login-button">
-            SIGN IN
-          </button>
-        </form>
-        <div className="switch-to-register">
-          <a
-            href="/register"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("/register");
-            }}
-          >
-            Don't have an account? Register!
-          </a>
+            <button type="submit">SIGN IN</button>
+          </form>
+          <button onClick={() => setMode("register")}>Register</button>
         </div>
-      </div>
+      )}
+      {mode === "register" && (
+        <div className="register-container">
+          <img src={logo} alt="Logo" className="logo-img" />
+          <h1 className="header">Register</h1>
+          <form onSubmit={handleRegister} className="form">
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={registerData.email}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              value={registerData.username}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              name="firstName"
+              placeholder="First Name"
+              value={registerData.firstName}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Last Name"
+              value={registerData.lastName}
+              onChange={handleChange}
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={registerData.password}
+              onChange={handleChange}
+            />
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              value={registerData.confirmPassword}
+              onChange={handleChange}
+            />
+            {registerData.role === "customer" ? (
+              <input
+                type="text"
+                name="address"
+                placeholder="Address"
+                value={registerData.address}
+                onChange={handleChange}
+              />
+            ) : (
+              <input
+                type="text"
+                name="companyName"
+                placeholder="Company Name"
+                value={registerData.companyName}
+                onChange={handleChange}
+              />
+            )}
+            <button type="submit">REGISTER</button>
+          </form>
+          <button onClick={() => setMode("login")}>Sign In</button>
+        </div>
+      )}
+      {mode === "home" && (
+        <div className="home-container">
+          <h1>Welcome to the Home Page!</h1>
+          <div className="product-list">
+            {products.map((product) => (
+              <div key={product.id} className="product-item">
+                <h3>{product.name}</h3>
+                <p>{product.price}</p>
+                <p>{product.genre}</p>
+                <p>{product.origin}</p>
+                <p>{product.details}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {mode === "manageProducts" && (
+        <div className="manage-products-container">
+          <h1>Manage Products</h1>
+          <form className="product-form">
+            <input
+              type="text"
+              name="name"
+              placeholder="Product Name"
+              value={newProduct.name}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              name="price"
+              placeholder="Price"
+              value={newProduct.price}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              name="genre"
+              placeholder="Genre"
+              value={newProduct.genre}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              name="origin"
+              placeholder="Origin"
+              value={newProduct.origin}
+              onChange={handleChange}
+            />
+            <textarea
+              name="details"
+              placeholder="Product Details"
+              value={newProduct.details}
+              onChange={handleChange}
+            ></textarea>
+            <button onClick={handleAddProduct}>
+              {newProduct.id === 0 ? "Add Product" : "Update Product"}
+            </button>
+          </form>
+          <div className="product-list">
+            {products.map((product) => (
+              <div key={product.id} className="product-item">
+                <h3>{product.name}</h3>
+                <p>{product.price}</p>
+                <p>{product.genre}</p>
+                <p>{product.origin}</p>
+                <p>{product.details}</p>
+                <button onClick={() => handleEditProduct(product.id)}>Edit</button>
+                <button onClick={() => handleDeleteProduct(product.id)}>Delete</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {mode === "supplierHome" && (
+        <div className="supplier-home-page">
+          <div className="supplier-content">
+            <h1>Welcome to the Supplier Page!</h1>
+            <div className="supplier-actions">
+              <div className="action-card">
+                <div className="image-container">
+                  <img src={storageImg} alt="Manage Products" />
+                </div>
+                <h2>Manage Products</h2>
+                <p>Keep your inventory up-to-date with ease.</p>
+                <button
+                  className="action-button"
+                  onClick={() => setMode("manageProducts")}
+                >
+                  Go to Product Management
+                </button>
+              </div>
+              <div className="action-card">
+                <div className="image-container">
+                  <img src={ordersImg} alt="View Orders" />
+                </div>
+                <h2>View Orders</h2>
+                <p>Monitor your sales and fulfill orders efficiently.</p>
+                <button
+                  className="action-button"
+                  onClick={() => setMode("viewOrders")}
+                >
+                  View Orders
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {mode === "viewOrders" && (
+        <div className="view-orders-page">
+          <h1>View Orders</h1>
+          {/* Here you can add the logic and UI for viewing orders */}
+          <button onClick={() => setMode("supplierHome")}>Back to Supplier Home</button>
+        </div>
+      )}
       <Footer />
     </div>
   );
 };
 
-export default Login;
+export default SinglePageApp;

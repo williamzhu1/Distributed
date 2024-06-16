@@ -11,6 +11,7 @@ interface Product {
   origin: string;
   details: string;
   image: string | null;
+  supplierId: string; // Added supplierId to the Product interface
 }
 
 const initialProducts: Product[] = [
@@ -22,6 +23,7 @@ const initialProducts: Product[] = [
     origin: "China",
     details: "A refreshing herbal tea from the mountains of China.",
     image: null,
+    supplierId: "supplier1", // Example supplier ID
   },
   // Add more initial products as needed
 ];
@@ -36,6 +38,7 @@ const ManageProducts: React.FC = () => {
     origin: "",
     details: "",
     image: null,
+    supplierId: "supplier1", // Example supplier ID
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -53,22 +56,69 @@ const ManageProducts: React.FC = () => {
     }
   };
 
-  const addProduct = () => {
-    setProducts([...products, newProduct]);
-    setNewProduct({
-      id: products.length + 1,
-      name: "",
-      price: "",
-      genre: "",
-      origin: "",
-      details: "",
-      image: null,
-    });
-    setImagePreview(null);
+  const addProduct = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(newProduct),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json(); // Parse the response as JSON
+      console.log(data);
+      setProducts([...products, { ...newProduct, id: data.id }]); // Use the returned ID
+      setNewProduct({
+        id: products.length + 1,
+        name: "",
+        price: "",
+        genre: "",
+        origin: "",
+        details: "",
+        image: null,
+        supplierId: "supplier1", // Example supplier ID
+      });
+      setImagePreview(null);
+    } catch (error) {
+      console.error("Error adding product:", error);
+    }
   };
 
-  const deleteProduct = (id: number) => {
-    setProducts(products.filter((product) => product.id !== id));
+
+
+
+  const deleteProduct = async (id: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+
+      const response = await fetch(`/api/products/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      setProducts(products.filter((product) => product.id !== id));
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
   };
 
   const editProduct = (id: number) => {
@@ -79,22 +129,45 @@ const ManageProducts: React.FC = () => {
     }
   };
 
-  const updateProduct = () => {
-    setProducts(
-      products.map((product) =>
-        product.id === newProduct.id ? newProduct : product,
-      ),
-    );
-    setNewProduct({
-      id: products.length + 1,
-      name: "",
-      price: "",
-      genre: "",
-      origin: "",
-      details: "",
-      image: null,
-    });
-    setImagePreview(null);
+  const updateProduct = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+
+      const response = await fetch(`/api/products/${newProduct.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(newProduct),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log(data);
+      setProducts(
+        products.map((product) =>
+          product.id === newProduct.id ? newProduct : product,
+        ),
+      );
+      setNewProduct({
+        id: products.length + 1,
+        name: "",
+        price: "",
+        genre: "",
+        origin: "",
+        details: "",
+        image: null,
+        supplierId: "supplier1", // Example supplier ID
+      });
+      setImagePreview(null);
+    } catch (error) {
+      console.error("Error updating product:", error);
+    }
   };
 
   return (
@@ -177,9 +250,7 @@ const ManageProducts: React.FC = () => {
                   />
                 )}
                 <button onClick={() => editProduct(product.id)}>Edit</button>
-                <button onClick={() => deleteProduct(product.id)}>
-                  Delete
-                </button>
+                <button onClick={() => deleteProduct(product.id)}>Delete</button>
               </li>
             ))}
           </ul>

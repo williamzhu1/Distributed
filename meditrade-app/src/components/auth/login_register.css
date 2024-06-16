@@ -1,194 +1,94 @@
-html,
-body {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-}
+/* single_page.css */
 
-.login-register-background {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-image: url("../../assets/images/background.jpeg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  position: relative;
-  opacity: 0.8; /* Adjust the opacity of the background image */
-  min-height: 100vh; /* Ensures the background takes full height */
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(
-    255,
-    255,
-    255,
-    0.6
-  ); /* Semi-transparent white overlay */
-  z-index: -1; /* Ensure the overlay is behind other content */
-}
-
-.register-container,
-.login-container {
-  background-color: rgba(255, 255, 255, 0.999);
-  backdrop-filter: blur(5px);
+.single-page-app {
+  font-family: Arial, sans-serif;
   padding: 20px;
-  width: 90%; /* Adjust width as needed */
-  max-width: 400px;
-  margin: 40px auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-  border-radius: 8px;
-  font-family: "Open Sans", sans-serif;
-}
-
-.register-header,
-.login-header {
-  font-size: 24px; /* Adjust the font size as needed */
-  text-align: center;
-  margin-bottom: 20px;
 }
 
 .logo-img {
-  width: calc(50% - 20px); /* Adjust the width as needed */
+  width: 150px;
+  display: block;
   margin: 0 auto;
-  display: block;
-  max-width: 200px; /* Set maximum width for responsiveness */
 }
 
-.register-mode-toggle {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.login-mode-toggle {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.toggle-button {
-  background-color: #ddd;
-  border: none;
-  padding: 10px 20px;
-  margin: 0 10px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  border-radius: 10px; /* Add this line */
-}
-
-.toggle-button.active {
-  background-color: #4caf50;
-  color: white;
-}
-
-.toggle-button:hover {
-  background-color: #4caf50;
-  color: white;
-}
-
-h1 {
-  color: #333;
+.header {
   text-align: center;
 }
 
-.form-group {
-  margin-bottom: 20px;
+.form {
+  max-width: 400px;
+  margin: 0 auto;
 }
 
-label {
-  display: block;
-  margin-bottom: 5px;
-  color: #333;
-}
-
-input[type="email"],
-input[type="password"],
-input[type="text"] {
-  box-sizing: border-box;
+.form input,
+.form textarea {
   width: 100%;
   padding: 10px;
+  margin-bottom: 10px;
+}
+
+.form button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.product-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.product-item {
   border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-  font-size: 16px;
-}
-
-.input-error {
-  border-color: red;
-}
-
-.error-message {
-  color: red;
-  font-size: 0.8rem;
-  margin-top: 5px;
-}
-
-.register-button,
-.login-button {
-  background-color: #4caf50;
-  color: white;
-  padding: 12px 20px;
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: 5px;
-  cursor: pointer;
-  display: block;
-  width: 100%;
-  transition: background-color 0.3s;
-}
-
-.register-button:hover,
-.login-button:hover {
-  background: linear-gradient(145deg, #2e7d32, #43a047);
-}
-
-.switch-to-login,
-.switch-to-register {
-  text-align: center;
-  margin-top: 10px;
-}
-
-.switch-to-login a,
-.switch-to-register a {
-  background: transparent;
-  border: none;
-  color: gray;
   padding: 10px;
-  text-decoration: underline;
+  width: 200px;
+}
+
+.product-item img {
+  max-width: 100%;
+}
+
+.supplier-home-page,
+.manage-products-container,
+.view-orders-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.supplier-content {
+  text-align: center;
+}
+
+.supplier-actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.action-card {
+  width: 200px;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.image-container {
+  text-align: center;
+}
+
+.action-card img {
+  max-width: 100%;
+}
+
+.action-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
   cursor: pointer;
-}
-
-body,
-input,
-button,
-label {
-  font-family: "Montserrat", sans-serif;
-}
-
-/* Responsive styles */
-@media only screen and (max-width: 600px) {
-  .register-container,
-  .login-container {
-    width: 90%;
-  }
-}
-
-@media only screen and (max-width: 400px) {
-  .register-container,
-  .login-container {
-    width: 100%;
-    margin: 20px auto;
-    padding: 10px;
-  }
+  margin-top: 10px;
 }
