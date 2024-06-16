@@ -134,6 +134,32 @@ public class OrderController {
         return ResponseEntity.ok("Order created successfully" );
     }
 
+
+    @PostMapping("/supplierorders")
+    public ResponseEntity<?> fetchSupplierOrders(@RequestBody String email) {
+        try {
+
+            QuerySnapshot snapshot = db.collection("users").whereEqualTo("email", email).get().get();
+            if (snapshot.getDocuments().isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Assuming there is exactly one matching document.
+            QueryDocumentSnapshot userDoc = snapshot.getDocuments().get(0);
+            String apikey = userDoc.getString("apikey");
+            String endpoint = userDoc.getString("endpoint");
+
+            String apiUrl = endpoint + "/orders";
+            ResponseEntity<String> response = restTemplate.exchange(apiUrl, org.springframework.http.HttpMethod.GET, entity, String.class);
+
+            return response;
+            } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Failed to fetch supplier orders due to an error.");
+        }
+    }
+
     // Method to send a POST request to supplier API
     private Map<String, Object> sendPostRequest(String apiUrl, Map<String, Object> data, String apiKey) throws IOException {
         // Implement your HTTP POST request logic here

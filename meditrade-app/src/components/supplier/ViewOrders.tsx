@@ -1,5 +1,5 @@
 // src/components/supplier/ViewOrders.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./view_orders.css";
 
 interface Order {
@@ -19,30 +19,41 @@ interface ViewOrdersProps {
   onLogout: () => void;
 }
 
-const initialOrders: Order[] = [
-  {
-    id: 1,
-    customerName: "John Doe",
-    product: "Herbal Tea",
-    quantity: 2,
-    totalPrice: "$20.00",
-    address: "123 Main St, City, Country",
-    status: "Pending",
-  },
-  {
-    id: 2,
-    customerName: "Jane Smith",
-    product: "Ginseng Extract",
-    quantity: 1,
-    totalPrice: "$25.00",
-    address: "456 Elm St, City, Country",
-    status: "Shipped",
-  },
-  // Add more initial orders as needed
-];
+async function fetchOrders() {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No token found");
+    }
+    const response = await fetch("/api/supplierorders", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({  }),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return [];
+  }
+}
 
 const ViewOrders: React.FC<ViewOrdersProps> = ({ user, onSwitchMode, onLogout }) => {
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    const loadOrders = async () => {
+      const fetchedOrders = await fetchOrders();
+      setOrders(fetchedOrders);
+    };
+    loadOrders();
+  }, []);
 
   const updateOrderStatus = (
     id: number,
@@ -82,10 +93,6 @@ const ViewOrders: React.FC<ViewOrdersProps> = ({ user, onSwitchMode, onLogout })
       ),
     );
   };
-
-  const deliveredOrders = orders.filter(
-    (order) => order.status === "Delivered",
-  );
 
   return (
     <div className="view-orders-page">
