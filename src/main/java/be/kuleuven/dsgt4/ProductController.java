@@ -8,113 +8,95 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api")
 public class ProductController {
 
-    private static final Logger LOGGER = Logger.getLogger(ProductController.class.getName());
-
     @PostMapping("/reload-products")
     public ResponseEntity<?> reloadProducts() {
-        Firestore db = FirestoreClient.getFirestore();
-        List<Map<String, String>> endpointsAndKeys = new ArrayList<>();
-
-        // Step 1: Fetch user data to get endpoints, API keys, and user IDs
         try {
-            ApiFuture<QuerySnapshot> usersQuery = db.collection("users").get();
-            QuerySnapshot usersSnapshot = usersQuery.get();
-            for (DocumentSnapshot document : usersSnapshot.getDocuments()) {
-                Map<String, Object> userData = document.getData();
-                if (userData != null && userData.containsKey("endpoint") && userData.containsKey("apikey")) {
-                    String userId = document.getId(); // Get the user ID
-                    Map<String, String> endpointAndKey = new HashMap<>();
-                    endpointAndKey.put("endpoint", (String) userData.get("endpoint"));
-                    endpointAndKey.put("apikey", (String) userData.get("apikey"));
-                    endpointAndKey.put("userId", userId); // Add user ID to the endpoint and key data
-                    endpointsAndKeys.add(endpointAndKey);
-                }
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            LOGGER.log(Level.SEVERE, "Error fetching user data from Firestore", e);
-            return ResponseEntity.status(500).body("Error fetching user data");
-        }
+            Firestore db = FirestoreClient.getFirestore();
 
-        List<Map<String, Object>> allProducts = new ArrayList<>();
-        RestTemplate restTemplate = new RestTemplate();
-
-        // Step 2: Fetch products from each endpoint
-        for (Map<String, String> endpointAndKey : endpointsAndKeys) {
-            String userId = endpointAndKey.get("userId"); // Get the user ID
-            String apiUrl = endpointAndKey.get("endpoint").trim() + "items";
-            String apikey = endpointAndKey.get("apikey");
-
-            LOGGER.log(Level.SEVERE, "Fetching products from: " + apiUrl);
-            LOGGER.log(Level.SEVERE, "Using API key: " + apikey);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Apikey", apikey);
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-
-            try {
-                if (!apiUrl.startsWith("http://")) {
-                    LOGGER.log(Level.WARNING, "Skipping non-absolute URL: {0}", apiUrl);
-                    continue;
-                }
-                ResponseEntity<Map> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.GET, entity, Map.class);
-                Map<String, Object> response = responseEntity.getBody();
-
-//                if (response == null) {
-//                    LOGGER.log(Level.WARNING, "Error fetching items from external API at {0}", apiUrl);
-//                    continue;
-//                }
-
-                List<Map<String, Object>> items = (List<Map<String, Object>>) response.get("data");
-
-                // Step 3: Add user ID to each fetched product
-                for (Map<String, Object> item : items) {
-                    item.put("userId", userId); // Add user ID to the product
-                }
-
-                allProducts.addAll(items);
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Error fetching items from external API at " + apiUrl, e);
-                return ResponseEntity.status(500).body("Error fetching items from external API at " + apiUrl + ": " + e.getMessage());
-            }
-        }
-
-        // Step 4: Store the fetched products in Firestore
-        List<ApiFuture<WriteResult>> futures = new ArrayList<>();
-        for (Map<String, Object> item : allProducts) {
-            ApiFuture<WriteResult> future = db.collection("products").document((String) item.get("id")).set(item);
-            futures.add(future);
-        }
-
-        try {
-            for (ApiFuture<WriteResult> future : futures) {
-                future.get();
-            }
-
-            // Step 5: Retrieve the updated list of products from Firestore
-            List<Map<String, Object>> updatedProducts = new ArrayList<>();
-            ApiFuture<QuerySnapshot> query = db.collection("products").get();
+            // Query to fetch managers
+            ApiFuture<QuerySnapshot> query = db.collection("users").whereEqualTo("role", "manager").get();
             QuerySnapshot querySnapshot = query.get();
-            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                Map<String, Object> product = document.getData();
-                product.put("id", document.getId());
-                updatedProducts.add(product);
+            List<QueryDocumentSnapshot> managerDocs = querySnapshot.getDocuments();
+
+            List<Map<String, Object>> allProducts = new ArrayList<>();
+
+            for (QueryDocumentSnapshot managerDoc : managerDocs) {
+                String apiUrl = ((String) Objects.requireNonNull(managerDoc.get("endpoint"))).trim() + "items";
+                String apiKey = ((String) Objects.requireNonNull(managerDoc.get("apikey"))).trim();
+                System.out.println("Manager: " + managerDoc.getId());
+                System.out.println("Endpoint URL: " + apiUrl);
+                System.out.println("API Key: " + apiKey);
+
+                RestTemplate restTemplate = new RestTemplate();
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("Apikey", apiKey);
+
+                HttpEntity<String> entity = new HttpEntity<>(headers);
+                System.out.println("Request Headers: " + headers);
+
+                try {
+                    ResponseEntity<Map> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.GET, entity, Map.class);
+                    Map<String, Object> response = responseEntity.getBody();
+                    System.out.println("ResponseEntity: " + responseEntity);
+                    System.out.println("Response: " + response);
+
+                    if (response == null || !Boolean.TRUE.equals(response.get("success"))) {
+                        System.err.println("Error fetching items from external API for manager: " + managerDoc.getId());
+                        continue;  // Skip to the next manager
+                    }
+
+                    List<Map<String, Object>> items = (List<Map<String, Object>>) response.get("data");
+
+                    List<ApiFuture<WriteResult>> futures = new ArrayList<>();
+
+                    for (Map<String, Object> item : items) {
+                        // Set supplierId as manager's id
+                        item.put("supplierId", managerDoc.getId());
+                        String itemId = (String) item.get("id");
+                        DocumentReference docRef = db.collection("products").document(itemId);
+                        ApiFuture<WriteResult> future = docRef.set(item, SetOptions.merge());
+                        futures.add(future);
+                    }
+
+                    // Wait for all writes to complete
+                    for (ApiFuture<WriteResult> future : futures) {
+                        future.get();
+                    }
+
+                    // Retrieve the updated list of products from Firestore
+                    List<Map<String, Object>> managerProducts = new ArrayList<>();
+                    ApiFuture<QuerySnapshot> productQuery = db.collection("products").whereEqualTo("supplierId", managerDoc.getId()).get();
+                    QuerySnapshot productQuerySnapshot = productQuery.get();
+                    for (DocumentSnapshot document : productQuerySnapshot.getDocuments()) {
+                        Map<String, Object> product = document.getData();
+                        product.put("id", document.getId());
+                        managerProducts.add(product);
+                    }
+                    allProducts.addAll(managerProducts);
+                } catch (HttpClientErrorException.Unauthorized unauthorizedException) {
+                    System.err.println("Unauthorized access to the external API for manager: " + managerDoc.getId());
+                    // Skip to the next manager
+                } catch (Exception e) {
+                    System.err.println("Error fetching items from external API for manager: " + managerDoc.getId() + " - " + e.getMessage());
+                    e.printStackTrace();
+                    // Skip to the next manager
+                }
             }
 
-            return ResponseEntity.ok(updatedProducts);
+            return ResponseEntity.ok(allProducts);
         } catch (InterruptedException | ExecutionException e) {
-            LOGGER.log(Level.SEVERE, "Error uploading products to Firestore", e);
-            return ResponseEntity.status(500).body("Error uploading products to Firestore: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error uploading products to Firestore");
         }
     }
 
@@ -127,24 +109,12 @@ public class ProductController {
         try {
             DocumentReference docRef = future.get();
             System.out.println("Product created with ID: " + docRef.getId());
-
-            // Creating a response map to return as JSON
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Product added successfully");
-            response.put("id", docRef.getId());
-
-            // Return response entity with the response map
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok("Product added successfully with ID: " + docRef.getId());
         } catch (InterruptedException | ExecutionException e) {
-            // Logging the error
             e.printStackTrace();
-
-            // Returning a 500 status with error message
-            return ResponseEntity.status(500).body(Collections.singletonMap("error", "Error adding product"));
+            return ResponseEntity.status(500).body("Error adding product");
         }
     }
-
-
 
     @GetMapping("/products")
     public ResponseEntity<?> getProducts() {
