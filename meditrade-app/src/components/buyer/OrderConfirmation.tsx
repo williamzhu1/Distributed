@@ -57,7 +57,7 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cartItems, total,
           lastName: user?.lastName,
           address: address,
           items: cartItems.reduce((acc: { [key: string]: number }, item) => {
-              acc[item.id] = Number(item.quantity.toString());
+              acc[item.id] = parseInt(item.quantity.toString(), 10);
               return acc;
           }, {})
         }),

@@ -113,7 +113,7 @@ const Trace: React.FC<TraceProps> = ({ user, onSwitchMode, onLogout }) => {
   const formatItemsAsInteger = (items: { [key: string]: number }): { [key: string]: number } => {
     const formattedItems: { [key: string]: number } = {};
     for (const [productName, quantity] of Object.entries(items)) {
-      formattedItems[productName] = Math.trunc(quantity);
+      formattedItems[productName] = parseInt(quantity.toString(), 10);
     }
     console.log("Items in retry order", formattedItems);
     return formattedItems;
