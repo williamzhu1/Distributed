@@ -27,12 +27,12 @@ public class OrderController {
     }
 
     @DeleteMapping("/order/{orderId}")
-    public ResponseEntity<?> createOrder(@PathVariable String orderId) throws ExecutionException, InterruptedException {
+    public ResponseEntity<?> deleteOrder(@PathVariable String orderId) throws ExecutionException, InterruptedException {
         return deleteOrderAndSupplierOrders(orderId);
     }
 
     @PutMapping("/retryOrder/{orderId}")
-    public ResponseEntity<?> updateOrderStatus(@PathVariable String orderId) throws IOException {
+    public ResponseEntity<?> retryOrder(@PathVariable String orderId) throws IOException {
         Firestore db = FirestoreClient.getFirestore();
         try {
             // Fetch the old order
@@ -62,6 +62,29 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/supplierOrder")
+    public ResponseEntity<?> getOrders(@RequestParam String orderId, @RequestBody Map<String, Object> updateData) {
+        Firestore db = FirestoreClient.getFirestore();
+        String userId = (String) updateData.get("userId");
+        try {
+            // Fetch supplier document to get API endpoint and API key
+            DocumentReference supplierDocRef = db.collection("users").document(userId);
+            DocumentSnapshot supplierDoc = supplierDocRef.get().get();
+            if (supplierDoc.exists()) {
+                String apiUrl = supplierDoc.getString("endpoint").trim() + "orders" + "/" + orderId;
+                String apiKey = supplierDoc.getString("apikey").trim();
+                // Send PUT request to supplier API
+                Map<String, Object> response = sendGetRequest(apiUrl, apiKey);
+                return (ResponseEntity<?>) response;
+            } else {
+                return ResponseEntity.status(404).body("Supplier not found");
+            }
+        } catch (InterruptedException | ExecutionException | IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error fetching orders");
+        }
+    }
+
     @PutMapping("/supplierOrder")
     public ResponseEntity<?> updateSupplierOrderStatus(@RequestParam String orderId, @RequestBody Map<String, Object> updateData) {
         Firestore db = FirestoreClient.getFirestore();
@@ -73,8 +96,8 @@ public class OrderController {
             DocumentReference supplierDocRef = db.collection("users").document(userId);
             DocumentSnapshot supplierDoc = supplierDocRef.get().get();
             if (supplierDoc.exists()) {
-                String apiUrl = supplierDoc.getString("endpoint").trim() + "orders" + "/" + orderId;
-                String apiKey = supplierDoc.getString("apikey").trim();
+                String apiUrl = Objects.requireNonNull(supplierDoc.getString("endpoint")).trim() + "orders" + "/" + orderId;
+                String apiKey = Objects.requireNonNull(supplierDoc.getString("apikey")).trim();
 
                 // Create request body to update status to CANCELLED
                 Map<String, Object> Request = new HashMap<>();
@@ -113,6 +136,24 @@ public class OrderController {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
             StringBuilder response = new StringBuilder();
             String responseLine = null;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            // Parse response JSON string to Map
+            return new Gson().fromJson(response.toString(), Map.class);
+        }
+    }
+    // Method to send GET request
+    private Map<String, Object> sendGetRequest(String apiUrl, String apiKey) throws IOException {
+        URL url = new URL(apiUrl);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Apikey", apiKey); // Set Apikey as a header
+        con.setDoOutput(true);
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine;
             while ((responseLine = br.readLine()) != null) {
                 response.append(responseLine.trim());
             }
