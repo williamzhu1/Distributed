@@ -127,7 +127,9 @@ const Trace: React.FC<TraceProps> = ({ user, onSwitchMode, onLogout }) => {
                 </li>
               ))}
             </ul>
+            {(order.status === "ROOTSTOCK" || order.status === "CANCELLED") && (
             <button onClick={() => handleDelete(order.orderId)} className={styles.deleteButton}>Delete Order</button>
+            )}
             {(order.status === "ROOTSTOCK" || order.status === "CANCELLED") && (
               <button onClick={() => handleRetry(order.orderId)} className={styles.retryButton}>Retry Order</button>
             )}
