@@ -4,8 +4,12 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.gson.Gson;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -81,25 +85,41 @@ public class OrderController {
     }
 
     @GetMapping("/supplierOrder")
-    public ResponseEntity<?> getOrders(@RequestParam String orderId, @RequestBody Map<String, Object> updateData) {
+    public ResponseEntity<?> getSupplierOrders(@RequestParam String userId) {
         Firestore db = FirestoreClient.getFirestore();
-        String userId = (String) updateData.get("userId");
+
         try {
             // Fetch supplier document to get API endpoint and API key
             DocumentReference supplierDocRef = db.collection("users").document(userId);
             DocumentSnapshot supplierDoc = supplierDocRef.get().get();
             if (supplierDoc.exists()) {
-                String apiUrl = Objects.requireNonNull(supplierDoc.getString("endpoint")).trim() + "orders" + "/" + orderId;
+                String apiUrl = Objects.requireNonNull(supplierDoc.getString("endpoint")).trim() + "orders";
                 String apiKey = Objects.requireNonNull(supplierDoc.getString("apikey")).trim();
-                // Send PUT request to supplier API
-                Map<String, Object> response = sendGetRequest(apiUrl, apiKey);
-                return (ResponseEntity<?>) response;
+                // Send GET request to supplier API
+                ResponseEntity<Map<String, Object>> response = sendGetRequest(apiUrl, apiKey);
+                return response;
             } else {
                 return ResponseEntity.status(404).body("Supplier not found");
             }
         } catch (InterruptedException | ExecutionException | IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Error fetching orders");
+        }
+    }
+
+    private ResponseEntity<Map<String, Object>> sendGetRequest(String apiUrl, String apiKey) throws IOException {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        headers.set("Apikey", apiKey);
+
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        ResponseEntity<Map> response = restTemplate.exchange(apiUrl, HttpMethod.GET, request, Map.class);
+
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            return ResponseEntity.ok(response.getBody());
+        } else {
+            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         }
     }
 
@@ -154,24 +174,6 @@ public class OrderController {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
             StringBuilder response = new StringBuilder();
             String responseLine = null;
-            while ((responseLine = br.readLine()) != null) {
-                response.append(responseLine.trim());
-            }
-            // Parse response JSON string to Map
-            return new Gson().fromJson(response.toString(), Map.class);
-        }
-    }
-    // Method to send GET request
-    private Map<String, Object> sendGetRequest(String apiUrl, String apiKey) throws IOException {
-        URL url = new URL(apiUrl);
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("Apikey", apiKey); // Set Apikey as a header
-        con.setDoOutput(true);
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
-            StringBuilder response = new StringBuilder();
-            String responseLine;
             while ((responseLine = br.readLine()) != null) {
                 response.append(responseLine.trim());
             }
@@ -494,6 +496,7 @@ public class OrderController {
                     // Fetch product details for each item
                     for (Map.Entry<String, Object> itemEntry : items.entrySet()) {
                         String itemId = itemEntry.getKey();
+                        Integer quantity = (Integer) itemEntry.getValue();
 
                         // Fetch product details from the database
                         DocumentReference productDocRef = db.collection("products").document(itemId);
