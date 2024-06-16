@@ -1,7 +1,7 @@
 .home-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: center; /* This ensures all items are vertically centered */
   padding: 10px 20px;
   background: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -27,6 +27,7 @@
   text-decoration: none;
   color: #333;
   font-weight: bold;
+  line-height: 30px; /* Ensure the line height is consistent */
 }
 
 .nav-links a:hover {
@@ -34,7 +35,8 @@
 }
 
 .welcome-message {
-  margin-left: 20px; /* Add margin to the welcome message */
+  margin-left: 20px;
+  line-height: 30px; /* Ensure the line height is consistent */
 }
 
 .cart-icon {
@@ -55,6 +57,8 @@
   color: #333;
   font-weight: bold;
   font-size: 1rem;
+  cursor: pointer; /* Ensure it's clear the button is clickable */
+  line-height: 30px; /* Ensure the line height is consistent */
 }
 
 .logout-button:hover {
