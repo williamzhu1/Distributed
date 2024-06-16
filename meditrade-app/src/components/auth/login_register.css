@@ -1,7 +1,16 @@
-/* single_page.css */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: "Montserrat", sans-serif;
+}
 
 .single-page-app {
-  font-family: Arial, sans-serif;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 20px;
 }
 
@@ -9,6 +18,7 @@
   width: 150px;
   display: block;
   margin: 0 auto;
+  margin-top: 80px; /* Add margin to prevent overlap with header */
 }
 
 .header, .register-header {
@@ -18,7 +28,7 @@
 .form, .register-form {
   max-width: 400px;
   margin: 0 auto;
-  margin-top: 100px;
+  margin-top: 20px; /* Ensure no overlap with the header */
 }
 
 .form input,
@@ -27,16 +37,30 @@
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 16px;
 }
 
 .form button,
 .register-form button {
   width: 100%;
-  padding: 10px;
-  background-color: #007bff;
+  padding: 12px 20px;
+  background-color: #4caf50;
   color: white;
   border: none;
+  border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.form button:hover,
+.register-form button:hover {
+  background: linear-gradient(145deg, #2e7d32, #43a047);
 }
 
 .product-list {
@@ -97,67 +121,132 @@
   margin-top: 10px;
 }
 
-.register-mode-toggle {
+.register-mode-toggle,
+.login-mode-toggle {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
 }
 
 .toggle-button {
-  padding: 10px 20px;
-  margin: 0 5px;
-  cursor: pointer;
-  background-color: #f0f0f0;
+  background-color: #ddd;
   border: none;
+  padding: 10px 20px;
+  margin: 0 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border-radius: 10px;
 }
 
-.toggle-button.active {
-  background-color: #007bff;
+.toggle-button.active,
+.toggle-button:hover {
+  background-color: #4caf50;
   color: white;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
 }
 
 .error-message {
   color: red;
-  font-size: 0.875em;
+  font-size: 0.8rem;
+  margin-top: 5px;
 }
 
 .input-error {
-  border: 1px solid red;
+  border-color: red;
 }
 
-.switch-to-register {
+.switch-to-register,
+.switch-to-login {
   text-align: center;
   margin-top: 10px;
 }
 
-.switch-to-register a {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #28a745;
-  color: white;
-  text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.switch-to-register a:hover {
-  background-color: #218838;
-}
-
-.switch-to-login {
-  text-align: center;
-  margin-top: 20px;
-}
-
+.switch-to-register a,
 .switch-to-login a {
-  color: #007bff;
-  text-decoration: none;
+  background: transparent;
+  border: none;
+  color: gray;
+  padding: 10px;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
-.switch-to-login a:hover {
-  text-decoration: underline;
+body,
+input,
+button,
+label {
+  font-family: "Montserrat", sans-serif;
+}
+
+.login-register-background {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url("../../assets/images/background.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  position: relative;
+  opacity: 0.8;
+  min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.6);
+  z-index: -1;
+}
+
+.register-container,
+.login-container {
+  background-color: rgba(255, 255, 255, 0.999);
+  backdrop-filter: blur(5px);
+  padding: 20px;
+  width: 90%; /* Adjust width as needed */
+  max-width: 400px;
+  margin: 80px auto 40px; /* Add margin-top to prevent overlap with header */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  font-family: "Open Sans", sans-serif;
+}
+
+.register-header,
+.login-header {
+  font-size: 24px; /* Adjust the font size as needed */
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Responsive styles */
+@media only screen and (max-width: 600px) {
+  .register-container,
+  .login-container {
+    width: 90%;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .register-container,
+  .login-container {
+    width: 100%;
+    margin: 20px auto;
+    padding: 10px;
+  }
 }

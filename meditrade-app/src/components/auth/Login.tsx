@@ -38,8 +38,12 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchMode }) => {
           onChange={handleChange}
         />
         <button type="submit">SIGN IN</button>
+        <div className="switch-to-register">
+          <a href="/register" onClick={(e) => {e.preventDefault(); onSwitchMode();}}>
+            Don't have an account yet? Register
+          </a>
+        </div>
       </form>
-      <button onClick={onSwitchMode}>Register</button>
     </div>
   );
 };
