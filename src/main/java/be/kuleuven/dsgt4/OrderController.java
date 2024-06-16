@@ -89,7 +89,7 @@ public class OrderController {
             DocumentReference supplierDocRef = db.collection("users").document(userId);
             DocumentSnapshot supplierDoc = supplierDocRef.get().get();
             if (supplierDoc.exists()) {
-                String apiUrl = Objects.requireNonNull(supplierDoc.getString("endpoint")).trim() + "orders" + "/" + orderId;
+                String apiUrl = Objects.requireNonNull(supplierDoc.getString("endpoint")).trim() + "orders";
                 String apiKey = Objects.requireNonNull(supplierDoc.getString("apikey")).trim();
                 // Send PUT request to supplier API
                 Map<String, Object> response = sendGetRequest(apiUrl, apiKey);
@@ -114,7 +114,7 @@ public class OrderController {
             DocumentReference supplierDocRef = db.collection("users").document(userId);
             DocumentSnapshot supplierDoc = supplierDocRef.get().get();
             if (supplierDoc.exists()) {
-                String apiUrl = Objects.requireNonNull(supplierDoc.getString("endpoint")).trim() + "orders";
+                String apiUrl = Objects.requireNonNull(supplierDoc.getString("endpoint")).trim() + "orders" + "/" + orderId;
                 String apiKey = Objects.requireNonNull(supplierDoc.getString("apikey")).trim();
 
                 // Create request body to update status to CANCELLED
