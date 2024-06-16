@@ -19,7 +19,7 @@ const ProductDetail: React.FC<ProductProps> = ({ productId, onSwitchMode }) => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/products/${productId}`, {
+        const response = await fetch(`/api/products/${productId}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
