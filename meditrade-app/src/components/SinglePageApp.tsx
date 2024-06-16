@@ -29,24 +29,24 @@ const SinglePageApp: React.FC = () => {
   const [total, setTotal] = useState<number>(0);
 
   const handleLogin = async (email: string, password: string) => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      setIsLoggedIn(true);
-      const userId = userCredential.user.uid;
-      const userDoc = await getDoc(doc(db, "users", userId));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        setUser({ ...userCredential.user, ...userData });
-        if (userData.role === "manager") {
-          setMode("supplierHome");
-        } else {
-          setMode("home");
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        setIsLoggedIn(true);
+        const userId = userCredential.user.uid;
+        const userDoc = await getDoc(doc(db, "users", userId));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUser({ ...userCredential.user, ...userData });
+          if (userData.role === "manager") {
+            setMode("supplierHome");
+          } else {
+            setMode("home");
+          }
         }
+      } catch (error) {
+        console.error("Error logging in:", error);
       }
-    } catch (error) {
-      console.error("Error logging in:", error);
-    }
-  };
+    };
 
   const handleRegister = async (registerData: any) => {
     if (registerData.password !== registerData.confirmPassword) {
