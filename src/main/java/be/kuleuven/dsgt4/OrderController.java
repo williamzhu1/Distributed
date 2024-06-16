@@ -271,19 +271,35 @@ public class OrderController {
     }
 
     @GetMapping("/getorders")
-    public ResponseEntity<?> getOrders(@RequestParam String firstName, @RequestParam String lastName) {
+    public ResponseEntity<?> getOrders(@RequestParam String userId) {
         Firestore db = FirestoreClient.getFirestore();
 
-        // Fetch orders from the Firestore database for the given firstName and lastName
+        // Fetch orders from the Firestore database for the given userId
         ApiFuture<QuerySnapshot> future = db.collection("orders")
-                .whereEqualTo("firstName", firstName)
-                .whereEqualTo("lastName", lastName)
+                .whereEqualTo("userId", userId)
                 .get();
         List<Map<String, Object>> orders = new ArrayList<>();
         try {
             List<QueryDocumentSnapshot> documents = future.get().getDocuments();
             for (QueryDocumentSnapshot document : documents) {
-                orders.add(document.getData());
+                Map<String, Object> orderData = document.getData();
+                Map<String, Object> items = (Map<String, Object>) orderData.get("items");
+
+                // Fetch product names for each item
+                Map<String, Object> itemsWithNames = new HashMap<>();
+                for (String itemId : items.keySet()) {
+                    DocumentReference productRef = db.collection("products").document(itemId);
+                    ApiFuture<DocumentSnapshot> productFuture = productRef.get();
+                    DocumentSnapshot productSnapshot = productFuture.get();
+                    if (productSnapshot.exists()) {
+                        String productName = productSnapshot.getString("name");
+                        itemsWithNames.put(productName, items.get(itemId));
+                    } else {
+                        itemsWithNames.put(itemId, items.get(itemId)); // Fallback to ID if name not found
+                    }
+                }
+                orderData.put("items", itemsWithNames);
+                orders.add(orderData);
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
