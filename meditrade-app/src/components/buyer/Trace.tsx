@@ -92,6 +92,7 @@ const Trace: React.FC<TraceProps> = ({ user, onSwitchMode, onLogout }) => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
+        body: JSON.stringify({ orderId, items: formatItemsAsInteger(orders.find(order => order.orderId === orderId)?.items || {}) })
       });
 
       if (!response.ok) {
@@ -107,6 +108,14 @@ const Trace: React.FC<TraceProps> = ({ user, onSwitchMode, onLogout }) => {
     } catch (error) {
       console.error("Error retrying order:", error);
     }
+  };
+
+  const formatItemsAsInteger = (items: { [key: string]: number }): { [key: string]: number } => {
+    const formattedItems: { [key: string]: number } = {};
+    for (const [productName, quantity] of Object.entries(items)) {
+      formattedItems[productName] = Math.trunc(quantity);
+    }
+    return formattedItems;
   };
 
   return (
