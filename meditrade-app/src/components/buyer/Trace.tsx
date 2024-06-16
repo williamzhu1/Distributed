@@ -59,7 +59,7 @@ const Trace: React.FC<TraceProps> = ({ user, onSwitchMode, onLogout }) => {
     }
 
     try {
-      const response = await fetch(`/order/${orderId}`, {
+      const response = await fetch(`/api/order/${orderId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -75,6 +75,37 @@ const Trace: React.FC<TraceProps> = ({ user, onSwitchMode, onLogout }) => {
       setOrders((prevOrders) => prevOrders.filter((order) => order.orderId !== orderId));
     } catch (error) {
       console.error("Error deleting order:", error);
+    }
+  };
+
+  const handleRetry = async (orderId: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found in local storage");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/retryOrder/${orderId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Optionally, you can update the order status in the state to reflect the retry
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.orderId === orderId ? { ...order, status: 'Retrying' } : order
+        )
+      );
+    } catch (error) {
+      console.error("Error retrying order:", error);
     }
   };
 
@@ -97,6 +128,9 @@ const Trace: React.FC<TraceProps> = ({ user, onSwitchMode, onLogout }) => {
               ))}
             </ul>
             <button onClick={() => handleDelete(order.orderId)} className={styles.deleteButton}>Delete Order</button>
+            {(order.status === "ROOTSTOCK" || order.status === "CANCELLED") && (
+              <button onClick={() => handleRetry(order.orderId)} className={styles.retryButton}>Retry Order</button>
+            )}
           </div>
         ))}
       </div>
