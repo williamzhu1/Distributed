@@ -34,6 +34,8 @@ const SinglePageApp: React.FC = () => {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         setIsLoggedIn(true);
         const userId = userCredential.user.uid;
+        const token = await userCredential.user.getIdToken();
+        localStorage.setItem("token", token);
         const userDoc = await getDoc(doc(db, "users", userId));
         if (userDoc.exists()) {
           const userData = userDoc.data();
