@@ -178,6 +178,21 @@ public class ProductController {
             for (QueryDocumentSnapshot document : querySnapshot.getDocuments()) {
                 Map<String, Object> product = document.getData();
                 product.put("id", document.getId()); // Include the document ID in the product data
+
+                String supplierId = (String) product.get("supplierId");
+                if (supplierId != null) {
+                    DocumentReference supplierRef = db.collection("users").document(supplierId);
+                    DocumentSnapshot supplierSnapshot = supplierRef.get().get();
+                    if (supplierSnapshot.exists()) {
+                        String companyName = supplierSnapshot.getString("companyName");
+                        product.put("companyName", companyName);
+                    } else {
+                        product.put("companyName", "Unknown Supplier");
+                    }
+                } else {
+                    product.put("companyName", "Unknown Supplier");
+                }
+
                 products.add(product);
             }
             return ResponseEntity.ok(products);
