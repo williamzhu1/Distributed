@@ -69,7 +69,7 @@ const SinglePageApp: React.FC = () => {
             }
           : {
               companyName: registerData.companyName,
-              apiKey: registerData.apiKey,
+              apikey: registerData.apikey,
               endpoint: registerData.endpoint,
               role: "manager",
             }),
