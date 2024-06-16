@@ -27,12 +27,12 @@ public class OrderController {
     }
 
     @DeleteMapping("/order/{orderId}")
-    public ResponseEntity<?> createOrder(@PathVariable String orderId) throws ExecutionException, InterruptedException {
+    public ResponseEntity<?> deleteOrder(@PathVariable String orderId) throws ExecutionException, InterruptedException {
         return deleteOrderAndSupplierOrders(orderId);
     }
 
     @PutMapping("/retryOrder/{orderId}")
-    public ResponseEntity<?> updateOrderStatus(@PathVariable String orderId) throws IOException {
+    public ResponseEntity<?> retryOrder(@PathVariable String orderId) throws IOException {
         Firestore db = FirestoreClient.getFirestore();
         try {
             // Fetch the old order
@@ -49,16 +49,57 @@ public class OrderController {
 
             // Copy the old order data and update status
             Map<String, Object> oldOrderData = oldOrderSnapshot.getData();
+
             if (oldOrderData == null) {
                 return ResponseEntity.status(404).body("Old order data is null");
             }
-            // Call the createOrUpdateOrder function to create a new order with updated data
 
-            return createOrUpdateOrder(oldOrderData);
+            // Ensure quantity values are sent as integers
+            Map<String, Integer> formattedItems = new HashMap<>();
+            // Get the items map from oldOrderData
+            Map<String, Object> itemsMap = (Map<String, Object>) oldOrderData.get("items");
+
+            if (itemsMap != null) {
+                for (Map.Entry<String, Object> itemEntry : itemsMap.entrySet()) {
+                    String itemName = itemEntry.getKey();
+                    Object quantityObj = itemEntry.getValue();
+                    if (quantityObj instanceof Long) {
+                        formattedItems.put(itemName, ((Long) quantityObj).intValue());
+                    }
+                }
+            }
+            Map<String, Object> newOrderData = new HashMap<>(oldOrderData);
+            newOrderData.put("items", formattedItems);
+            // Call the createOrUpdateOrder function to create a new order with updated data
+            deleteOrderAndSupplierOrders(orderId);
+            return createOrUpdateOrder(newOrderData);
 
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Error updating order");
+        }
+    }
+
+    @GetMapping("/supplierOrder")
+    public ResponseEntity<?> getOrders(@RequestParam String orderId, @RequestBody Map<String, Object> updateData) {
+        Firestore db = FirestoreClient.getFirestore();
+        String userId = (String) updateData.get("userId");
+        try {
+            // Fetch supplier document to get API endpoint and API key
+            DocumentReference supplierDocRef = db.collection("users").document(userId);
+            DocumentSnapshot supplierDoc = supplierDocRef.get().get();
+            if (supplierDoc.exists()) {
+                String apiUrl = Objects.requireNonNull(supplierDoc.getString("endpoint")).trim() + "orders" + "/" + orderId;
+                String apiKey = Objects.requireNonNull(supplierDoc.getString("apikey")).trim();
+                // Send PUT request to supplier API
+                Map<String, Object> response = sendGetRequest(apiUrl, apiKey);
+                return (ResponseEntity<?>) response;
+            } else {
+                return ResponseEntity.status(404).body("Supplier not found");
+            }
+        } catch (InterruptedException | ExecutionException | IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error fetching orders");
         }
     }
 
@@ -73,8 +114,8 @@ public class OrderController {
             DocumentReference supplierDocRef = db.collection("users").document(userId);
             DocumentSnapshot supplierDoc = supplierDocRef.get().get();
             if (supplierDoc.exists()) {
-                String apiUrl = supplierDoc.getString("endpoint").trim() + "orders" + "/" + orderId;
-                String apiKey = supplierDoc.getString("apikey").trim();
+                String apiUrl = Objects.requireNonNull(supplierDoc.getString("endpoint")).trim() + "orders";
+                String apiKey = Objects.requireNonNull(supplierDoc.getString("apikey")).trim();
 
                 // Create request body to update status to CANCELLED
                 Map<String, Object> Request = new HashMap<>();
@@ -113,6 +154,24 @@ public class OrderController {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
             StringBuilder response = new StringBuilder();
             String responseLine = null;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            // Parse response JSON string to Map
+            return new Gson().fromJson(response.toString(), Map.class);
+        }
+    }
+    // Method to send GET request
+    private Map<String, Object> sendGetRequest(String apiUrl, String apiKey) throws IOException {
+        URL url = new URL(apiUrl);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Apikey", apiKey); // Set Apikey as a header
+        con.setDoOutput(true);
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine;
             while ((responseLine = br.readLine()) != null) {
                 response.append(responseLine.trim());
             }
@@ -166,7 +225,6 @@ public class OrderController {
         }
     }
 
-
     @GetMapping("/getorders")
     public ResponseEntity<?> getOrders(@RequestParam String userId) {
         Firestore db = FirestoreClient.getFirestore();
@@ -207,7 +265,7 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
-    private ResponseEntity<?> createOrUpdateOrder(Map<String, Object> orderData){
+    private ResponseEntity<?> createOrUpdateOrder(Map<String, Object> orderData) {
         Firestore db = FirestoreClient.getFirestore();
 
         System.out.println("Order Data:");
@@ -290,6 +348,7 @@ public class OrderController {
             // Create orders for suppliers and send requests
             int confirmedSuppliers = 0;
             boolean outOfStock = false;
+            boolean cancelled = false;
             for (Map.Entry<String, Map<String, Integer>> entry : itemsBySupplier.entrySet()) {
                 String supplierId = entry.getKey();
                 Map<String, Integer> supplierItems = entry.getValue();
@@ -326,7 +385,7 @@ public class OrderController {
                             confirmedSuppliers++;
                         }
                         if (status.equals("ROOTSTOCK")) {
-                            System.out.println("ROOTSOCK on:");
+                            System.out.println("ROOTSTOCK on:");
                             for (Map.Entry<String, Integer> entrystock : supplierItems.entrySet()) {
                                 System.out.println(entrystock.getKey() + ": " + entrystock.getValue());
                             }
@@ -340,6 +399,7 @@ public class OrderController {
                         Map<String, Object> updateOrder = new HashMap<>();
                         updateOrder.put("status", "CANCELLED");
                         db.collection("orders").document(customerOrderId).update(updateOrder);
+                        cancelled = true;
                         System.err.println("Error creating order or sending requests to suppliers");
                     }
                 }
@@ -352,6 +412,7 @@ public class OrderController {
                 updateOrder.put("status", "CONFIRMED");
                 db.collection("orders").document(customerOrderId).update(updateOrder);
                 System.out.println("Suppliers confirmed the order");
+                return ResponseEntity.ok("Order created and confirmed successfully");
             } else if (outOfStock) {
                 // Handle if not all suppliers confirmed
                 System.out.println("Some items out of stock or not enough stock");
@@ -375,7 +436,8 @@ public class OrderController {
                     updateOrder.put("status", "ROOTSTOCK");
                     db.collection("orders").document(customerOrderId).update(updateOrder);
                 }
-            } else {
+                return ResponseEntity.ok("Order created but some items are out of stock");
+            } else if (cancelled) {
                 // Handle if not all suppliers confirmed
                 System.out.println("Not all suppliers confirmed the order");
                 for (Map.Entry<String, Map<String, Integer>> entry : itemsBySupplier.entrySet()) {
@@ -398,6 +460,7 @@ public class OrderController {
                     updateOrder.put("status", "CANCELLED");
                     db.collection("orders").document(customerOrderId).update(updateOrder);
                 }
+                return ResponseEntity.ok("Order cancelled due to supplier issues");
             }
         } catch (InterruptedException | ExecutionException | IOException e) {
             e.printStackTrace();
@@ -406,6 +469,7 @@ public class OrderController {
             assert customerOrderId != null;
             db.collection("orders").document(customerOrderId).update(updateOrder);
             System.err.println("Error creating order or sending requests to suppliers");
+            return ResponseEntity.status(500).body("Error creating order or sending requests to suppliers");
         }
         return ResponseEntity.ok("Order created successfully");
     }
@@ -430,7 +494,6 @@ public class OrderController {
                     // Fetch product details for each item
                     for (Map.Entry<String, Object> itemEntry : items.entrySet()) {
                         String itemId = itemEntry.getKey();
-                        Integer quantity = (Integer) itemEntry.getValue();
 
                         // Fetch product details from the database
                         DocumentReference productDocRef = db.collection("products").document(itemId);
@@ -439,8 +502,7 @@ public class OrderController {
 
                         if (productDoc.exists()) {
                             String supplierId = productDoc.getString("supplierId");
-                            // Add item details to the corresponding supplier
-                            itemsBySupplier.computeIfAbsent(supplierId, k -> new HashMap<>()).put(itemId, quantity);
+                            itemsBySupplier.computeIfAbsent(supplierId, k -> new HashMap<>()).put(itemId, 0);
                         } else {
                             // Handle if product not found
                             System.err.println("Product not found for ID: " + itemId);
@@ -455,15 +517,19 @@ public class OrderController {
                         // Get supplier details (API endpoint and API key)
                         DocumentSnapshot supplierDoc = db.collection("users").document(supplierId).get().get();
                         if (supplierDoc.exists()) {
-                            String apiUrl = Objects.requireNonNull(supplierDoc.getString("endpoint")).trim() + "orders".trim() + orderId;
+                            String apiUrl = Objects.requireNonNull(supplierDoc.getString("endpoint")).trim() + "orders".trim() + "/" + orderId;
                             String apiKey = Objects.requireNonNull(supplierDoc.getString("apikey")).trim();
+                            try {
+                                // Send DELETE request to supplier API
+                                Map<String, Object> response = sendDeleteRequest(apiUrl, apiKey);
 
-                            // Send DELETE request to supplier API
-                            Map<String, Object> response = sendDeleteRequest(apiUrl, apiKey);
-
-                            // Handle supplier response
-                            if (response == null || !response.containsKey("success") || !(Boolean) response.get("success")) {
-                                System.out.println("Error or unexpected response from supplier API");
+                                // Handle supplier response
+                                if (response == null || !response.containsKey("success") || !(Boolean) response.get("success")) {
+                                    System.out.println("Error or unexpected response from supplier API");
+                                }
+                            } catch (Exception e) {
+                                // Log the exception and continue
+                                System.err.println("Error sending DELETE request to supplier API: " + e.getMessage());
                             }
                         }
                     }
@@ -473,13 +539,11 @@ public class OrderController {
                 orderDocRef.delete();
                 return ResponseEntity.ok("Order and related supplier orders deleted successfully.");
             } else {
-                return ResponseEntity.status(403).body("EOrder not found");
+                return ResponseEntity.status(403).body("Order not found");
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Error deleting the order: " + e.getMessage());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }

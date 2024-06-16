@@ -1,31 +1,27 @@
 .order-completed-page {
-  font-family: "Montserrat", sans-serif;
-  margin: 0;
-  padding-top: 30px; /* Adjust this value to match your header's height */
-  background-color: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
+  background-color: #f9f9f9;
 }
 
 .order-completed-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: white;
-  margin: 20px auto;
-  margin-top: 50px;
+  background-color: #ffffff;
   padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+  border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
-  width: 100%;
-}
-
-.order-completed-container h1 {
-  margin-bottom: 20px;
-}
-
-.order-completed-container p {
-  font-size: 1.2em;
   text-align: center;
+}
+
+h1 {
+  color: #333;
+}
+
+pre {
+  text-align: left;
+  background-color: #f1f1f1;
+  padding: 10px;
+  border-radius: 4px;
+  overflow: auto;
 }

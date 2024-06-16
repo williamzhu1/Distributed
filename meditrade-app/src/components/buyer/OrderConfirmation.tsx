@@ -1,22 +1,18 @@
-// src/components/buyer/OrderConfirmation.tsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { CartItem } from "./CartItem"; // Import the CartItem type correctly
 import "./order_confirmation.css";
-import { Order } from "../../entities/Order";
 import { useUser } from "../../contexts/UserContext";
 
 interface OrderConfirmationProps {
   cartItems: CartItem[];
   total: number;
-  onOrderCompleted: () => void; // Add this prop to notify when the order is completed
+  onOrderCompleted: (response: any) => void; // Add this prop to notify when the order is completed
 }
 
 const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cartItems, total, onOrderCompleted }) => {
   const { user } = useUser();
 
   const [formData, setFormData] = useState({
-    name: "",
     address: "",
     paymentMethod: "Credit Card",
   });
@@ -33,15 +29,17 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cartItems, total,
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await sendCartCloud(formData.address);
-    onOrderCompleted(); // Notify the parent component that the order is completed
+    const response = await sendCartCloud(formData.address);
+    if (response) {
+      onOrderCompleted(response); // Notify the parent component that the order is completed with response data
+    }
   };
 
   async function sendCartCloud(address: string) {
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("No token found in local storage");
-      return;
+      return null;
     }
 
     try {
@@ -63,20 +61,19 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ cartItems, total,
         }),
       });
 
-      const contentType = response.headers.get("Content-Type");
       if (!response.ok) {
         throw new Error("Failed to send cart to firebase");
       }
 
+      const contentType = response.headers.get("Content-Type");
       if (contentType && contentType.includes("application/json")) {
-        const responseData = await response.json();
-        console.log("Response data:", responseData);
+        return await response.json();
       } else {
-        const textData = await response.text();
-        console.log("Response data is not JSON:", textData);
+        return { message: await response.text() };
       }
     } catch (error) {
       console.error("Error sending cart to firebase:", error);
+      return null;
     }
   };
 

@@ -27,6 +27,7 @@ const SinglePageApp: React.FC = () => {
   const [user, setUser] = useState<any>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [total, setTotal] = useState<number>(0);
+  const [response, setResponse] = useState<any>(null);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null); // State to handle selected product
 
   const handleLogin = async (email: string, password: string) => {
@@ -97,9 +98,10 @@ const SinglePageApp: React.FC = () => {
     setMode("orderConfirmation");
   };
 
-  const handleOrderCompleted = () => {
-    setMode("orderCompleted");
-  };
+   const handleOrderCompleted = (response: any) => {
+      setResponse(response);
+      setMode("orderCompleted");
+    };
 
   const handleProductClick = (productId: string) => {
     setSelectedProductId(productId);
@@ -118,7 +120,7 @@ const SinglePageApp: React.FC = () => {
       {mode === "cart" && <Cart user={user} onSwitchMode={setMode} onLogout={handleLogout} onProceedToOrder={handleProceedToOrder} />}
       {mode === "trace" && <Trace user={user} onSwitchMode={setMode} onLogout={handleLogout} />}
       {mode === "orderConfirmation" && <OrderConfirmation cartItems={cartItems} total={total} onOrderCompleted={handleOrderCompleted} />}
-      {mode === "orderCompleted" && <OrderCompleted />}
+      {mode === "orderCompleted" && <OrderCompleted response={response} />}
       {mode === "product" && selectedProductId && <Product productId={selectedProductId} onSwitchMode={setMode} />}
       <Footer />
     </div>

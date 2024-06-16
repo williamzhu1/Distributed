@@ -99,7 +99,6 @@ const Trace: React.FC<TraceProps> = ({ user, onSwitchMode, onLogout }) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Optionally, you can update the order status in the state to reflect the retry
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
           order.orderId === orderId ? { ...order, status: 'Retrying' } : order
