@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "meditrade-c7526",
+  "private_key_id": "c9b65cd3183e9ca5bd2a5fb23cf78ed46cc4f7db",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCJTvsb8KyfnGbq\nLk+oEKeqvWpSGhoJ0XFegqOAhIj5c0KGgKBPtENGdCwryGeEwZfI02Ifp39rKv83\nQbwREzlC4Z1n9LwSieHp4CkiYPM3dC2u/isiX0+p8C38ADun9iWxX5tfQL4X1n5p\nV7HgB432fApmkrQ58Pb1HLUq9/c609x3nrYIVjeWLhFmHHlaXXPPfQgHcdpZLS3x\nAcI9+Pw5IcjGnd4wV22z0h/zmscO74MQLht5OmH8XhA8tKYKrpxvRZNoAmgepo46\nTgVRWoaFN+bTZZyL//9LMvH2qAjA2WiTYaeavFiAeGh1MSiP9xVviAFBUb+Cxpc7\nIPeitZiJAgMBAAECggEACu/DiIIu/beTauutZJGPCUZ1BX0Wvdl00jZNl5r23geU\nMOpl2nNdOGtgaUxZEnXpBRHxKtxIhdyy30/ZDvMdCHq38uPHZyKcX+h+3kIinTQf\nv2R3QxGcYsjCoOPT3Jj6f5pB4eBiQ7vN7c4SWOnBIPTYTzs4J7VNtlBHDdkaVBEW\nDCo9NuYNnnjxUd2Lmboa1qujWe3l9r3dmjWU8SI8p1L1hqtZs6/q5bfzFRGYm/e7\nspItBa9/Kq6ab9KI763JKDAhxEQlzUHfgFiLDdHLZd0LbdYJzG+uNuBEdsnO+Ka1\nXhHy8GGDUU+sT/wcxJUhMOVNnIQlY0ftdlYum09ZQQKBgQC9KYTy9dkPclP3t3ao\nzlSS6Nv1eU7fF4Vmp/1Qh2/s2L2z6Guvp5dmSL3YGgu4Fr7SKznnqfFktx8o4XVx\nEcRu1MH7mvOL0Rf3pAwzRGnOu5cw5a0UOQEVc3iF7t4RMh8XJ/bJ/dRovln3uHPl\nBoJpp2JOk/uYEORzCM8+FPR6dQKBgQC50xbAd1r/geMiX0FN7zZcpS7/16N6JWpc\nXqLLOpjcsEAkFtiDt/KDg0O21NFH+lTNbAWua/+UmxSsMNOrWX4MWrIva3fnztkY\nV3shlEFIk6ji5/XBSbQLEONB5oZmE3OZLdqh3QftRAgxlncx2QHTTv0qDfYiX2EG\nqQTHzQVbRQKBgGe87llj9E8hTuVKKvv2c7FBnOdpSJTWTGV4+VYBgKMuVhLlArGJ\nQmFowRxTZFvntWyDIjVnIKgwORltU7/Xk5eIfH2kg64I1JEN2VcATNqATDEXtCyj\n+nEuK0mgLw7VIvHLC+/IkYWD5skQ0hYm1LxmfGZFh7Pkh7SCf003pr/FAoGAKisU\nxqhPJhw7htlG4ICgPXXerIAqwNUsxblUB/pMJgh5BbeJepqLlfx7qUmyFDticxtI\nTsSDQx3OGyUZY5DzYapTNR+WHix6Z2OytXQHPIkFkjhBNJOdH8W9TH8bkJ5pZSFa\ns9CMs/L0SQx0EAPGvkT2fkycxkAOrIw+YXjM9mECgYAMD1eO3i5kikAngNhxRkmP\nL79H1o0I+ALxVD5OPZUXTIwUEPrMeOkZLI5boPr7FmxQu9RYXFnI52GEvBTZUHLG\nvAvbLC54d1BZmgsejcY6sQ07S6owz96yuShiXR9rtdOC9Ov9Of0NgjPPqzzZS3pP\njPZ2RVSuqZofCKlcofOlwQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-73foc@meditrade-c7526.iam.gserviceaccount.com",
+  "client_id": "117800520333032674548",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-73foc%40meditrade-c7526.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
