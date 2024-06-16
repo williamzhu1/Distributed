@@ -27,6 +27,7 @@ public class ProductController {
             ApiFuture<QuerySnapshot> query = db.collection("users").whereEqualTo("role", "manager").get();
             QuerySnapshot querySnapshot = query.get();
             List<QueryDocumentSnapshot> managerDocs = querySnapshot.getDocuments();
+            System.out.println("manageGer URL: " + managerDocs);
 
             List<Map<String, Object>> allProducts = new ArrayList<>();
 
